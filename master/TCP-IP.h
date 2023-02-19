@@ -7,6 +7,7 @@
 #include <sys/types.h>	// for Socket data types
 #include <netinet/in.h> // for IP Socket data types
 #include <pthread.h>	// for multithread function
+#include "UILog.h"
 
 
 #define MAXPENDING 5

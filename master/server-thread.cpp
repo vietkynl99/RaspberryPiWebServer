@@ -1,9 +1,9 @@
+#include <stdbool.h>
+#include <stdlib.h>
 #include <string.h>
 #include <strings.h>
-#include "TCP-IP.h"
 #include "TCP-IP.cpp"
-#include <stdbool.h> // for bool type
-#include <stdlib.h>  // for itoa() call
+#include "UILog.cpp"
 
 #define localhost "127.0.0.1"
 #define SET "OK"
@@ -25,6 +25,7 @@ bool SendCommandToDevice(int index, char *str);
 #define SIZE_OF_ARRY2(array2) (sizeof(array2) / sizeof(array2[0][0]) / 3)
 
 int servSock; // global variable
+UILog *mUILog;
 
 int main(int argc, char *argv[])
 {
@@ -34,9 +35,16 @@ int main(int argc, char *argv[])
     struct ThreadArgs *threadArgs; /* Pointer to argument structure for thread */
     unsigned int clntLen;          /* Length of client address data structure */
 
+    mUILog = &UILog::getInstance();
+    if (mUILog != (UILog *)NULL)
+    {
+        mUILog->setUiLogLevel(UILog::ERROR | UILog::SYSTEM | UILog::LOG);
+    }
+
     clntLen = sizeof(cli_addr);
 
     servSock = CreateTCPServerSocket(PORT);
+    UIPRINT(UILog::SYSTEM, "Starting server...");
 
     while (1)
     {
@@ -55,7 +63,7 @@ int main(int argc, char *argv[])
         if (pthread_create(&threadID, NULL, HandleThreadClient, (void *)threadArgs) != 0)
             error("pthread_create() failed");
 
-        // printf("\n+ New client[%d][Addr:%s]\n\n",
+        // UIPRINT(UILog::LOG, "\n+ New client[%d][Addr:%s]\n\n",
         //     clntSock, inet_ntoa(cli_addr.sin_addr));
     }
 
@@ -77,26 +85,26 @@ void *HandleThreadClient(void *threadArgs)
         recvMsgSize = recv(clntSock, buffer, BUFFSIZE, 0);
         if (recvMsgSize < 0)
         {
-            printf("ERROR reading from socket\n");
+            UIPRINT(UILog::ERROR, "ERROR reading from socket\n");
         }
         else if (recvMsgSize > 0)
         {
 
             if (!strcmp(((struct ThreadArgs *)threadArgs)->addr, localhost))
             { // if data from server
-                printf(". Web server: %s\n", buffer);
+                UIPRINT(UILog::LOG, ". Web server: %s\n", buffer);
                 ServerCommand(buffer);
             }
             else
             {
-                printf(". Device: %s\n", buffer);
+                UIPRINT(UILog::LOG, ". Device: %s\n", buffer);
                 // Check command of device
                 char *header = strtok(buffer, ":");
                 char *content = strtok(NULL, ":");
                 if (strcmp(header, "RESULT") == 0)
                 { // result command
                     // response from device
-                    printf(". Address[%s]: %s\n", ((struct ThreadArgs *)threadArgs)->addr, content);
+                    UIPRINT(UILog::LOG, ". Address[%s]: %s\n", ((struct ThreadArgs *)threadArgs)->addr, content);
                 }
                 else if (strcmp(header, "INIT") == 0)
                 { // Init a new device command
@@ -113,11 +121,11 @@ void *HandleThreadClient(void *threadArgs)
         {
             if (!strcmp(((struct ThreadArgs *)threadArgs)->addr, localhost))
             {
-                // printf("- Web server disconnected\n");
+                // UIPRINT(UILog::LOG, "- Web server disconnected\n");
             }
             else
             {
-                printf("- Address[%s]: disconnected !\n", ((struct ThreadArgs *)threadArgs)->addr);
+                UIPRINT(UILog::LOG, "- Address[%s]: disconnected !\n", ((struct ThreadArgs *)threadArgs)->addr);
                 // u can handle with client-disconnected event
                 // code here
             }
@@ -126,6 +134,7 @@ void *HandleThreadClient(void *threadArgs)
         }
     }
     close(clntSock);
+    return threadArgs;
 }
 
 void ServerCommand(char *str)
@@ -137,11 +146,11 @@ void ServerCommand(char *str)
         if (IdDevice[i][0]) // check if IdDevice[i][0] is not NULL
             if (strcmp(header, IdDevice[i][0]) == 0)
             {
-                // printf("header: %s, IdDevice: %s, content: %s\n", header, IdDevice[i][1], content);
+                // UIPRINT(UILog::LOG, "header: %s, IdDevice: %s, content: %s\n", header, IdDevice[i][1], content);
                 if (IdDevice[i][2] != NULL) // check if has device
                     SendCommandToDevice(i, content);
                 else
-                    printf("- There is no device: \"%s\"\n", IdDevice[i][0]);
+                    UIPRINT(UILog::LOG, "- There is no device: \"%s\"\n", IdDevice[i][0]);
                 // break;       // break when u just wanna send to one device
             }
     }
@@ -154,10 +163,10 @@ bool IdentifyDevice(int clntSock, char *str)
         if (IdDevice[i][0]) // check if IdDevice[i][0] is not NULL
             if (strcmp(str, IdDevice[i][1]) == 0)
             {
-                printf("+ Detecting a new device: %s, ID:%s\n\n", IdDevice[i][0], IdDevice[i][1]);
+                UIPRINT(UILog::LOG, "+ Detecting a new device: %s, ID:%s\n\n", IdDevice[i][0], IdDevice[i][1]);
                 if (send(clntSock, SET, strlen(SET), 0) < 0)
                 { // send "OK"
-                    printf("- Sending \"OK\" to device: \"%s\" false\n", IdDevice[i][0]);
+                    UIPRINT(UILog::LOG, "- Sending \"OK\" to device: \"%s\" false\n", IdDevice[i][0]);
                     return false;
                 }
                 char clientAddr[4];                  // save client socket as string, max is "9999"
@@ -174,10 +183,10 @@ bool SendCommandToDevice(int index, char *str)
     int clntSock = atoi(IdDevice[index][2]);
     if (send(clntSock, str, strlen(str), 0) < 0)
     {
-        printf("- Sending to device: \"%s\" failed\n", IdDevice[index][0]);
+        UIPRINT(UILog::ERROR, "- Sending to device: \"%s\" failed\n", IdDevice[index][0]);
         return false;
     }
-    printf(". Sending to device: \"%s\", content: %s\n", IdDevice[index][0], str);
+    UIPRINT(UILog::LOG, ". Sending to device: \"%s\", content: %s\n", IdDevice[index][0], str);
 
     return false;
 }

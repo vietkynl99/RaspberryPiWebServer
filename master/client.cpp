@@ -10,6 +10,7 @@
 #include <string.h>     /* for memset() */
 #include <unistd.h>     /* for close() */
 #include <stdbool.h>    // for bool type
+#include "UILog.h"
 
 #define BUFFSIZE 256
 #define PORT 8888
@@ -62,10 +63,10 @@ int main(int argc, char *argv[]){
         
         recvMsgSize = recv(sockfd,buffer,BUFFSIZE,0);
         if (recvMsgSize==-1) {
-            printf("ERROR reading from socket\n");
+            UIPRINT(UILog::ERROR, "ERROR reading from socket\n");
         }
         else if(recvMsgSize>0) {
-            printf("Receive: %s\n", buffer);
+            UIPRINT(UILog::LOG, "Receive: %s\n", buffer);
             bzero(buffer,BUFFSIZE);
         }
     }
@@ -75,17 +76,17 @@ int main(int argc, char *argv[]){
 }
 
 bool SentID() {
-    printf("Send identify : \"Living Room Light : L1\"\n");
+    UIPRINT(UILog::LOG, "Send identify : \"Living Room Light : L1\"\n");
     SendToMaster(INIT_IdDevice);
 
     bzero(buffer,BUFFSIZE);
     recvMsgSize = recv(sockfd,buffer,BUFFSIZE,0);
     if (recvMsgSize ==-1) {
-        printf("ERROR reading from socket\n");
+        UIPRINT(UILog::ERROR, "ERROR reading from socket\n");
     }
     else if(recvMsgSize>0) {
         if(strcmp(buffer, SET)==0) {
-            printf("the device was set: %s\n", buffer);
+            UIPRINT(UILog::LOG, "the device was set: %s\n", buffer);
             return true;
         }
     } else {
@@ -98,7 +99,7 @@ bool SentID() {
 bool SendToMaster(char *str) {
 
     if ( send(sockfd, str, strlen(str),0) < 0) {
-        printf("Error seding to master\n");
+        UIPRINT(UILog::ERROR, "Error seding to master\n");
         return false;
     }
 

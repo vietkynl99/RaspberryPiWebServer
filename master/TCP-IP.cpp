@@ -21,7 +21,7 @@ int CreateTCPServerSocket(unsigned short port){
     
     int reuse=1;
     if (setsockopt(servSock, SOL_SOCKET, SO_REUSEADDR, (char *)&reuse, sizeof(int)) == -1){
-        printf("Reuse port Error : \n");
+        UIPRINT(UILog::ERROR, "Reuse port Error : \n");
     }
 
     /* Construct local address structure */
@@ -54,7 +54,7 @@ int AcceptTCPConnection(int servSock){
         error("accept() failed");
     
     /* clntSock is connected to a client! */
-    // printf("Handling client %s\n", inet_ntoa(cli_addr.sin_addr));
+    // UIPRINT(UILog::LOG, "Handling client %s\n", inet_ntoa(cli_addr.sin_addr));
     
 
     return clntSock;
