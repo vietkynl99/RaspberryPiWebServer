@@ -1,8 +1,9 @@
 CC=gcc
+CXX=g++
 CFLAGS=-c -Wall
 
 server-thread:
-	$(CC) -o $@ $@.c -lpthread
+	$(CXX) -o $@ $@.cpp -lpthread
 
 .PHONY: clean
 clean:

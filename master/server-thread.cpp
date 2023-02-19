@@ -1,13 +1,7 @@
-/*
-    Nguyen Hai Duong
-    Date : 11 jun 2016
-
-    compile : gcc -std=c11 -Wall -g -D_BSD_SOURCE server-thread.c -o server-thread -lpthread
-*/
 #include <string.h>
 #include <strings.h>
 #include "TCP-IP.h"
-#include "TCP-IP.c"
+#include "TCP-IP.cpp"
 #include <stdbool.h> // for bool type
 #include <stdlib.h>  // for itoa() call
 
