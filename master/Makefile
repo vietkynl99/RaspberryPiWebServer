@@ -5,8 +5,8 @@ CFLAGS=-c -Wall
 
 # all: server-thread
 
-$(TARGET):
-	$(CC) $(CFLAGS) -o $@ $@.c -lpthread
+server-thread:
+	$(CC) -o $@ $@.c -lpthread
 
 # msg_server: msg_server.o $(LIBOBJ)
 # 	$(CC) $^ -o $@ -pthread
@@ -16,5 +16,5 @@ $(TARGET):
 
 .PHONY: clean
 clean:
-	rm -rf *.o
-	rm -rf $(TARGET)
+# rm -rf *.o
+	rm -rf server-thread
