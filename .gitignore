@@ -1,5 +1,5 @@
 ### Target filename
-./master/server-thread
+/master/server-thread
 
 
 ### C ###
@@ -55,5 +55,3 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-
-# End of https://www.toptal.com/developers/gitignore/api/c
