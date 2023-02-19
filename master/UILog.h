@@ -37,7 +37,6 @@
 #define C_CODE_F_YELLOW_B_MAGENTA "\033[33;45m" // Fg:Yellow,   Bg:Magenta
 #define C_CODE_F_BLACK_B_CYAN "\033[30;46m"     // Fg:Black,    Bg:Cyan
 
-#define AppPrintf printf
 #define UIPRINT(LEVEL, ...)	    {UILog::getInstance().uiPrintf(LEVEL, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__);}
 #define DISPLAY_TICK    (0)
 
@@ -51,13 +50,13 @@ private:
 public:
     enum LOGLEV
     {
-        ERROR = 0x00000001,
-        SYSTEM = 0x00000002,
-        LOG = 0x00000004,
-        EVENT = 0x00000008,
-        CTRL = 0x00000010,
-        SERVER = 0x00000020,
-        CLIENT = 0x00000040,
+        ERROR   = 0x00000001,
+        SYSTEM  = 0x00000002,
+        LOG     = 0x00000004,
+        EVENT   = 0x00000008,
+        CTRL    = 0x00000010,
+        SERVER  = 0x00000020,
+        CLIENT  = 0x00000040,
         // EMPTY = 0x00000080,
         // EMPTY = 0x00000100,
         // EMPTY = 0x00000200,
@@ -83,11 +82,13 @@ public:
         // EMPTY = 0x20000000,
         // EMPTY = 0x40000000,
         // EMPTY = 0x80000000,
-        ALL = 0xffffffff
+        ALL     = 0xffffffff
     };
 
-public:
+private:
     UILog(void);
+
+public:
     static UILog &getInstance(void)
     {
         static UILog inst;
