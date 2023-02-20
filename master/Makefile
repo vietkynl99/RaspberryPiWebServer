@@ -2,11 +2,11 @@ CC=gcc
 CXX=g++
 CFLAGS=-c -Wall
 
-all: clean server-thread
+all: clean server
 
-server-thread:
+server:
 	$(CXX) -o $@ $@.cpp -lpthread
 
 .PHONY: clean
 clean:
-	rm -rf server-thread
+	rm -rf server

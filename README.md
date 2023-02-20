@@ -46,4 +46,4 @@ raspberrypi/lazy (hoặc 192.168.1.23/lazy). Trong đó "192.168.1.23" là đị
 
 Chạy chương trình master trên terminal :
 
-	$ ./server-thread
+	$ ./server

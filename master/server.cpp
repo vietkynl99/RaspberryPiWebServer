@@ -1,3 +1,6 @@
+
+
+
 #include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,13 +41,13 @@ int main(int argc, char *argv[])
     mUILog = &UILog::getInstance();
     if (mUILog != (UILog *)NULL)
     {
-        mUILog->setUiLogLevel(UILog::ERROR | UILog::SYSTEM | UILog::LOG);
+        mUILog->setUiLogLevel(UILog::ALL);
     }
 
     clntLen = sizeof(cli_addr);
 
     servSock = CreateTCPServerSocket(PORT);
-    UIPRINT(UILog::SYSTEM, "Starting server...");
+    UIPRINT(UILog::SERVER, "Starting server...");
 
     while (1)
     {
@@ -121,7 +124,7 @@ void *HandleThreadClient(void *threadArgs)
         {
             if (!strcmp(((struct ThreadArgs *)threadArgs)->addr, localhost))
             {
-                // UIPRINT(UILog::LOG, "- Web server disconnected\n");
+                UIPRINT(UILog::SERVER, "- Web server disconnected\n");
             }
             else
             {

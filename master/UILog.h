@@ -16,26 +16,26 @@
     Foreground Color ==> 30:black, 31:red, 32:green, 33:yellow, 34:blue, 35:magenta, 36:cyan, 37:white
     Background Color ==> 40:black, 41:red, 42:green, 43:yellow, 44:blue, 45:magenta, 46:cyan, 47:white
 */
-#define C_CODE_RESET "\033[0m"
-#define C_CODE_F_BLACK "\033[30m"          // Fg:Black
-#define C_CODE_F_RED "\033[31m"            // Fg:Red
-#define C_CODE_F_GREEN "\033[32m"          // Fg:Green
-#define C_CODE_F_YELLOW "\033[33m"         // Fg:Yellow
-#define C_CODE_F_BLUE "\033[34m"           // Fg:Blue
-#define C_CODE_F_BRIGHT_BLUE "\033[94m"    // Fg:Bright Blue
-#define C_CODE_F_MAGENTA "\033[35m"        // Fg:Magenta
-#define C_CODE_F_CYAN "\033[36m"           // Fg:Cyan
-#define C_CODE_F_WHITE "\033[37m"          // Fg:White
-#define C_CODE_F_LIGHT_GREEN "\033[01;32m" // Fg:Light Green
+#define C_CODE_RESET                "\033[0m"
+#define C_CODE_F_BLACK              "\033[30m"      // Fg:Black
+#define C_CODE_F_RED                "\033[31m"      // Fg:Red
+#define C_CODE_F_GREEN              "\033[32m"      // Fg:Green
+#define C_CODE_F_YELLOW             "\033[33m"      // Fg:Yellow
+#define C_CODE_F_BLUE               "\033[34m"      // Fg:Blue
+#define C_CODE_F_BRIGHT_BLUE        "\033[94m"      // Fg:Bright Blue
+#define C_CODE_F_MAGENTA            "\033[35m"      // Fg:Magenta
+#define C_CODE_F_CYAN               "\033[36m"      // Fg:Cyan
+#define C_CODE_F_WHITE              "\033[37m"      // Fg:White
+#define C_CODE_F_LIGHT_GREEN        "\033[01;32m"   // Fg:Light Green
 
-#define C_CODE_F_WHITE_B_RED "\033[37;41m"      // Fg:White,    Bg:Red
-#define C_CODE_F_BLACK_B_GREEN "\033[30;42m"    // Fg:Black,    Bg:Green
-#define C_CODE_F_BLACK_B_YELLOW "\033[30;43m"   // Fg:black,    Bg:Yellow
-#define C_CODE_F_MAGENTA_B_BLUE "\033[35;44m"   // Fg:Magenta,  Bg:Blue
-#define C_CODE_F_WHITE_B_BLUE "\033[37;44m"     // Fg:White,    Bg:Blue
-#define C_CODE_F_WHITE_B_MAGENTA "\033[37;45m"  // Fg:White,    Bg:Magenta
-#define C_CODE_F_YELLOW_B_MAGENTA "\033[33;45m" // Fg:Yellow,   Bg:Magenta
-#define C_CODE_F_BLACK_B_CYAN "\033[30;46m"     // Fg:Black,    Bg:Cyan
+#define C_CODE_F_WHITE_B_RED        "\033[37;41m"   // Fg:White,    Bg:Red
+#define C_CODE_F_BLACK_B_GREEN      "\033[30;42m"   // Fg:Black,    Bg:Green
+#define C_CODE_F_BLACK_B_YELLOW     "\033[30;43m"   // Fg:black,    Bg:Yellow
+#define C_CODE_F_MAGENTA_B_BLUE     "\033[35;44m"   // Fg:Magenta,  Bg:Blue
+#define C_CODE_F_WHITE_B_BLUE       "\033[37;44m"   // Fg:White,    Bg:Blue
+#define C_CODE_F_WHITE_B_MAGENTA    "\033[37;45m"   // Fg:White,    Bg:Magenta
+#define C_CODE_F_YELLOW_B_MAGENTA   "\033[33;45m"   // Fg:Yellow,   Bg:Magenta
+#define C_CODE_F_BLACK_B_CYAN       "\033[30;46m"   // Fg:Black,    Bg:Cyan
 
 #define UIPRINT(LEVEL, ...)	    {UILog::getInstance().uiPrintf(LEVEL, __FILE__, __LINE__, __FUNCTION__, __VA_ARGS__);}
 #define DISPLAY_TICK    (0)
