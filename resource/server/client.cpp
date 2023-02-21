@@ -1,4 +1,3 @@
-// Nguyen Hai Duong
 // simple client
 // notice that client has the same ip with server. so its correspond to web-server.
 // To test it lets change 
