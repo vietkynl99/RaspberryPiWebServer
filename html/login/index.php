@@ -1,7 +1,3 @@
-<!-- 	Nguyen Hai Duong, September 2016 
- 			GNU LESSER GENERAL PUBLIC LICENSE Version 2.1, February 1999
--->
-
 <?php 
 
 include 'function/print-HTML.php';
@@ -18,7 +14,7 @@ $conn = ConnectDatabse();
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Lazy man</title>
+    <title>Raspberry Pi</title>
     
     <!-- CSS -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
@@ -44,50 +40,33 @@ $conn = ConnectDatabse();
   </head>
   
   <body class="lazy-man">
-     <!-- Fixed navbar -->
-     <!-- <div class="container"></div>
-     <nav class="navbar navbar-inverse navbar-fixed-top">
-       <div class="container">
-         <div class="navbar-header">
-           </div>
-          </div>
-        </nav> -->
 
      <!-- Conainer -->
     <div class="container">
-      
-      <div class="row">
-        <div class="land-1">
+          <div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
 
-          <h2>Login</h2>
-          <div>
-              <label for="username">Username:</label>
-              <input type="text" id="username" name="username">
+            <div class="wrap-login-logo">
+              <h2>Login</h2>
+            </div>
+
+            <div class="wrap-username">
+              <div>
+                  <label for="username">Username:</label>
+                  <input type="text" id="username" name="username">
+              </div>
+            </div>
+
+            <div class="wrap-password">
+              <div>
+                  <label for="pass">Password:</label>
+                  <input type="password" id="pass" name="password" minlength="8" required>
+              </div>
+
+            <button id="button_login" type="button" onclick="login()">Login</button>
           </div>
-          <div>
-              <label for="pass">Password (8 characters minimum):</label>
-              <input type="password" id="pass" name="password"
-                    minlength="8" required>
-          </div>
-          <button id="button_login" type="button" onclick="login()">Login</button>
-          <!-- <script>
-              function login(){
-                  // alert("Hello ahihi");
-                  document.getElementById("infomation").textContent="Oke babe"
-              }
-          </script> -->
-
-
-          <div class="clearfix"></div>  
-        </div>
-      </div>
     </div>
-	  <div class="log-box alert alert-danger" role="alert">
-      <strong>Woop !</strong>
-			<p class="log-text">test demo alert log</p>
-		</div>
-    
 
+  </div>
 
   </body>
 </html>

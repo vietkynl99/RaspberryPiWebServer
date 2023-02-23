@@ -1,7 +1,3 @@
-<!-- 	Nguyen Hai Duong, September 2016 
- 			GNU LESSER GENERAL PUBLIC LICENSE Version 2.1, February 1999
--->
-
 <?php 
 
 include 'function/print-HTML.php';
@@ -18,7 +14,7 @@ $conn = ConnectDatabse();
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>Lazy man</title>
+    <title>Raspberry Pi</title>
     
     <!-- CSS -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
