@@ -4,8 +4,14 @@ include 'function/print-HTML.php';
 include 'sql/sql-function.php';
 
 $conn = ConnectDatabse();
-
 ?>
+
+<script>
+if (sessionStorage.getItem("logined") != "true") {
+  // alert("You must login first!");
+  window.location.href="../login/";
+}
+</script>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -25,10 +31,10 @@ $conn = ConnectDatabse();
     <link rel="stylesheet" type="text/css" href="css/index.css">
     
     <!-- JS -->
+    <script type="text/javascript" src="js/query.js"></script>
     <script type="text/javascript" src="js/jquery/jquery.js"></script>
     <script type="text/javascript" src="js/jquery/jquery-ui.min.js"></script>
     <script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
-    <script type="text/javascript" src="js/query.js"></script>
     
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
