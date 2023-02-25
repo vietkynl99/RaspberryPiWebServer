@@ -18,7 +18,7 @@ fi
 
 if test "$CREATE_DATABASE" == "y" ; then
     echo -e "Make server database...\n"
-    php resource/sql/createDatabase.php
+    php html/home/sql/createDatabase.php
 fi
 
 if test "$COPY_TO_HTML_FOLDER" == "y" ; then
