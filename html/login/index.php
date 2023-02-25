@@ -1,12 +1,3 @@
-<?php 
-
-include 'function/print-HTML.php';
-include 'sql/sql-function.php';
-
-$conn = ConnectDatabse();
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -70,7 +61,3 @@ $conn = ConnectDatabse();
 
   </body>
 </html>
-
-<?php 
-	CloseDatabase($conn);
-?>
