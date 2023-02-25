@@ -11,7 +11,8 @@ if test "$#" == "0" ; then
         exit
     fi 
     rm -rf ${HTML_FOLDER}/*
-    cp -rf html/* ${HTML_FOLDER}/
+    cp -rf html/* ${HTML_FOLDER}/ && echo "Copy successfully!"
+    exit
 fi
 
 if test "$#" == "1" ; then
