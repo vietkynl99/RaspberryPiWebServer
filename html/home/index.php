@@ -34,7 +34,7 @@ if (sessionStorage.getItem("logined") != "true") {
     <script type="text/javascript" src="js/jquery/jquery.js"></script>
     <script type="text/javascript" src="js/jquery/jquery-ui.min.js"></script>
     <script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
-    <script type="text/javascript" src="js/query.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
     
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->

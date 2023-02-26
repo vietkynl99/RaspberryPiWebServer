@@ -1,5 +1,5 @@
 $(document).ready(function() {
-
+	
 // check if device is touch screen
 var TOUCHSCREEN = ('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0);
 
