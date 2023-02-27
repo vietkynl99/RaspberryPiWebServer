@@ -92,6 +92,16 @@ function UpdateObject($conn, $objName, $propChange) {
 	else
 	    echo "Error updating record: " . $conn->error . PHP_EOL;
 }
-
+	
+// Authentication
+function CheckAuthentication($conn, $username, $password) {
+	$sql = "SELECT * FROM UserData WHERE username='$username' AND password='$password'";
+	// echo $sql . PHP_EOL;
+	$result = $conn->query($sql);
+	if( $result->num_rows > 0)
+		echo "true";
+	else
+		echo "false";
+}
 
 ?>

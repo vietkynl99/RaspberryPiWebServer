@@ -3,15 +3,10 @@
 include 'function/print-HTML.php';
 include 'sql/sql-function.php';
 
+session_start();
 $conn = ConnectDatabse();
 ?>
 
-<script>
-if (sessionStorage.getItem("logined") != "true") {
-  // alert("You must login first!");
-  window.location.href="../login/";
-}
-</script>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -36,6 +31,11 @@ if (sessionStorage.getItem("logined") != "true") {
     <script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
     
+    <!-- Verify account when user logs in -->
+    <script>
+      CheckUserAuthentication();
+    </script>
+
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>

@@ -1,5 +1,25 @@
+function CheckUserAuthentication() {
+	var username = sessionStorage.getItem("username");
+	var password = sessionStorage.getItem("password");
+		$.post( 
+			"function/data.php",
+			{
+				type: "authentication",
+				username : username,
+				password : password
+			},
+			function(data) {
+				if(data != "true")
+				{
+					alert("You must login first!");
+					window.location.href="../login/";
+				}
+			}
+		 );
+}
+
+
 $(document).ready(function() {
-	
 // check if device is touch screen
 var TOUCHSCREEN = ('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0);
 
