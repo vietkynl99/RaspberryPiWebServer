@@ -1,5 +1,5 @@
 <?php
-$_SESSION["valid"] = true;
+session_start();
 ?>
 
 <!DOCTYPE html>

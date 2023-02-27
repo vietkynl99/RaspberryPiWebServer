@@ -1,24 +1,17 @@
-$('.login100-form-btn').click(function() {
-    sessionStorage.setItem("logined", "true");
-        alert("Ok. Let's go!");
-        window.location.href="../home/";
-    });
-
-$('.txt-forgot-password').click(function() {
-        alert("This feature is not supported yet!");
-        // sessionStorage.setItem("key_name", "hello, Codermen");
-    });
-
-$('.txt-register').click(function() {
-        alert("This feature is not supported yet!");
-        // let value =	sessionStorage.getItem("key_name");
-        // alert(value);
-    });
-
-
 (function ($) {
     "use strict";
-    
+        
+    /*==================================================================
+    [ Button ]*/
+    $('.txt-forgot-password').on('click', function(){
+        alert("This feature is not supported yet!");
+    });
+        
+    $('.txt-register').on('click', function(){
+        alert("This feature is not supported yet!");
+    });
+
+
      /*==================================================================
     [ Focus input ]*/
     $('.input100').each(function(){
@@ -39,15 +32,20 @@ $('.txt-register').click(function() {
 
     $('.validate-form').on('submit',function(){
         var check = true;
-
         for(var i=0; i<input.length; i++) {
             if(validate(input[i]) == false){
                 showValidate(input[i]);
                 check=false;
             }
         }
-
-        return check;
+        if(check == true)
+        {
+            sessionStorage.setItem("username", $(input[0]).val());
+            sessionStorage.setItem("password", $(input[1]).val());
+            window.location.href="../home";
+        }
+        // return check;
+        return false;
     });
 
 
