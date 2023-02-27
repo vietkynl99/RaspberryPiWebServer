@@ -1,6 +1,6 @@
 <?php
 
-include 'sql-function.php';
+include '../sql/SqlAdapter.php';
 
 // Create connection
 $conn = ConnectToSql();

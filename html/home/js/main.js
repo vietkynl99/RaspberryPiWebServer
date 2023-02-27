@@ -2,7 +2,7 @@ function CheckUserAuthentication() {
 	var username = sessionStorage.getItem("username");
 	var password = sessionStorage.getItem("password");
 		$.post( 
-			"function/data.php",
+			"function/ServerRequest.php",
 			{
 				type: "authentication",
 				username : username,
@@ -129,7 +129,7 @@ function TurnOff(OBJECT) {
 // update info of object to server
 function UpdateObject(objName, strUpdate) {
 	$.post(
-		"function/data.php",
+		"function/ServerRequest.php",
 		{
 			type : "update",
 			name : objName,
@@ -141,7 +141,7 @@ function UpdateObject(objName, strUpdate) {
 // Function send special state
 function SendSpecialState(status) {
 	$.post(
-		"function/data.php",
+		"function/ServerRequest.php",
 		{
 			type : "status",
 			state : status

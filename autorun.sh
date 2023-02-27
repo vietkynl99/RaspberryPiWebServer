@@ -10,8 +10,18 @@ if test "$#" == "0" ; then
     if test "$ans" != "y" ; then
         exit
     fi 
+
     rm -rf ${HTML_FOLDER}/*
-    cp -rf html/* ${HTML_FOLDER}/ && echo "Copy successfully!"
+    # html folder
+    cp -rf html/* ${HTML_FOLDER}/
+    # function
+    cp -rf function/ ${HTML_FOLDER}/home/
+    cp -rf function/ ${HTML_FOLDER}/login/
+    # sql
+    cp -rf sql/ ${HTML_FOLDER}/home/
+    cp -rf sql/ ${HTML_FOLDER}/login/
+
+    echo "Done"
     exit
 fi
 
@@ -19,7 +29,7 @@ if test "$#" == "1" ; then
     case $1 in
         -createdb)
             echo -e "Create server database...\n"
-            php html/home/sql/createDatabase.php
+            php html/home/sql/CreateDatabase.php
             exit
             ;;
         -startserver)

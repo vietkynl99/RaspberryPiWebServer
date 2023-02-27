@@ -1,7 +1,7 @@
 <?php 
 	
-	include 'client.php';
-	include '../sql/sql-function.php';
+	include 'ServerAdapter.php';
+	include '../sql/SqlAdapter.php';
 	
 	$conn = ConnectDatabse();	// connect to database
 

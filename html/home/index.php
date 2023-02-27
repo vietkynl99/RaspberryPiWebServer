@@ -1,7 +1,7 @@
 <?php 
 
-include 'function/print-HTML.php';
-include 'sql/sql-function.php';
+include 'function/PrintComponents.php';
+include 'sql/SqlAdapter.php';
 
 session_start();
 $conn = ConnectDatabse();
