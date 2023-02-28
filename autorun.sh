@@ -1,7 +1,7 @@
 #!/bin/bash
 
 HTML_FOLDER=/var/www/html
-SERVER_FOLDER=./resource/server
+SERVER_FOLDER=./server
 
 if test "$#" == "0" ; then
     echo -e "Copying html resource to ${HTML_FOLDER}..."
@@ -50,14 +50,14 @@ if test "$#" == "1" ; then
             ;;
         -rebuildserver)
             echo -e "Building server...\n"
-            cd ./resource/server
+            cd ${SERVER_FOLDER}
             make clean
             make
-            sleep 1
             cd - > /dev/null
-            if [ -f ${SERVER_EXECUTABLE} ] ; then
+            sleep 1
+            if [ -f ${SERVER_FOLDER}/server ] ; then
                 echo -e "\nStart server..."
-                ${SERVER_EXECUTABLE}
+                ${SERVER_FOLDER}/server
             fi
             exit
             ;;
