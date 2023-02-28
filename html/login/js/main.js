@@ -1,5 +1,27 @@
 (function ($) {
     "use strict";
+
+    
+    function CheckUserAuthentication(username, password) {
+        $.post( 
+            "function/ServerRequest.php",
+            {
+                type: "authentication",
+                username : username,
+                password : password
+            },
+            function(data, status) {
+                if(data == "true" && status == "success")
+                {
+                    window.location.href="../home";
+                }
+                else
+                {
+                    AlertBox("Username or password is incorrect!");
+                }
+            }
+            );
+    }
         
     /*==================================================================
     [ Button ]*/
@@ -42,9 +64,8 @@
         {
             sessionStorage.setItem("username", $(input[0]).val());
             sessionStorage.setItem("password", $(input[1]).val());
-            window.location.href="../home";
+            CheckUserAuthentication($(input[0]).val(), $(input[1]).val());
         }
-        // return check;
         return false;
     });
 
@@ -80,6 +101,12 @@
         $(thisAlert).removeClass('alert-validate');
     }
     
-    
+    function AlertBox(message) {
+	$(".log-box").addClass("log-show");
+	$(".log-box .log-text").html(message);
+	setTimeout(function(){
+		$(".log-box").removeClass('log-show');
+	}, 3000);
+}
 
 })(jQuery);

@@ -8,11 +8,11 @@ function CheckUserAuthentication() {
 				username : username,
 				password : password
 			},
-			function(data) {
-				if(data != "true")
+			function(data, status) {
+				if(data != "true" || status != "success")
 				{
 					alert("You must login first!");
-					window.location.href="../login/";
+					window.location.href="../login";
 				}
 			}
 		 );

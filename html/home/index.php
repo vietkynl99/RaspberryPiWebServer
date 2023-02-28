@@ -70,7 +70,7 @@ $conn = ConnectDatabse();
     </div>
 	  <div class="log-box alert alert-danger" role="alert">
 			<strong>Woop !</strong>
-			<p class="log-text">test demo alert log</p>
+			<p class="log-text">Something went wrong!</p>
 		</div>
   </body>
 </html>

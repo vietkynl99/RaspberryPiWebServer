@@ -28,10 +28,11 @@ session_start();
 		<div class="container-login100" style="background-image: url('images/bg-01.jpg');">
 			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
 				<form class="login100-form validate-form">
+
 					<span class="login100-form-title p-b-49">
 						Login
 					</span>
-
+					
 					<div class="wrap-input100 validate-input m-b-23" data-validate = "Username is reauired">
 						<span class="label-input100">Username</span>
 						<input class="input100" type="text" name="username" placeholder="Type your username">
@@ -48,6 +49,11 @@ session_start();
 						<a href="#" class="txt-forgot-password">
 							Forgot password?
 						</a>
+					</div>
+
+					<div class="log-box alert alert-danger" role="alert">
+						<strong>Woop!</strong>
+						<p class="log-text">Something went wrong!</p>
 					</div>
 					
 					<div class="container-login100-form-btn">

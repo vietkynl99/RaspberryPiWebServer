@@ -374,6 +374,37 @@ iframe {
 
 
 /*------------------------------------------------------------------
+[ Alert box ]*/
+.log-box {
+  position: fixed;
+  right: 50px;
+  top: 120px;
+  cursor: pointer;
+  z-index: 9999;
+  -webkit-transition: 300ms;
+  -o-transition: 300ms;
+  transition: 300ms;
+  /*display: none;*/
+  opacity: 0;
+  -webkit-transition: 300ms;
+  -o-transition: 300ms;
+  transition: 300ms;
+  -ms-transform: scale(0.5, 0.5);     /* IE 9 */
+  -webkit-transform: scale(0.5, 0.5); /* Safari */
+  transform: scale(0.5, 0.5);
+}
+.log-box.log-show {
+  opacity: 1;
+  -ms-transform: scale(1, 1); /* IE 9 */
+  -webkit-transform: scale(1, 1); /* Safari */
+  transform: scale(1, 1);
+}
+.log-box .log-text {
+  display: inline;
+}
+
+
+/*------------------------------------------------------------------
 [ Alert validate ]*/
 
 .validate-input {
