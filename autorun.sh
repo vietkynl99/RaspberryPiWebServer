@@ -27,12 +27,12 @@ fi
 
 if test "$#" == "1" ; then
     case $1 in
-        -createdb)
+        -c|--createdb)
             echo -e "Create server database...\n"
             php html/home/sql/CreateDatabase.php
             exit
             ;;
-        -startserver)
+        -s|--startserver)
             if [ ! -f ${SERVER_FOLDER}/server ] ; then
                 echo -e "Building server...\n"
                 cd ${SERVER_FOLDER}
@@ -48,7 +48,7 @@ if test "$#" == "1" ; then
             fi
             exit
             ;;
-        -rebuildserver)
+        -r|--rebuildserver)
             echo -e "Building server...\n"
             cd ${SERVER_FOLDER}
             make clean
@@ -67,7 +67,7 @@ if test "$#" == "1" ; then
 fi
 
 echo -e "usage:"
-echo -e "\tautorun.sh                 : copy html folder to apache2 html folder"
-echo -e "\tautorun.sh -createdb       : create database"
-echo -e "\tautorun.sh -startserver    : start server"
-echo -e "\tautorun.sh -rebuildserver  : rebuild and start server"
+echo -e "\t./autorun.sh                 : copy html folder to apache2 html folder"
+echo -e "\t./autorun.sh -c (--createdb)       : create database"
+echo -e "\t./autorun.sh -s (--startserver)    : start server"
+echo -e "\t./autorun.sh -r (--rebuildserver)  : rebuild and start server"
