@@ -66,8 +66,7 @@ int main(int argc, char *argv[])
         if (pthread_create(&threadID, NULL, HandleThreadClient, (void *)threadArgs) != 0)
             error("pthread_create() failed");
 
-        // UIPRINT(UILog::LOG, "\n+ New client[%d][Addr:%s]\n\n",
-        //     clntSock, inet_ntoa(cli_addr.sin_addr));
+        UIPRINT(UILog::LOG, "New client[%d] Address[%s]", clntSock, inet_ntoa(cli_addr.sin_addr));
     }
 
     close(servSock);
@@ -88,26 +87,26 @@ void *HandleThreadClient(void *threadArgs)
         recvMsgSize = recv(clntSock, buffer, BUFFSIZE, 0);
         if (recvMsgSize < 0)
         {
-            UIPRINT(UILog::ERROR, "ERROR reading from socket\n");
+            UIPRINT(UILog::ERROR, "ERROR reading from socket");
         }
         else if (recvMsgSize > 0)
         {
 
             if (!strcmp(((struct ThreadArgs *)threadArgs)->addr, localhost))
             { // if data from server
-                UIPRINT(UILog::LOG, ". Web server: %s\n", buffer);
+                UIPRINT(UILog::LOG, "Web server: %s", buffer);
                 ServerCommand(buffer);
             }
             else
             {
-                UIPRINT(UILog::LOG, ". Device: %s\n", buffer);
+                UIPRINT(UILog::LOG, "Device: %s", buffer);
                 // Check command of device
                 char *header = strtok(buffer, ":");
                 char *content = strtok(NULL, ":");
                 if (strcmp(header, "RESULT") == 0)
                 { // result command
                     // response from device
-                    UIPRINT(UILog::LOG, ". Address[%s]: %s\n", ((struct ThreadArgs *)threadArgs)->addr, content);
+                    UIPRINT(UILog::LOG, "Address[%s]: %s", ((struct ThreadArgs *)threadArgs)->addr, content);
                 }
                 else if (strcmp(header, "INIT") == 0)
                 { // Init a new device command
@@ -124,15 +123,14 @@ void *HandleThreadClient(void *threadArgs)
         {
             if (!strcmp(((struct ThreadArgs *)threadArgs)->addr, localhost))
             {
-                UIPRINT(UILog::SERVER, "- Web server disconnected\n");
+                UIPRINT(UILog::SERVER, "Web server disconnected");
             }
             else
             {
-                UIPRINT(UILog::LOG, "- Address[%s]: disconnected !\n", ((struct ThreadArgs *)threadArgs)->addr);
+                UIPRINT(UILog::LOG, "Address[%s]: disconnected!", ((struct ThreadArgs *)threadArgs)->addr);
                 // u can handle with client-disconnected event
                 // code here
             }
-
             break;
         }
     }
@@ -153,7 +151,7 @@ void ServerCommand(char *str)
                 if (IdDevice[i][2] != NULL) // check if has device
                     SendCommandToDevice(i, content);
                 else
-                    UIPRINT(UILog::LOG, "- There is no device: \"%s\"\n", IdDevice[i][0]);
+                    UIPRINT(UILog::LOG, "There is no device: \"%s\"", IdDevice[i][0]);
                 // break;       // break when u just wanna send to one device
             }
     }
@@ -166,10 +164,10 @@ bool IdentifyDevice(int clntSock, char *str)
         if (IdDevice[i][0]) // check if IdDevice[i][0] is not NULL
             if (strcmp(str, IdDevice[i][1]) == 0)
             {
-                UIPRINT(UILog::LOG, "+ Detecting a new device: %s, ID:%s\n\n", IdDevice[i][0], IdDevice[i][1]);
+                UIPRINT(UILog::LOG, "Detecting a new device: %s, ID:%s", IdDevice[i][0], IdDevice[i][1]);
                 if (send(clntSock, SET, strlen(SET), 0) < 0)
                 { // send "OK"
-                    UIPRINT(UILog::LOG, "- Sending \"OK\" to device: \"%s\" false\n", IdDevice[i][0]);
+                    UIPRINT(UILog::LOG, "Sending \"OK\" to device: \"%s\" false", IdDevice[i][0]);
                     return false;
                 }
                 char clientAddr[4];                  // save client socket as string, max is "9999"
@@ -186,10 +184,10 @@ bool SendCommandToDevice(int index, char *str)
     int clntSock = atoi(IdDevice[index][2]);
     if (send(clntSock, str, strlen(str), 0) < 0)
     {
-        UIPRINT(UILog::ERROR, "- Sending to device: \"%s\" failed\n", IdDevice[index][0]);
+        UIPRINT(UILog::ERROR, "Sending to device: \"%s\" failed", IdDevice[index][0]);
         return false;
     }
-    UIPRINT(UILog::LOG, ". Sending to device: \"%s\", content: %s\n", IdDevice[index][0], str);
+    UIPRINT(UILog::LOG, "Sending to device: \"%s\", content: %s", IdDevice[index][0], str);
 
     return false;
 }
