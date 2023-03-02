@@ -13,6 +13,7 @@
             function(data, status) {
                 if(data == "true" && status == "success")
                 {
+                    LoginNotice();
                     window.location.href="../home";
                 }
                 else
@@ -21,6 +22,15 @@
                 }
             }
             );
+    }
+    function LoginNotice() {
+        $.post(
+            "function/ServerRequest.php",
+            {
+                type : "message",
+                data : "login:" + sessionStorage.getItem("username")
+            }
+        )
     }
         
     /*==================================================================
