@@ -18,8 +18,21 @@ function CheckUserAuthentication() {
 		 );
 }
 
+function LoginNotice() {
+	$.post(
+		"function/ServerRequest.php",
+		{
+			type : "message",
+			data : "login:" + sessionStorage.getItem("username")
+		}
+	)
+}
+
 
 $(document).ready(function() {
+
+	LoginNotice();
+
 // check if device is touch screen
 var TOUCHSCREEN = ('ontouchstart' in window) || (navigator.msMaxTouchPoints > 0);
 

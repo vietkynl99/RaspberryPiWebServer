@@ -25,6 +25,10 @@
 			$str = $_REQUEST["state"];
 			SendCommandToMaster($str);
 		}
+		else if($_REQUEST["type"]=="message") {
+			$str = $_REQUEST["data"];
+			SendCommandToMaster($str);
+		}
 		else if($_REQUEST["type"]=="authentication") {
 			$username = $_REQUEST["username"];
 			$password = $_REQUEST["password"];
