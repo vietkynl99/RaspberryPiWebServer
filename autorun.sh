@@ -43,8 +43,8 @@ if test "$#" == "1" ; then
                 cd - > /dev/null
                 echo
                 echo
+                sleep 1
             fi
-            sleep 1
             if [ -f ${SERVER_FOLDER}/server ] ; then
                 echo -e "Start server..."
                 ${SERVER_FOLDER}/server
@@ -70,7 +70,7 @@ if test "$#" == "1" ; then
 fi
 
 echo -e "usage:"
-echo -e "\t./autorun.sh                 : copy html folder to apache2 html folder"
-echo -e "\t./autorun.sh -c (--createdb)       : create database"
-echo -e "\t./autorun.sh -s (--startserver)    : start server"
-echo -e "\t./autorun.sh -r (--rebuildserver)  : rebuild and start server"
+echo -e "\t./autorun.sh                         : copy html folder to apache2 html folder"
+echo -e "\t./autorun.sh -c (--createdb)         : create database"
+echo -e "\t./autorun.sh -s (--startserver)      : start server"
+echo -e "\t./autorun.sh -r (--rebuildserver)    : rebuild and start server"
