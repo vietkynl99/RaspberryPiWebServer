@@ -29,6 +29,7 @@ $conn = ConnectDatabse();
     <script type="text/javascript" src="js/jquery/jquery.js"></script>
     <script type="text/javascript" src="js/jquery/jquery-ui.min.js"></script>
     <script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="js/js-cookie.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
     
     <!-- Verify account when user logs in -->

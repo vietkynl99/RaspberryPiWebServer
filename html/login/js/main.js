@@ -1,6 +1,5 @@
 (function ($) {
     "use strict";
-
     
     function CheckUserAuthentication(username, password) {
         $.post( 
@@ -28,11 +27,11 @@
             "function/ServerRequest.php",
             {
                 type : "message",
-                data : "login:" + sessionStorage.getItem("username")
+                data : "login:" + getCookie('username')
             }
         )
     }
-        
+
     /*==================================================================
     [ Button ]*/
     $('.txt-forgot-password').on('click', function(){
@@ -72,8 +71,8 @@
         }
         if(check == true)
         {
-            sessionStorage.setItem("username", $(input[0]).val());
-            sessionStorage.setItem("password", $(input[1]).val());
+            setCookie('username', $(input[0]).val(), 1);
+            setCookie('password', $(input[1]).val(), 1);
             CheckUserAuthentication($(input[0]).val(), $(input[1]).val());
         }
         return false;

@@ -20,6 +20,9 @@ if test "$#" == "0" ; then
     # sql
     cp -rf sql/ ${HTML_FOLDER}/home/
     cp -rf sql/ ${HTML_FOLDER}/login/
+    # js
+    cp -rf js/ ${HTML_FOLDER}/home/
+    cp -rf js/ ${HTML_FOLDER}/login/
 
     echo "Done"
     exit

@@ -1,21 +1,21 @@
 function CheckUserAuthentication() {
-	var username = sessionStorage.getItem("username");
-	var password = sessionStorage.getItem("password");
-		$.post( 
-			"function/ServerRequest.php",
+	var username = getCookie('username');
+	var password = getCookie('password');
+	$.post( 
+		"function/ServerRequest.php",
+		{
+			type: "authentication",
+			username : username,
+			password : password
+		},
+		function(data, status) {
+			if(data != "true" || status != "success")
 			{
-				type: "authentication",
-				username : username,
-				password : password
-			},
-			function(data, status) {
-				if(data != "true" || status != "success")
-				{
-					alert("You must login first!");
-					window.location.href="../login";
-				}
+				alert("You must login first!");
+				window.location.href="../login";
 			}
-		 );
+		}
+		);
 }
 
 
