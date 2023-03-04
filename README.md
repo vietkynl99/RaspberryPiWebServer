@@ -31,13 +31,17 @@ sử dụng mysql làm cơ sở dữ liệu để lưu trữ thông tin của c�
 
 5. Khởi chạy server:
 
-    Trong lần chạy đầu tiên:
+    Build server:
 
-	$ ./autorun.sh -r (hoặc ./autorun.sh --rebuildserver)
+	$ ./autorun.sh -b (hoặc ./autorun.sh --build)
 
-    Trong lần chạy thứ 2 trở đi:
+	Rebuild và start server:
 
-	$ ./autorun.sh -s (hoặc ./autorun.sh --startserver)
+	$ ./autorun.sh -r (hoặc ./autorun.sh --rebuild)
+
+    Start server:
+
+	$ ./autorun.sh -s (hoặc ./autorun.sh --start)
 
 6. Truy cập trên trình duyệt
 

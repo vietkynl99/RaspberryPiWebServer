@@ -1,4 +1,4 @@
-#include "TCP-IP.h"
+#include "../inc/TCP-IP.h"
 
 // Socket descriptor for client
 struct ThreadArgs{
