@@ -1,7 +1,3 @@
-### Target filename
-/server/server
-
-
 ### C ###
 # Prerequisites
 *.d

@@ -2,7 +2,7 @@
 
 HTML_FOLDER=/var/www/html
 SERVER_FOLDER=./server
-SERVER_EXECUTABLE=${SERVER_FOLDER}/output/server
+SERVER_EXECUTABLE=${SERVER_FOLDER}/output/server.out
 
 server_build() {
     echo -e "Building server...\n"

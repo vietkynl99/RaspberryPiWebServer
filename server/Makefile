@@ -5,7 +5,7 @@ CFLAGS=-c -Wall
 all: clean server
 
 server:
-	$(CXX) -o output/$@ src/$@.cpp -lpthread
+	$(CXX) -o output/$@.out src/$@.cpp -lpthread
 
 .PHONY: clean
 clean:
