@@ -19,7 +19,7 @@ session_start();
 	<link rel="stylesheet" type="text/css" href="vendor/select2/select2.min.css">
 	<link rel="stylesheet" type="text/css" href="vendor/daterangepicker/daterangepicker.css">
 	<link rel="stylesheet" type="text/css" href="css/util.css">
-	<link rel="stylesheet" type="text/css" href="css/main.css">
+	<link rel="stylesheet" type="text/css" href="css/LoginPage.css">
 <!--===============================================================================================-->
 </head>
 <body>
@@ -92,7 +92,7 @@ session_start();
 	<script src="vendor/daterangepicker/daterangepicker.js"></script>
 	<script src="vendor/countdowntime/countdowntime.js"></script>
 	<script src="js/js-cookie.js"></script>
-	<script src="js/main.js"></script>
+	<script src="js/LoginPage.js"></script>
 <!--===============================================================================================-->
 
 </body>

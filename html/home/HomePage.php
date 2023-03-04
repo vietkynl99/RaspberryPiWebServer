@@ -23,14 +23,14 @@ $conn = ConnectDatabse();
     <!-- Bootstrap -->
     <link rel="stylesheet" type="text/css" href="vendor/bootstrap-3.3.7/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="vendor/jquery/css/jquery-ui.min.css">
-    <link rel="stylesheet" type="text/css" href="css/index.css">
+    <link rel="stylesheet" type="text/css" href="css/HomePage.css">
     
     <!-- JS -->
     <script type="text/javascript" src="vendor/jquery/js/jquery.js"></script>
     <script type="text/javascript" src="vendor/jquery/js/jquery-ui.min.js"></script>
     <script type="text/javascript" src="vendor/jquery/js/jquery.ui.touch-punch.min.js"></script>
     <script type="text/javascript" src="js/js-cookie.js"></script>
-    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/HomePage.js"></script>
     
     <!-- Verify account when user logs in -->
     <script>

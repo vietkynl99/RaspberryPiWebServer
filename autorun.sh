@@ -17,6 +17,9 @@ if test "$#" == "0" ; then
     # common
     cp -rf common/* ${HTML_FOLDER}/home/
     cp -rf common/* ${HTML_FOLDER}/login/
+    # rename php file to index.php
+    mv ${HTML_FOLDER}/home/*.php ${HTML_FOLDER}/home/index.php
+    mv ${HTML_FOLDER}/login/*.php ${HTML_FOLDER}/login/index.php
 
     echo "Done"
     exit
