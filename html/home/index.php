@@ -21,14 +21,14 @@ $conn = ConnectDatabse();
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans">
     <link rel="stylesheet" type="text/css" href="fonts/font-awesome/css/font-awesome.min.css">
     <!-- Bootstrap -->
-    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
-    <link rel="stylesheet" type="text/css" href="css/jquery-ui.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/bootstrap-3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="vendor/jquery/css/jquery-ui.min.css">
     <link rel="stylesheet" type="text/css" href="css/index.css">
     
     <!-- JS -->
-    <script type="text/javascript" src="js/jquery/jquery.js"></script>
-    <script type="text/javascript" src="js/jquery/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
+    <script type="text/javascript" src="vendor/jquery/js/jquery.js"></script>
+    <script type="text/javascript" src="vendor/jquery/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src="vendor/jquery/js/jquery.ui.touch-punch.min.js"></script>
     <script type="text/javascript" src="js/js-cookie.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
     
