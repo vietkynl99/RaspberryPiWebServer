@@ -2,6 +2,12 @@
 session_start();
 ?>
 
+<script src="js/js-cookie.js"></script>
+<script>
+	eraseCookie('username')
+	eraseCookie('password')
+</script>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -91,7 +97,6 @@ session_start();
 	<script src="vendor/daterangepicker/moment.min.js"></script>
 	<script src="vendor/daterangepicker/daterangepicker.js"></script>
 	<script src="vendor/countdowntime/countdowntime.js"></script>
-	<script src="js/js-cookie.js"></script>
 	<script src="js/LoginPage.js"></script>
 <!--===============================================================================================-->
 
