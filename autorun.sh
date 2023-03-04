@@ -14,15 +14,9 @@ if test "$#" == "0" ; then
     rm -rf ${HTML_FOLDER}/*
     # html folder
     cp -rf html/* ${HTML_FOLDER}/
-    # function
-    cp -rf function/ ${HTML_FOLDER}/home/
-    cp -rf function/ ${HTML_FOLDER}/login/
-    # sql
-    cp -rf sql/ ${HTML_FOLDER}/home/
-    cp -rf sql/ ${HTML_FOLDER}/login/
-    # js
-    cp -rf js/ ${HTML_FOLDER}/home/
-    cp -rf js/ ${HTML_FOLDER}/login/
+    # common
+    cp -rf common/* ${HTML_FOLDER}/home/
+    cp -rf common/* ${HTML_FOLDER}/login/
 
     echo "Done"
     exit
