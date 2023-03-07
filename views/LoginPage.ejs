@@ -5,7 +5,7 @@
 	<title>Viet Kynl</title>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	
+
 	<!--===============================================================================================-->
 	<link rel="icon" type="image/png" href="images/icons/icon.ico" />
 	<!--===============================================================================================-->
@@ -91,7 +91,40 @@
 	<script src="vendor/daterangepicker/moment.min.js"></script>
 	<script src="vendor/daterangepicker/daterangepicker.js"></script>
 	<script src="vendor/countdowntime/countdowntime.js"></script>
+	<script src="js/js-cookie.js"></script>
 	<script src="js/LoginPage.js"></script>
+	<!--===============================================================================================-->
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		eraseCookie('username')
+		eraseCookie('password')
+		var socket = io();
+		var input = $('.validate-input .input100');
+		$('.validate-form').on('submit', function (e) {
+			e.preventDefault();
+			var check = true;
+			for (var i = 0; i < input.length; i++) {
+				if (validate(input[i]) == false) {
+					showValidate(input[i]);
+					check = false;
+				}
+			}
+			if (check == true) {
+				setCookie('username', $(input[0]).val(), 1);
+				setCookie('password', $(input[1]).val(), 1);
+				socket.emit('authentication', $(input[0]).val(), $(input[1]).val());
+			}
+		});
+		socket.on('authentication', function (res) {
+			if (res == true) {
+				window.location.href = "../home";
+			}
+			else
+			{
+				AlertBox("Username or password is incorrect!");
+			}
+		});
+	</script>
 	<!--===============================================================================================-->
 </body>
 

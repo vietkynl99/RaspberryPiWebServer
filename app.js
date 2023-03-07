@@ -51,6 +51,11 @@ app.use(function (err, req, res, next) {
 io.on('connection', function (socket) {
   console.log('Address [' + socket.handshake.address + '] ID [' + socket.id + '] connected')
 
+  socket.on('authentication', function (username, password) {
+    console.log('check authentication username[' + username + "] password[" + password + "]")
+    io.emit('authentication', false);
+  });
+
   //new message from client
   socket.on('message', function (msg) {
     console.log('get message from client: ' + msg)

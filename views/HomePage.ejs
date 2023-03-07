@@ -7,14 +7,14 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-	<!--===============================================================================================-->
+  <!--===============================================================================================-->
   <link rel="icon" type="image/png" href="../../images/icons/icon.ico" />
-	<!--===============================================================================================-->
+  <!--===============================================================================================-->
   <link rel="stylesheet" type="text/css" href="../../fonts/font-awesome/css/font-awesome.min.css">
   <link rel="stylesheet" type="text/css" href="../../vendor/bootstrap-3.3.7/css/bootstrap.min.css">
   <link rel="stylesheet" type="text/css" href="../../vendor/jquery/css/jquery-ui.min.css">
   <link rel="stylesheet" type="text/css" href="../../css/HomePage.css">
-	<!--===============================================================================================-->
+  <!--===============================================================================================-->
 </head>
 
 <body class="lazy-man">
@@ -38,6 +38,12 @@
   <script type="text/javascript" src="../../vendor/jquery/js/jquery.ui.touch-punch.min.js"></script>
   <script type="text/javascript" src="../../js/js-cookie.js"></script>
   <script type="text/javascript" src="../../js/HomePage.js"></script>
+  <!--===============================================================================================-->
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io();
+    socket.emit('login', getCookie('username'), getCookie('password'));
+  </script>
   <!--===============================================================================================-->
 </body>
 
