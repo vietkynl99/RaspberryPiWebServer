@@ -5,7 +5,10 @@ giao diện điều khiển web.
 
 ## Yêu cầu hệ thống
 
-Sử dụng Apache, PHP, mysql, C++ trên Raspberry Pi
+Sử dụng PHP, mysql, NodeJs Express trên Raspberry Pi
+
+	$ sudo apt install nodejs
+	$ sudo apt install npm
 
 ## Tính năng
 
@@ -19,29 +22,17 @@ sử dụng mysql làm cơ sở dữ liệu để lưu trữ thông tin của c�
 
 	$ git clone https://github.com/vietkynl99/RaspberryPiWebServer.git
 
-2. Mở tệp sql/sqlAdapter.php lên và sửa các thông tin về: serverName, userName, password, dbName, TABLE
+2. Cài đặt những module cần thiết cho hệ thống:
+
+	$ npm install
 
 3. Tạo database cho hệ thống : 
 
-	$ ./autorun.sh -c (hoặc ./autorun.sh --createdb)
-
-4. Chạy chương trình copy html vào Apache:
-
-	$ ./autorun.sh
+	$ php database/CreateDatabase.php
 
 5. Khởi chạy server:
 
-    Build server:
-
-	$ ./autorun.sh -b (hoặc ./autorun.sh --build)
-
-	Rebuild và start server:
-
-	$ ./autorun.sh -r (hoặc ./autorun.sh --rebuild)
-
-    Start server:
-
-	$ ./autorun.sh -s (hoặc ./autorun.sh --start)
+    $ node ./app.js
 
 6. Truy cập trên trình duyệt
 
