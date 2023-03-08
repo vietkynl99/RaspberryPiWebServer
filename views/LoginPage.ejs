@@ -115,13 +115,16 @@
 				socket.emit('authentication', $(input[0]).val(), $(input[1]).val());
 			}
 		});
-		socket.on('authentication', function (res) {
-			if (res == true) {
+		socket.on('authentication', function (result) {
+			if (result == 'accept') {
 				window.location.href = "../home";
+			}
+			else if (result == 'deny') {
+				AlertBox("Username or password is incorrect!");
 			}
 			else
 			{
-				AlertBox("Username or password is incorrect!");
+				AlertBox("Error while sending request to server!");
 			}
 		});
 	</script>
