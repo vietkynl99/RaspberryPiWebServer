@@ -1,3 +1,25 @@
+<script type="text/javascript" src="../../js/js-cookie.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+	var username = getCookie('username');
+	var hash = getCookie('hash');
+	if(username != null && hash != null)
+	{
+		var socket = io();
+		socket.emit('check hash', username, hash);
+		socket.on('resp hash', function (result) {
+			if (result != 'accept') {
+				window.location.href = "../";
+			}
+		});
+	}
+	else
+	{
+		window.location.href = "../";
+	}
+</script>
+<!--===============================================================================================-->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -36,14 +58,7 @@
 	<script type="text/javascript" src="../../vendor/jquery/js/jquery.js"></script>
 	<script type="text/javascript" src="../../vendor/jquery/js/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="../../vendor/jquery/js/jquery.ui.touch-punch.min.js"></script>
-	<script type="text/javascript" src="../../js/js-cookie.js"></script>
 	<script type="text/javascript" src="../../js/HomePage.js"></script>
-	<!--===============================================================================================-->
-	<script src="/socket.io/socket.io.js"></script>
-	<script>
-		var socket = io();
-		socket.emit('login', getCookie('username'), getCookie('password'));
-	</script>
 	<!--===============================================================================================-->
 </body>
 

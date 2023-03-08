@@ -97,7 +97,7 @@
 	<script src="/socket.io/socket.io.js"></script>
 	<script>
 		eraseCookie('username')
-		eraseCookie('password')
+		eraseCookie('hash')
 		var socket = io();
 		var input = $('.validate-input .input100');
 		$('.validate-form').on('submit', function (e) {
@@ -110,13 +110,13 @@
 				}
 			}
 			if (check == true) {
-				setCookie('username', $(input[0]).val(), 1);
-				setCookie('password', $(input[1]).val(), 1);
-				socket.emit('authentication', $(input[0]).val(), $(input[1]).val());
+				socket.emit('check auth', $(input[0]).val(), $(input[1]).val());
 			}
 		});
-		socket.on('authentication', function (result) {
+		socket.on('resp auth', function (result, hash) {
 			if (result == 'accept') {
+				setCookie('username', $(input[0]).val(), 1);
+				setCookie('hash', hash, 1);
 				window.location.href = "../home";
 			}
 			else if (result == 'deny') {
