@@ -85,7 +85,6 @@ router.post('/', function (req, res) {
 		else {
 			// set data to cookie
 			var token = generateToken();
-			console.log('[Login.js] save data to cookie : ' + username + ' ' + token)
 			var expires_date = new Date(Date.now() + 60 * 60 * 1000) //cookie will expire in 1 hour
 			res.cookie('username', username, { expires: expires_date, httpOnly: true, secure: true });
 			res.cookie('token', token, { expires: expires_date, httpOnly: true, secure: true });

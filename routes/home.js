@@ -57,7 +57,7 @@ router.get('/', function(req, res) {
       res.redirect('/');
     }
     else {
-      res.render('homePage');
+      res.render('homePage', {username : req.cookies.username});
     }
   })
 });
