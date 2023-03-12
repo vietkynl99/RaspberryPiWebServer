@@ -26,7 +26,7 @@
 	<div class="limiter">
 		<div class="container-login100" style="background-image: url('images/images/bg-01.jpg');">
 			<div class="wrap-login100 p-l-55 p-r-55 p-t-65 p-b-54">
-				<form class="login100-form validate-form">
+				<form class="login100-form validate-form" method="post">
 
 					<span class="login100-form-title p-b-49">
 						Login
@@ -93,41 +93,6 @@
 	<script src="vendor/countdowntime/countdowntime.js"></script>
 	<script src="js/js-cookie.js"></script>
 	<script src="js/LoginPage.js"></script>
-	<!--===============================================================================================-->
-	<script src="/socket.io/socket.io.js"></script>
-	<script>
-		eraseCookie('username')
-		eraseCookie('hash')
-		var socket = io();
-		var input = $('.validate-input .input100');
-		$('.validate-form').on('submit', function (e) {
-			e.preventDefault();
-			var check = true;
-			for (var i = 0; i < input.length; i++) {
-				if (validate(input[i]) == false) {
-					showValidate(input[i]);
-					check = false;
-				}
-			}
-			if (check == true) {
-				socket.emit('check auth', $(input[0]).val(), $(input[1]).val());
-			}
-		});
-		socket.on('resp auth', function (result, hash) {
-			if (result == 'accept') {
-				setCookie('username', $(input[0]).val(), 1);
-				setCookie('hash', hash, 1);
-				window.location.href = "../home";
-			}
-			else if (result == 'deny') {
-				AlertBox("Username or password is incorrect!");
-			}
-			else
-			{
-				AlertBox("Error while sending request to server!");
-			}
-		});
-	</script>
 	<!--===============================================================================================-->
 </body>
 
