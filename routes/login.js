@@ -86,8 +86,10 @@ router.post('/', function (req, res) {
 			// set data to cookie
 			var token = generateToken();
 			var expires_date = new Date(Date.now() + 60 * 60 * 1000) //cookie will expire in 1 hour
-			res.cookie('username', username, { expires: expires_date, httpOnly: true, secure: true });
-			res.cookie('token', token, { expires: expires_date, httpOnly: true, secure: true });
+			// res.cookie('username', username, { expires: expires_date, httpOnly: true, secure: true });
+			// res.cookie('token', token, { expires: expires_date, httpOnly: true, secure: true });
+			res.cookie('username', username, { expires: expires_date, httpOnly: true});
+			res.cookie('token', token, { expires: expires_date, httpOnly: true});
 			// save token to sql
 			var query = `UPDATE userinfo SET token = '${token}' WHERE username = '${username}'`
 			sqlQuery(query, function (success, result) {
