@@ -45,21 +45,26 @@ function sqlQuery(query, callback) {
 }
 
 // Http request
-router.get('/', function(req, res) {
-  // check token
-  var query = `SELECT * FROM userinfo WHERE username='${req.cookies.username}' AND token='${req.cookies.token}'`
-  sqlQuery(query, function(success, result) {
-    if (success == false)
-    {
-      res.redirect('/');
-    }
-    else if(result.length <= 0) {
-      res.redirect('/');
-    }
-    else {
-      res.render('homePage', {username : req.cookies.username});
-    }
-  })
+router.get('/', function (req, res) {
+	if (!req.cookies.username || !req.cookies.token) {
+		res.redirect('/');
+		return;
+	}
+	// check token
+	var query = `SELECT * FROM userinfo WHERE username='${req.cookies.username}' AND token='${req.cookies.token}'`
+	sqlQuery(query, function (success, result) {
+		if (success == false) {
+			res.redirect('/');
+		}
+		else if (result.length <= 0) {
+			res.redirect('/');
+			console.log('[Home.js][WARN] Request login failed username "' + req.cookies.username + '" token "' + req.cookies.token + '"')
+		}
+		else {
+			console.log('[Home.js] User "' + req.cookies.username + '" logged in')
+			res.render('HomePage', { username: req.cookies.username });
+		}
+	})
 });
 
 module.exports = router;
