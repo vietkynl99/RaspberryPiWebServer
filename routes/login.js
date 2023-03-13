@@ -75,7 +75,6 @@ router.post('/', function (req, res) {
 			res.render('LoginPage');
 		}
 		else if (result.length <= 0) {
-			console.log("[Login.js] Username or password is incorrect")
 			// clear the cookie
 			res.clearCookie('username');
 			res.clearCookie('token');
@@ -91,7 +90,7 @@ router.post('/', function (req, res) {
 			res.cookie('username', username, { expires: expires_date, httpOnly: true});
 			res.cookie('token', token, { expires: expires_date, httpOnly: true});
 			// save token to sql
-			var query = `UPDATE userinfo SET token = '${token}' WHERE username = '${username}'`
+			var query = `UPDATE userinfo SET token = '${token}' , lastlogin = NOW() WHERE username = '${username}'`
 			sqlQuery(query, function (success, result) {
 				if (success == false) {
 					console.log("[Login.js][Error] Can't update token to sql")
