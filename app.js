@@ -47,61 +47,32 @@ var sqlAdapter = new SqlAdapter()
 sqlAdapter.connect()
 
 // client list
-var clientList = new Array();
-function print_client_list() {
-	console.log();
-	if(clientList.length == 0) {
-		console.log('There are no client!')
-	}
-	else
-	{
-		console.log('There are ' + clientList.length + ' client:')
-		clientList.forEach(function(value, index) {
-			console.log((index + 1) + '. username=' + value.username + ' id=' + value.id + ' ip=' + value.ip)
-		})
-	}
-	console.log();
-}
-function client_list_add(username, id, ip) {
-	clientList.push({username: username, id: id, ip: ip})
-}
-function client_list_remove(id) {
-	var index = clientList.findIndex(x => x.id === id)
-	if(index >= 0) {
-		var data = clientList.at(index)
-		clientList.splice(index, 1)
-		return data
-	}
-	else {
-		console.log('[App.js][ERROR] Cannot find user with id=' + id)
-		return null
-	}
-}
+var ClientList = require('./modules/ClientList')
+var clientList = new ClientList()
 
 function user_login(username, id, ip) {
 	console.log('[App.js] User "' + username + '" logged in!')
-	client_list_add(username, id, ip)
-	print_client_list()
+	clientList.add(username, id, ip)
+	clientList.printList()
 }
 
 function user_logout(id) {
-	var data = client_list_remove(id)
-	if(data)
-	{
+	var data = clientList.removeId(id)
+	if (data) {
 		console.log('[App.js] User "' + data.username + '" logged out!')
-		print_client_list()
+		clientList.printList()
 	}
 }
 
 // new connection to server
 io.on('connection', function (socket) {
 	// console.log('Address [' + socket.handshake.address + '] ID [' + socket.id + '] connected')
-	
+
 	// client disconnect
 	socket.on('disconnect', function () {
 		user_logout(socket.id)
 	});
-	
+
 	// user logged in
 	socket.on('login', function (username) {
 		user_login(username, socket.id, socket.handshake.address)
@@ -109,32 +80,32 @@ io.on('connection', function (socket) {
 
 	// request data from client
 	socket.on('navbar_fullname', function (data) {
-		var query = `SELECT name FROM userinfo WHERE username='${data}'`
-		sqlAdapter.query(query, function (success, result) {
-			if (success == false) {
-				console.log('[App.js][ERROR] SQL query error')
-			}
-			else if (result.length <= 0) {
-				console.log('[App.js][ERROR] Cannot find data of user "' + data + '"')
-			}
-			else {
-				io.emit('navbar_fullname', result[0].name);
-			}
-		})
+		sqlAdapter.query(`SELECT name FROM userinfo WHERE username='${data}'`,
+			function (success, result) {
+				if (success == false) {
+					console.log('[App.js][ERROR] SQL query error')
+				}
+				else if (result.length <= 0) {
+					console.log('[App.js][ERROR] Cannot find data of user "' + data + '"')
+				}
+				else {
+					io.emit('navbar_fullname', result[0].name);
+				}
+			})
 	});
 	socket.on('navbar_email', function (data) {
-		var query = `SELECT email FROM userinfo WHERE username='${data}'`
-		sqlAdapter.query(query, function (success, result) {
-			if (success == false) {
-				console.log('[App.js][ERROR] SQL query error')
-			}
-			else if (result.length <= 0) {
-				console.log('[App.js][ERROR] Cannot find data of user "' + data + '"')
-			}
-			else {
-				io.emit('navbar_email', result[0].email);
-			}
-		})
+		sqlAdapter.query(`SELECT email FROM userinfo WHERE username='${data}'`,
+			function (success, result) {
+				if (success == false) {
+					console.log('[App.js][ERROR] SQL query error')
+				}
+				else if (result.length <= 0) {
+					console.log('[App.js][ERROR] Cannot find data of user "' + data + '"')
+				}
+				else {
+					io.emit('navbar_email', result[0].email);
+				}
+			})
 	});
 });
 
