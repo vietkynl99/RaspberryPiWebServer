@@ -89,7 +89,7 @@ io.on('connection', function (socket) {
 					console.log('[App.js][ERROR] Cannot find data of user "' + data + '"')
 				}
 				else {
-					io.emit('navbar_fullname', result[0].name);
+					io.to(socket.id).emit('navbar_fullname', result[0].name);
 				}
 			})
 	});
@@ -103,7 +103,7 @@ io.on('connection', function (socket) {
 					console.log('[App.js][ERROR] Cannot find data of user "' + data + '"')
 				}
 				else {
-					io.emit('navbar_email', result[0].email);
+					io.to(socket.id).emit('navbar_email', result[0].email);
 				}
 			})
 	});
