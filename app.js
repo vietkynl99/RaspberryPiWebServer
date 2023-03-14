@@ -3,7 +3,6 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var mysql = require('mysql');
 var loginRouter = require('./routes/login');
 var homeRouter = require('./routes/home');
 var app = express();
@@ -43,61 +42,75 @@ app.use(function (err, req, res, next) {
 
 
 // connect to database
-const sqlcon = mysql.createConnection({
-	host: "localhost",
-	port: 3306,
-	user: "root",
-	password: "KynlMySQL1103@!",
-	database: "kynlwebdb"
-});
+var SqlAdapter = require('./modules/SqlAdapter')
+var sqlAdapter = new SqlAdapter()
+sqlAdapter.connect()
 
-try {
-	sqlcon.connect((err) => {
-		if (err) {
-			throw err
-		}
-		console.log('[App.js] Database connected!')
-	});
-}
-catch (error) {
-	console.log("[App.js][ERROR] Can't connect to database: " + error)
-	process.exit(1)
-}
-
-function sqlQuery(query, callback) {
-	try {
-		sqlcon.query(query, (error, result) => {
-			if (error) {
-				throw error
-			}
-			callback(true, result)
-		});
+// client list
+var clientList = new Array();
+function print_client_list() {
+	console.log();
+	if(clientList.length == 0) {
+		console.log('There are no client!')
 	}
-	catch (error) {
-		console.log("[App.js][ERROR] Sql query error: " + error)
-		callback(false, undefined)
+	else
+	{
+		console.log('There are ' + clientList.length + ' client:')
+		clientList.forEach(function(value, index) {
+			console.log((index + 1) + '. username=' + value.username + ' id=' + value.id)
+		})
+	}
+	console.log();
+}
+function client_list_add(username, id) {
+	clientList.push({username: username, id: id})
+}
+function client_list_remove(id) {
+	var index = clientList.findIndex(x => x.id === id)
+	if(index >= 0) {
+		var data = clientList.at(index)
+		clientList.splice(index, 1)
+		return data
+	}
+	else {
+		console.log('[App.js][ERROR] Cannot find user with id=' + id)
+		return null
 	}
 }
 
+function user_login(username, id) {
+	console.log('[App.js] User "' + username + '" logged in!')
+	client_list_add(username, id)
+	print_client_list()
+}
+
+function user_logout(id) {
+	var data = client_list_remove(id)
+	if(data)
+	{
+		console.log('[App.js] User "' + data.username + '" logged out!')
+		print_client_list()
+	}
+}
 
 // new connection to server
 io.on('connection', function (socket) {
-	console.log('Address [' + socket.handshake.address + '] ID [' + socket.id + '] connected')
-
+	// console.log('Address [' + socket.handshake.address + '] ID [' + socket.id + '] connected')
+	
 	// client disconnect
 	socket.on('disconnect', function () {
-		console.log('Address [' + socket.handshake.address + '] ID [' + socket.id + '] disconnected')
+		user_logout(socket.id)
 	});
-
-	//new message from client
-	socket.on('message', function (msg) {
-		console.log('get message from client: ' + msg)
+	
+	// user logged in
+	socket.on('login', function (username) {
+		user_login(username, socket.id)
 	});
 
 	// request data from client
 	socket.on('navbar_fullname', function (data) {
 		var query = `SELECT name FROM userinfo WHERE username='${data}'`
-		sqlQuery(query, function (success, result) {
+		sqlAdapter.query(query, function (success, result) {
 			if (success == false) {
 				console.log('[App.js][ERROR] SQL query error')
 			}
@@ -111,7 +124,7 @@ io.on('connection', function (socket) {
 	});
 	socket.on('navbar_email', function (data) {
 		var query = `SELECT email FROM userinfo WHERE username='${data}'`
-		sqlQuery(query, function (success, result) {
+		sqlAdapter.query(query, function (success, result) {
 			if (success == false) {
 				console.log('[App.js][ERROR] SQL query error')
 			}

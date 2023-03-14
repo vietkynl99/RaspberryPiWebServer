@@ -3,6 +3,7 @@ var username = document.getElementById("navbar_username").textContent.trim();
 // conntec to socket
 var socket = io();
 socket.on('connect', function () {
+	socket.emit('login', username);
 	socket.emit('navbar_fullname', username);
 	socket.emit('navbar_email', username);
 });
