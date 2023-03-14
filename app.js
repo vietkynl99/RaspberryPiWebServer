@@ -57,13 +57,13 @@ function print_client_list() {
 	{
 		console.log('There are ' + clientList.length + ' client:')
 		clientList.forEach(function(value, index) {
-			console.log((index + 1) + '. username=' + value.username + ' id=' + value.id)
+			console.log((index + 1) + '. username=' + value.username + ' id=' + value.id + ' ip=' + value.ip)
 		})
 	}
 	console.log();
 }
-function client_list_add(username, id) {
-	clientList.push({username: username, id: id})
+function client_list_add(username, id, ip) {
+	clientList.push({username: username, id: id, ip: ip})
 }
 function client_list_remove(id) {
 	var index = clientList.findIndex(x => x.id === id)
@@ -78,9 +78,9 @@ function client_list_remove(id) {
 	}
 }
 
-function user_login(username, id) {
+function user_login(username, id, ip) {
 	console.log('[App.js] User "' + username + '" logged in!')
-	client_list_add(username, id)
+	client_list_add(username, id, ip)
 	print_client_list()
 }
 
@@ -104,7 +104,7 @@ io.on('connection', function (socket) {
 	
 	// user logged in
 	socket.on('login', function (username) {
-		user_login(username, socket.id)
+		user_login(username, socket.id, socket.handshake.address)
 	});
 
 	// request data from client
