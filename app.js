@@ -54,6 +54,13 @@ function user_login(username, id, ip) {
 	console.log('[App.js] User "' + username + '" logged in!')
 	clientList.add(username, id, ip)
 	clientList.printList()
+	// save login history  to sql
+	sqlAdapter.query(`INSERT INTO loginhistory (time, type, username, ip) VALUES(NOW(), 0, '${username}', '${ip}')`,
+		function (success, result) {
+			if (success == false) {
+				console.log('[App.js][ERROR] SQL query error')
+			}
+		});
 }
 
 function user_logout(id) {
@@ -61,6 +68,13 @@ function user_logout(id) {
 	if (data) {
 		console.log('[App.js] User "' + data.username + '" logged out!')
 		clientList.printList()
+		// save logout history  to sql
+		sqlAdapter.query(`INSERT INTO loginhistory (time, type, username, ip) VALUES(NOW(), 1, '${data.username}', '${data.ip}')`,
+			function (success, result) {
+				if (success == false) {
+					console.log('[App.js][ERROR] SQL query error')
+				}
+			});
 	}
 }
 
