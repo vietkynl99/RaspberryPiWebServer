@@ -76,11 +76,8 @@ io.on('connection', function (socket) {
 	// user logged in
 	socket.on('login', function (username) {
 		user_login(username, socket.id, socket.handshake.address)
-	});
-
-	// request data from client
-	socket.on('navbar_fullname', function (data) {
-		sqlAdapter.query(`SELECT name FROM userinfo WHERE username='${data}'`,
+		// send data to client
+		sqlAdapter.query(`SELECT name FROM userinfo WHERE username='${username}'`,
 			function (success, result) {
 				if (success == false) {
 					console.log('[App.js][ERROR] SQL query error')
@@ -91,10 +88,8 @@ io.on('connection', function (socket) {
 				else {
 					io.to(socket.id).emit('navbar_fullname', result[0].name);
 				}
-			})
-	});
-	socket.on('navbar_email', function (data) {
-		sqlAdapter.query(`SELECT email FROM userinfo WHERE username='${data}'`,
+			});
+		sqlAdapter.query(`SELECT email FROM userinfo WHERE username='${username}'`,
 			function (success, result) {
 				if (success == false) {
 					console.log('[App.js][ERROR] SQL query error')
@@ -105,7 +100,7 @@ io.on('connection', function (socket) {
 				else {
 					io.to(socket.id).emit('navbar_email', result[0].email);
 				}
-			})
+			});
 	});
 });
 
