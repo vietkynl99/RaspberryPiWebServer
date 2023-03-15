@@ -14,37 +14,25 @@ class SqlAdapter {
   }
   
   connect() {
-    try {
       this.#sqlcon.connect((err) => {
         if (err) {
+          console.log('[SqlAdapter][ERROR] Cannot connect to database: ' + error)
           throw err
         }
         console.log('[SqlAdapter] Database connected!')
       });
-    }
-    catch (error) {
-      console.log("[SqlAdapter][ERROR] Can't connect to database: " + error)
-      process.exit(1)
-    }
   }
 
   query(query, callback) {
-    try {
       this.#sqlcon.query(query, (error, result) => {
         if (error) {
-          throw error
+          console.log('[SqlAdapter][ERROR] Sql query error: ' + error)
+          callback(false, undefined)
         }
-        callback(true, result)
+        else {
+          callback(true, result)
+        }
       });
-    }
-    catch (error) {
-      console.log("[SqlAdapter][ERROR] Sql query error: " + error)
-      callback(false, undefined)
-    }
-  }
-
-  testfunc() {
-    console.log('hello from MySQL')
   }
 }
 
