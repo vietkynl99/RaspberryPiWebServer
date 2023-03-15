@@ -31,7 +31,7 @@ router.post('/', function (req, res) {
 	var username = req.body.username;
 	var password = req.body.pass;
 
-	sqlAdapter.query(`SELECT * FROM userinfo WHERE username='${username}' AND password='${password}'`,
+	sqlAdapter.query(`SELECT username FROM userinfo WHERE username='${username}' AND password='${password}'`,
 		function (success, result) {
 			if (success == false) {
 				console.log("[Login.js][Error] Sql query error")
