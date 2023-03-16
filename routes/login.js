@@ -66,10 +66,14 @@ router.post('/', function (req, res) {
 					function (success, result) {
 						if (success == false) {
 							console.log("[Login.js][Error] Can't update token to sql")
+							// go to login page
+							res.render('LoginPage');
+						}
+						else {
+							// go to home page
+							res.redirect('/home');
 						}
 					})
-				// go to home page
-				res.redirect('/home');
 			}
 		})
 });
