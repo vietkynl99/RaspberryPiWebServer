@@ -9,8 +9,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 function generateToken() {
-	const token = crypto.randomBytes(20).toString('hex');
-	return token;
+	return crypto.randomBytes(20).toString('hex');
 }
 
 // connect to database
@@ -28,8 +27,11 @@ router.get('/', function (req, res) {
 });
 
 router.post('/', function (req, res) {
-	var username = req.body.username;
-	var password = req.body.pass;
+	var username = sqlAdapter.removeSpecialCharacter(req.body.username);
+	var password = sqlAdapter.removeSpecialCharacter(req.body.pass);
+	if (!username || !password) {
+		return
+	}
 
 	sqlAdapter.query(`SELECT username FROM userinfo WHERE username='${username}' AND password='${password}'`,
 		function (success, result) {
@@ -41,7 +43,7 @@ router.post('/', function (req, res) {
 				// go to login page
 				res.render('LoginPage');
 			}
-			else if (result.length <= 0) {
+			else if (result.length != 1) {
 				// clear the cookie
 				res.clearCookie('username');
 				res.clearCookie('token');
@@ -50,8 +52,11 @@ router.post('/', function (req, res) {
 			}
 			else {
 				// set data to cookie
-				var token = generateToken();
-				var expires_date = new Date(Date.now() + 60 * 60 * 1000) //cookie will expire in 1 hour
+				let token = sqlAdapter.removeSpecialCharacter(generateToken());
+				if (!token) {
+					return
+				}
+				let expires_date = new Date(Date.now() + 60 * 60 * 1000) //cookie will expire in 1 hour
 				// res.cookie('username', username, { expires: expires_date, httpOnly: true, secure: true });
 				// res.cookie('token', token, { expires: expires_date, httpOnly: true, secure: true });
 				res.cookie('username', username, { expires: expires_date, httpOnly: true });

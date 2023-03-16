@@ -51,6 +51,12 @@ var ClientList = require('./modules/ClientList')
 var clientList = new ClientList()
 
 function user_login(username, id, ip) {
+	username = sqlAdapter.removeSpecialCharacter(username);
+	id = sqlAdapter.removeSpecialCharacter(id);
+	ip = sqlAdapter.removeSpecialCharacter(ip);
+	if (!username || !id || !ip) {
+		return;
+	}
 	console.log('[App.js] User "' + username + '" logged in!')
 	clientList.add(username, id, ip)
 	clientList.printList()
@@ -64,18 +70,24 @@ function user_login(username, id, ip) {
 }
 
 function user_logout(id) {
-	var data = clientList.removeId(id)
-	if (data) {
-		console.log('[App.js] User "' + data.username + '" logged out!')
-		clientList.printList()
-		// save logout history  to sql
-		sqlAdapter.query(`INSERT INTO loginhistory (time, type, username, ip) VALUES(NOW(), 1, '${data.username}', '${data.ip}')`,
-			function (success, result) {
-				if (success == false) {
-					console.log('[App.js][ERROR] SQL query error')
-				}
-			});
+	let data = clientList.removeId(id)
+	if (!data) {
+		return
 	}
+	let username = sqlAdapter.removeSpecialCharacter(data.username);
+	let ip = sqlAdapter.removeSpecialCharacter(data.ip);
+	if (!username || !ip) {
+		return;
+	}
+	console.log('[App.js] User "' + username + '" logged out!')
+	clientList.printList()
+	// save logout history  to sql
+	sqlAdapter.query(`INSERT INTO loginhistory (time, type, username, ip) VALUES(NOW(), 1, '${username}', '${ip}')`,
+		function (success, result) {
+			if (success == false) {
+				console.log('[App.js][ERROR] SQL query error')
+			}
+		});
 }
 
 // new connection to server
@@ -89,6 +101,10 @@ io.on('connection', function (socket) {
 
 	// user logged in
 	socket.on('login', function (username) {
+		username = sqlAdapter.removeSpecialCharacter();
+		if (!username) {
+			return
+		}
 		user_login(username, socket.id, socket.handshake.address)
 		// send data to client
 		sqlAdapter.query(`SELECT name FROM userinfo WHERE username='${username}'`,

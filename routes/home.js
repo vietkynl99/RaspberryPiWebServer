@@ -12,22 +12,24 @@ sqlAdapter.connect()
 
 // Http request
 router.get('/', function (req, res) {
-	if (!req.cookies.username || !req.cookies.token) {
+	let username = sqlAdapter.removeSpecialCharacter(req.cookies.username);
+	let token = sqlAdapter.removeSpecialCharacter(req.cookies.token);
+	if (!username || !token) {
 		res.redirect('/');
 		return;
 	}
 	// check token
-	sqlAdapter.query(`SELECT * FROM userinfo WHERE username='${req.cookies.username}' AND token='${req.cookies.token}'`,
+	sqlAdapter.query(`SELECT * FROM userinfo WHERE username='${username}' AND token='${token}'`,
 		function (success, result) {
 			if (success == false) {
 				res.redirect('/');
 			}
 			else if (result.length <= 0) {
 				res.redirect('/');
-				console.log('[Home.js][WARN] Request login failed username "' + req.cookies.username + '" token "' + req.cookies.token + '"')
+				console.log('[Home.js][WARN] Request login failed username "' + username + '" token "' + token + '"')
 			}
 			else {
-				res.render('HomePage', { username: req.cookies.username });
+				res.render('HomePage', { username: username });
 			}
 		})
 });
