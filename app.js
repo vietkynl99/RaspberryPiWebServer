@@ -101,7 +101,7 @@ io.on('connection', function (socket) {
 
 	// user logged in
 	socket.on('login', function (username) {
-		username = sqlAdapter.removeSpecialCharacter();
+		username = sqlAdapter.removeSpecialCharacter(username);
 		if (!username) {
 			return
 		}
