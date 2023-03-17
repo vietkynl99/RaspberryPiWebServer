@@ -10,7 +10,7 @@ fs.readFile('kynlweb.sql', (err, data) => {
 
     let queryArray = data.toString().split(';');
 
-    for (let i = 0; i < queryArray.length - 1; i++) {
+    for (let i = 0; i <= queryArray.length - 2; i++) {
         let query = queryArray[i].trim() + ';';
         // console.log((i + 1 ) + '. ' + query);
 
@@ -19,8 +19,10 @@ fs.readFile('kynlweb.sql', (err, data) => {
                 console.log('[ERROR] SQL query error: ' + query);
                 // process.exit()
             }
+            else if (i === queryArray.length - 2) {
+                console.log('\nDone!');
+                process.exit()
+            }
         })
     }
-    console.log('\nDone!');
-    process.exit()
 })

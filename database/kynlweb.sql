@@ -1,5 +1,6 @@
+CREATE DATABASE IF NOT EXISTS `kynlwebdb`;
 
-DROP TABLE `kynlwebdb`.`userinfo`;
+DROP TABLE IF EXISTS `kynlwebdb`.`userinfo`;
 
 CREATE TABLE `kynlwebdb`.`userinfo` (
   `username` VARCHAR(50) NOT NULL,
@@ -17,7 +18,7 @@ INSERT INTO `kynlwebdb`.`userinfo` (`username`, `password`, `name`, `email`, `ph
 INSERT INTO `kynlwebdb`.`userinfo` (`username`, `password`, `name`, `email`, `phone`, `permission`) VALUES ('admin', '123456', 'Admin', 'admin@gmail.com', '0123456', '1');
 INSERT INTO `kynlwebdb`.`userinfo` (`username`, `password`, `name`, `email`, `phone`, `permission`) VALUES ('testuser', '123456', 'Nguyen Van An', 'nguyevanan001@gmail.com', '0123456789', '2');
 
-DROP TABLE `kynlwebdb`.`loginhistory`;
+DROP TABLE IF EXISTS `kynlwebdb`.`loginhistory`;
 
 CREATE TABLE `kynlwebdb`.`loginhistory` (
   `id` INT NOT NULL AUTO_INCREMENT,
