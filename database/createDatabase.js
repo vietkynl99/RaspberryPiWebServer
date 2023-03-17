@@ -17,7 +17,7 @@ fs.readFile('kynlweb.sql', (err, data) => {
         sqlAdapter.query(query, function (success, result) {
             if (success == false) {
                 console.log('[ERROR] SQL query error: ' + query);
-                // process.exit()
+                process.exit()
             }
             if (i === queryArray.length - 2) {
                 console.log('\nDone!');
