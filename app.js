@@ -13,6 +13,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 3000;
 
+// get data from system
+var systemManager = require('./modules/systemManager');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -92,6 +94,13 @@ function user_logout(id) {
 		});
 }
 
+function sendDataInterval(io, socket) {
+	io.to(socket.id).emit('cpu usage', systemManager.getCPUUsage());
+	io.to(socket.id).emit('mem usage', systemManager.getMemoryUsage());
+	io.to(socket.id).emit('total mem usage', systemManager.getTotalMemoryUsage());
+	io.to(socket.id).emit('total mem', systemManager.getTotalMemory());
+}
+
 // new connection to server
 io.on('connection', function (socket) {
 	// console.log('Address [' + socket.handshake.address + '] ID [' + socket.id + '] connected')
@@ -133,7 +142,12 @@ io.on('connection', function (socket) {
 					io.to(socket.id).emit('navbar_email', result[0].email);
 				}
 			});
+		sendDataInterval(io, socket);
 	});
+
+	let interval = setInterval(function () {
+		sendDataInterval(io, socket);
+	}, 5000);
 });
 
 
