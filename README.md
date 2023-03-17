@@ -5,7 +5,7 @@ giao diện điều khiển web.
 
 ## Yêu cầu hệ thống
 
-Sử dụng PHP, mysql, NodeJs Express trên Raspberry Pi
+Sử dụng PHP, mysql, NodeJs Express trên Raspberry Pi:
 
 	$ sudo apt install nodejs
 	$ sudo apt install npm
@@ -18,7 +18,7 @@ sử dụng mysql làm cơ sở dữ liệu để lưu trữ thông tin của c�
 
 ## Cài đặt và sử dụng
 
-1. Tải xuống chương trình:
+1. Tải xuống project:
 
 	$ git clone https://github.com/vietkynl99/RaspberryPiWebServer.git
 
@@ -26,15 +26,16 @@ sử dụng mysql làm cơ sở dữ liệu để lưu trữ thông tin của c�
 
 	$ npm install
 
-3. Tạo database cho hệ thống : 
+3. Tạo database cho hệ thống:
 
-	$ php database/CreateDatabase.php
+	$ cd database
+	$ node createDatabase.js
 
 5. Khởi chạy server:
 
     $ node ./app.js
 
-6. Truy cập trên trình duyệt
+6. Truy cập trên trình duyệt:
 
     Mở trình duyêt và điền địa chỉ của server trên thanh địa chỉ, ví dụ: http://192.168.1.7 hoặc http://raspberrypi.
     
