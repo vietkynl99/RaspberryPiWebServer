@@ -23,10 +23,10 @@ class SqlAdapter {
 	}
 
 	connect() {
-		this.#sqlcon.connect((err) => {
-			if (err) {
+		this.#sqlcon.connect((error) => {
+			if (error) {
 				console.log('[SqlAdapter][ERROR] Cannot connect to database: ' + error)
-				throw err
+				throw error
 			}
 			console.log('[SqlAdapter] Database connected!')
 		});
