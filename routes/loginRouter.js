@@ -13,8 +13,7 @@ function generateToken() {
 }
 
 // connect to database
-var SqlAdapter = require('../modules/SqlAdapter')
-var sqlAdapter = new SqlAdapter()
+var sqlAdapter = require('../modules/sqlAdapter')
 sqlAdapter.connect()
 
 // Http request

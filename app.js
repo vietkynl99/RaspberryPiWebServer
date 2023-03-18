@@ -46,8 +46,7 @@ app.use(function (err, req, res, next) {
 
 
 // connect to database
-var SqlAdapter = require('./modules/SqlAdapter')
-var sqlAdapter = new SqlAdapter()
+var sqlAdapter = require('./modules/sqlAdapter')
 sqlAdapter.connect()
 
 // client list
