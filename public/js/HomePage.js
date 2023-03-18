@@ -99,12 +99,9 @@
 		socket.emit('login', username);
 	});
 
-	socket.on('navbar_fullname', function (data) {
-		document.getElementById('navbar_fullname').textContent = data;
-	});
-
-	socket.on('navbar_email', function (data) {
-		document.getElementById('navbar_email').textContent = data;
+	socket.on('user info', function (data) {
+		document.getElementById('navbar_fullname').textContent = data.name;
+		document.getElementById('navbar_email').textContent = data.email;
 	});
 
 	socket.on('cpu usage', function (data) {

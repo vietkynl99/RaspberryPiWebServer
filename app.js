@@ -116,7 +116,7 @@ io.on('connection', function (socket) {
 		}
 		user_login(username, socket.id, socket.handshake.address)
 		// send data to client
-		sqlAdapter.query(`SELECT name FROM userinfo WHERE username='${username}'`,
+		sqlAdapter.query(`SELECT name, email FROM userinfo WHERE username='${username}'`,
 			function (success, result) {
 				if (success == false) {
 					console.log('[App.js][ERROR] SQL query error')
@@ -125,23 +125,10 @@ io.on('connection', function (socket) {
 					console.log('[App.js][ERROR] Cannot find data of user "' + data + '"')
 				}
 				else {
-					io.to(socket.id).emit('navbar_fullname', result[0].name);
+					io.to(socket.id).emit('user info', {name: result[0].name, email: result[0].email});
 				}
 			});
 			
-		sqlAdapter.query(`SELECT email FROM userinfo WHERE username='${username}'`,
-			function (success, result) {
-				if (success == false) {
-					console.log('[App.js][ERROR] SQL query error')
-				}
-				else if (result.length <= 0) {
-					console.log('[App.js][ERROR] Cannot find data of user "' + data + '"')
-				}
-				else {
-					io.to(socket.id).emit('navbar_email', result[0].email);
-				}
-			});
-
 		let chartId = 'performance-line';
 		let chartLabel = 'Memory used';
 		let ChartXData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
