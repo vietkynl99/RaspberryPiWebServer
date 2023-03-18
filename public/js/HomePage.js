@@ -1,4 +1,6 @@
-$(document).ready(function () {
+(function($) {
+	'use strict';
+	$(function() {
 
 	var chartOption = {
 		responsive: true,
@@ -134,5 +136,6 @@ $(document).ready(function () {
 		}, 5000);
 	}
 });
+})(jQuery);
 
 
