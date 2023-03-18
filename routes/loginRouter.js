@@ -32,7 +32,7 @@ router.post('/', function (req, res) {
 		return
 	}
 
-	sqlAdapter.query(`SELECT username FROM userinfo WHERE username='${username}' AND password='${password}'`,
+	sqlAdapter.query(`SELECT username FROM userinfo WHERE username='${username}' AND password='${password}' AND lastlogin >= DATE_SUB(NOW(), INTERVAL 1 HOUR)`,
 		function (success, result) {
 			if (success == false) {
 				console.log("[Login.js][Error] Sql query error")

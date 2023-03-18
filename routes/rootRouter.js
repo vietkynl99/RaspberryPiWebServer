@@ -18,7 +18,7 @@ router.get('/', function (req, res) {
 		return;
 	}
 	// check token
-	sqlAdapter.query(`SELECT * FROM userinfo WHERE username='${username}' AND token='${token}'`,
+	sqlAdapter.query(`SELECT username FROM userinfo WHERE username='${username}' AND token='${token}' AND lastlogin >= DATE_SUB(NOW(), INTERVAL 1 HOUR)`,
 		function (success, result) {
 			if (success == false) {
 				res.redirect('/login');
