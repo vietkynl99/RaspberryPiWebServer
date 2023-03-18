@@ -130,6 +130,7 @@ io.on('connection', function (socket) {
 					io.to(socket.id).emit('navbar_fullname', result[0].name);
 				}
 			});
+			
 		sqlAdapter.query(`SELECT email FROM userinfo WHERE username='${username}'`,
 			function (success, result) {
 				if (success == false) {
@@ -142,6 +143,13 @@ io.on('connection', function (socket) {
 					io.to(socket.id).emit('navbar_email', result[0].email);
 				}
 			});
+
+		let chartId = 'performance-line';
+		let chartLabel = 'Memory used';
+		let ChartXData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+		let ChartYData = [100, 500, 300, 400, 900, 500, 700, 600, 600, 700];
+		io.to(socket.id).emit('update chart', {id: chartId, label: chartLabel, xData: ChartXData, yData:ChartYData});
+
 		sendDataInterval(io, socket);
 	});
 
