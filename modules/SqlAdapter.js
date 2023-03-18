@@ -1,4 +1,5 @@
 var mysql = require('mysql');
+var sqlcon = undefined;
 
 function removeSpecialCharacter(str) {
 	if (str) {
