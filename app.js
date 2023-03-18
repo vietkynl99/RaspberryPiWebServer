@@ -50,8 +50,7 @@ var sqlAdapter = require('./modules/sqlAdapter')
 sqlAdapter.connect()
 
 // client list
-var ClientList = require('./modules/ClientList')
-var clientList = new ClientList()
+var clientList = require('./modules/clientList')
 
 function user_login(username, id, ip) {
 	username = sqlAdapter.removeSpecialCharacter(username);
