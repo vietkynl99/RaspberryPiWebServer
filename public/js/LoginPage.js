@@ -33,7 +33,7 @@ $('.validate-form .input100').each(function () {
 
 var input = $('.validate-input .input100');
 $('.validate-form').on('submit', function (e) {
-    // e.preventDefault();
+    e.preventDefault();
     var check = true;
     for (var i = 0; i < input.length; i++) {
         if (validate(input[i]) == false) {
@@ -41,7 +41,28 @@ $('.validate-form').on('submit', function (e) {
             check = false;
         }
     }
-    return check;
+    if (check) {
+        $.ajax({
+            url: '/login',
+            type: 'POST',
+            data: {
+                username: $(input[0]).val().trim(),
+                pass: $(input[1]).val().trim()
+            },
+            success: function (response) {
+                console.log(response);
+                if (response === 'accept') {
+                    window.location.href = "/home";
+                }
+                else {
+                    AlertBox('Username or password is incorrect');
+                }
+            },
+            error: function (xhr, status, error) {
+                console.log(xhr.responseText);
+            }
+        });
+    }
 });
 
 function validate(input) {

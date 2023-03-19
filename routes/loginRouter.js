@@ -29,25 +29,19 @@ router.post('/', function (req, res) {
 	var username = sqlAdapter.removeSpecialCharacter(req.body.username);
 	var password = sqlAdapter.removeSpecialCharacter(req.body.pass);
 	if (!username || !password) {
+		// deny request
+		res.send('deny');
 		return
 	}
 
 	sqlAdapter.query(`SELECT username FROM userinfo WHERE username='${username}' AND password='${password}'`,
 		function (success, result) {
-			if (success == false) {
-				console.log("[Login.js][Error] Sql query error")
+			if (success === false || result.length !== 1) {
 				// clear the cookie
 				res.clearCookie('username');
 				res.clearCookie('token');
-				// go to login page
-				res.render('loginPage');
-			}
-			else if (result.length != 1) {
-				// clear the cookie
-				res.clearCookie('username');
-				res.clearCookie('token');
-				// go to login page
-				res.render('loginPage');
+				// deny request
+				res.send('deny');
 			}
 			else {
 				// set data to cookie
@@ -65,12 +59,12 @@ router.post('/', function (req, res) {
 					function (success, result) {
 						if (success == false) {
 							console.log("[Login.js][Error] Can't update token to sql")
-							// go to login page
-							res.render('loginPage');
+							// deny request
+							res.send('deny');
 						}
 						else {
-							// go to home page
-							res.redirect('/home');
+							// accept request
+							res.send('accept');
 						}
 					})
 			}
