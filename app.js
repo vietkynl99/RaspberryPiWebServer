@@ -92,6 +92,30 @@ function user_logout(id) {
 		});
 }
 
+function updateLoginHistoryTable(io, socket, username) {
+	sqlAdapter.query(`SELECT * FROM loginhistory WHERE username='${username}' ORDER BY time DESC LIMIT 10`,
+		function (success, result) {
+			if (success == false) {
+				console.log('[App.js][ERROR] SQL query error')
+			}
+			else if (result.length <= 0) {
+				console.log('[App.js][ERROR] Cannot find data of user "' + username + '"')
+			}
+			else {
+				let data = [];
+				result.forEach(element => {
+					data.push([element.id, new Date(element.time).toLocaleString(), element.username, element.ip, element.type]);
+				});
+				let tableData = {
+					id: 'login-history-table',
+					columnName: ['#', 'Time', 'Username', 'IP', 'Status'],
+					data: data
+				}
+				io.to(socket.id).emit('update table', tableData);
+			}
+		});
+}
+
 function sendDataInterval(io, socket) {
 	io.to(socket.id).emit('cpu usage', systemManager.getCPUUsage());
 	io.to(socket.id).emit('mem usage', systemManager.getMemoryUsage());
@@ -122,20 +146,28 @@ io.on('connection', function (socket) {
 					console.log('[App.js][ERROR] SQL query error')
 				}
 				else if (result.length <= 0) {
-					console.log('[App.js][ERROR] Cannot find data of user "' + data + '"')
+					console.log('[App.js][ERROR] Cannot find data of user "' + username + '"')
 				}
 				else {
-					io.to(socket.id).emit('user info', {name: result[0].name, email: result[0].email});
+					io.to(socket.id).emit('user info', { name: result[0].name, email: result[0].email });
 				}
 			});
-			
+
 		let chartId = 'performance-line';
 		let chartLabel = 'Memory used';
 		let ChartXData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 		let ChartYData = [100, 500, 300, 400, 900, 500, 700, 600, 600, 700];
-		io.to(socket.id).emit('update chart', {id: chartId, label: chartLabel, xData: ChartXData, yData:ChartYData});
+		io.to(socket.id).emit('update chart', { id: chartId, label: chartLabel, xData: ChartXData, yData: ChartYData });
 
 		sendDataInterval(io, socket);
+	});
+
+	socket.on('req loginhistory', function (username) {
+		username = sqlAdapter.removeSpecialCharacter(username);
+		if (!username) {
+			return
+		}
+		updateLoginHistoryTable(io, socket, username);
 	});
 
 	let interval = setInterval(function () {
