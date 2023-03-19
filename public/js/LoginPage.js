@@ -50,7 +50,6 @@ $('.validate-form').on('submit', function (e) {
                 pass: $(input[1]).val().trim()
             },
             success: function (response) {
-                console.log(response);
                 if (response === 'accept') {
                     window.location.href = "/home";
                 }
@@ -92,8 +91,10 @@ function hideValidate(input) {
 
 function AlertBox(message) {
     $(".log-box").addClass("log-show");
+    // $(".log-box").show();
     $(".log-box .log-text").html(message);
     setTimeout(function () {
         $(".log-box").removeClass('log-show');
+        // $(".log-box").hide();
     }, 3000);
 }
