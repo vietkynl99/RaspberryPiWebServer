@@ -93,7 +93,7 @@ function user_logout(id) {
 }
 
 function updateLoginHistoryTable(io, socket, username) {
-	sqlAdapter.query(`SELECT * FROM loginhistory WHERE username='${username}' ORDER BY time DESC LIMIT 10`,
+	sqlAdapter.query(`SELECT * FROM loginhistory WHERE username='${username}' ORDER BY id DESC LIMIT 10`,
 		function (success, result) {
 			if (success == false) {
 				console.log('[App.js][ERROR] SQL query error')
