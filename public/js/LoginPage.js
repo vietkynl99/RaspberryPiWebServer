@@ -49,11 +49,19 @@ $('.validate-form').on('submit', function (e) {
                 username: $(input[0]).val().trim(),
                 pass: $(input[1]).val().trim()
             },
-            success: function (response) {
-                if (response === 'accept') {
+            success: function (data) {
+                if (data.response === 'accept') {
                     window.location.href = "/home";
                 }
-                else {
+                else if (data.response === 'retry') {
+                    if (data.timeout === 1) {
+                        AlertBox('You have entered wrong too many times. Try again in ' + data.timeout + ' minute!');
+                    }
+                    else {
+                        AlertBox('You have entered wrong too many times. Try again in ' + data.timeout + ' minutes!');
+                    }
+                }
+                else if (data.response === 'deny') {
                     AlertBox('Username or password is incorrect');
                 }
             },
