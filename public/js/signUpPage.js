@@ -1,90 +1,107 @@
-/*==================================================================
-[ Focus input ]*/
-$('.input100').each(function () {
-    $(this).on('blur', function () {
-        if ($(this).val().trim() != "") {
-            $(this).addClass('has-val');
-        }
-        else {
-            $(this).removeClass('has-val');
-        }
-    })
-})
+(function ($) {
+    'use strict';
+    $(function () {
+
+        /*==================================================================
+        [ Focus input ]*/
+        $('.input100').each(function () {
+            $(this).on('blur', function () {
+                if ($(this).val().trim() != "") {
+                    $(this).addClass('has-val');
+                }
+                else {
+                    $(this).removeClass('has-val');
+                }
+            })
+        })
 
 
-/*==================================================================
-[ Validate ]*/
-$('.validate-form .input100').each(function () {
-    $(this).focus(function () {
-        hideValidate(this);
-    });
-});
+        /*==================================================================
+        [ Validate ]*/
+        $('.validate-form .input100').each(function () {
+            $(this).focus(function () {
+                hideValidate(this);
+            });
+        });
 
-var inputValidate = $('.validate-input .input100');
-$('.validate-form').on('submit', function (e) {
-    e.preventDefault();
-    var check = true;
-    for (var i = 0; i < inputValidate.length; i++) {
-        if (validate(inputValidate[i]) == false) {
-            showValidate(inputValidate[i]);
-            check = false;
-        }
-    }
-});
+        var inputValidate = $('.validate-input .input100');
+        $('.validate-form').on('submit', function (e) {
+            e.preventDefault();
+            var check = true;
+            for (var i = 0; i < inputValidate.length; i++) {
+                if (validate(inputValidate[i]) == false) {
+                    showValidate(inputValidate[i]);
+                    check = false;
+                }
+            }
+        });
 
-function validate(input) {
-    if ($(input).attr('name') == 'name') {
-        if ($(input).val().trim().match(/^([a-zA-Z0-9 ]+)$/) == null) {
-            return false;
-        }
-    }
-    else if ($(input).attr('name') == 'email') {
-        if ($(input).val().trim().match(/^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/) == null) {
-            return false;
-        }
-    }
-    else if ($(input).attr('name') == 'phone') {
-        if ($(input).val().trim().match(/^(\+84|0)\d{9}$/) == null) {
-            return false;
-        }
-    }
-    else if ($(input).attr('name') == 'pass' || $(input).attr('name') == 'confirm-pass') {
-        if ($(input).val().trim().match(/^([a-zA-Z0-9!-~ ]+)$/) == null) {
-            return false;
-        }
-        if ($(input).val().trim().match(/(['"]+)/) != null) {
-            return false;
-        }
-        if ($(input).attr('name') == 'confirm-pass') {
-            if ($(inputValidate[inputValidate.length - 2]).val().trim() != $(inputValidate[inputValidate.length - 1]).val().trim()) {
+
+        function validate(input) {
+            if ($(input).val().trim() == '') {
+                $(input).parent().attr('data-validate', "This entry cannot be empty");
                 return false;
             }
+            if ($(input).attr('name') == 'name') {
+                if ($(input).val().trim().match(/^([a-zA-Z0-9 ]+)$/) == null) {
+                    $(input).parent().attr('data-validate', "Name is invalid");
+                    return false;
+                }
+            }
+            else if ($(input).attr('name') == 'email') {
+                if ($(input).val().trim().match(/^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/) == null) {
+                    $(input).parent().attr('data-validate', "Email is invalid");
+                    return false;
+                }
+            }
+            else if ($(input).attr('name') == 'phone') {
+                if ($(input).val().trim().match(/^(\+84|0)\d{9}$/) == null) {
+                    $(input).parent().attr('data-validate', "Phone number is invalid");
+                    return false;
+                }
+            }
+            else if ($(input).attr('name') == 'pass' || $(input).attr('name') == 'confirm-pass') {
+                if ($(input).attr('name') == 'confirm-pass') {
+                    if ($(inputValidate[inputValidate.length - 2]).val().trim() != $(inputValidate[inputValidate.length - 1]).val().trim()) {
+                        $(input).parent().attr('data-validate', "The password confirmation does not match");
+                        return false;
+                    }
+                }
+                if ($(input).val().trim().length < 6) {
+                    $(input).parent().attr('data-validate', 'Password must be at least 6 characters');
+                    return false;
+                }
+                if ($(input).val().trim().match(/^([a-zA-Z0-9!-~ ]+)$/) == null) {
+                    $(input).parent().attr('data-validate', "Password cannot contain special characters");
+                    return false;
+                }
+                if ($(input).val().trim().match(/(['"`]+)/) != null) {
+                    $(input).parent().attr('data-validate', "Password cannot contain characters (' \" `)");
+                    return false;
+                }
+            }
+            return true;
         }
-    }
-    else {
-        if ($(input).val().trim() == '') {
-            return false;
+
+        function showValidate(input) {
+            var thisAlert = $(input).parent();
+
+            $(thisAlert).addClass('alert-validate');
         }
-    }
-    return true;
-}
 
-function showValidate(input) {
-    var thisAlert = $(input).parent();
+        function hideValidate(input) {
+            var thisAlert = $(input).parent();
 
-    $(thisAlert).addClass('alert-validate');
-}
+            $(thisAlert).removeClass('alert-validate');
+        }
 
-function hideValidate(input) {
-    var thisAlert = $(input).parent();
+        function AlertBox(message) {
+            $(".log-box").addClass("log-show");
+            $(".log-box .log-text").html(message);
+            setTimeout(function () {
+                $(".log-box").removeClass('log-show');
+            }, 3000);
+        }
 
-    $(thisAlert).removeClass('alert-validate');
-}
-
-function AlertBox(message) {
-    $(".log-box").addClass("log-show");
-    $(".log-box .log-text").html(message);
-    setTimeout(function () {
-        $(".log-box").removeClass('log-show');
-    }, 3000);
-}
+    });
+})(jQuery);
