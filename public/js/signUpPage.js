@@ -1,10 +1,4 @@
 /*==================================================================
-[ Button ]*/
-$('.txt-forgot-password').on('click', function () {
-    alert("This feature is not supported yet!");
-});
-
-/*==================================================================
 [ Focus input ]*/
 $('.input100').each(function () {
     $(this).on('blur', function () {
@@ -36,35 +30,6 @@ $('.validate-form').on('submit', function (e) {
             check = false;
         }
     }
-    if (check) {
-        $.ajax({
-            url: '/login',
-            type: 'POST',
-            data: {
-                username: $(input[0]).val().trim(),
-                pass: $(input[1]).val().trim()
-            },
-            success: function (data) {
-                if (data.response === 'accept') {
-                    window.location.href = "/home";
-                }
-                else if (data.response === 'retry') {
-                    if (data.timeout === 1) {
-                        AlertBox('You have entered wrong too many times. Try again in ' + data.timeout + ' minute!');
-                    }
-                    else {
-                        AlertBox('You have entered wrong too many times. Try again in ' + data.timeout + ' minutes!');
-                    }
-                }
-                else if (data.response === 'deny') {
-                    AlertBox('Username or password is incorrect');
-                }
-            },
-            error: function (xhr, status, error) {
-                console.log(xhr.responseText);
-            }
-        });
-    }
 });
 
 function validate(input) {
@@ -94,10 +59,8 @@ function hideValidate(input) {
 
 function AlertBox(message) {
     $(".log-box").addClass("log-show");
-    // $(".log-box").show();
     $(".log-box .log-text").html(message);
     setTimeout(function () {
         $(".log-box").removeClass('log-show');
-        // $(".log-box").hide();
     }, 3000);
 }

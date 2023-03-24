@@ -142,7 +142,7 @@ iframe {
   color: #666666;
 }
 
-.txt-register {
+.txt-login {
   font-family: Poppins-Regular;
   font-size: 14px;
   line-height: 1.5;
@@ -181,7 +181,7 @@ iframe {
 }
 
 .wrap-login100 {
-  width: 500px;
+  width: 600px;
   background: #fff;
   border-radius: 10px;
   overflow: hidden;
