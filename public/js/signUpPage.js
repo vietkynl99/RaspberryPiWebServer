@@ -34,6 +34,34 @@
                     check = false;
                 }
             }
+            if (check) {
+                $.ajax({
+                    url: '/signup',
+                    type: 'POST',
+                    data: {
+                        firstname: $(inputValidate[0]).val(),
+                        lastname: $(inputValidate[1]).val(),
+                        phone: $(inputValidate[2]).val(),
+                        birthday: $(inputValidate[3]).val(),
+                        email: $(inputValidate[4]).val(),
+                        pass: $(inputValidate[5]).val()
+                    },
+                    success: function (data) {
+                        if (data.response === 'accept') {
+                            window.location.href = "/login";
+                        }
+                        else if (data.response === 'registered') {
+                            AlertBox('Account has been registered. Please register another account!');
+                        }
+                        else if (data.response === 'deny') {
+                            AlertBox('The server does not accept account registration!');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(xhr.responseText);
+                    }
+                });
+            }
         });
 
 
