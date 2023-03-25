@@ -8,14 +8,14 @@ function printList() {
 	else {
 		console.log('[ClientList] There are ' + list.length + ' client:')
 		list.forEach(function (data, index) {
-			console.log((index + 1) + '. username=' + data.username + ' id=' + data.id + ' ip=' + data.ip)
+			console.log((index + 1) + '. email=' + data.email + ' id=' + data.id + ' ip=' + data.ip)
 		})
 	}
 	console.log();
 }
 
-function add(username, id, ip) {
-	list.push({ username: username, id: id, ip: ip })
+function add(email, id, ip) {
+	list.push({ email: email, id: id, ip: ip })
 }
 
 function removeId(id) {

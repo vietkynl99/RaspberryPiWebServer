@@ -54,18 +54,18 @@ sqlAdapter.connect()
 // client list
 var clientList = require('./modules/clientList')
 
-function user_login(username, id, ip) {
-	username = sqlAdapter.removeSpecialCharacter(username);
+function user_login(email, id, ip) {
+	email = sqlAdapter.removeSpecialCharacter(email);
 	id = sqlAdapter.removeSpecialCharacter(id);
 	ip = sqlAdapter.removeSpecialCharacter(ip);
-	if (!username || !id || !ip) {
+	if (!email || !id || !ip) {
 		return;
 	}
-	console.log('[App.js] User "' + username + '" logged in!')
-	clientList.add(username, id, ip)
+	console.log('[App.js] User "' + email + '" logged in!')
+	clientList.add(email, id, ip)
 	clientList.printList()
 	// save login history  to sql
-	sqlAdapter.query(`INSERT INTO loginhistory (time, type, username, ip) VALUES(NOW(), 0, '${username}', '${ip}')`,
+	sqlAdapter.query(`INSERT INTO loginhistory (time, type, email, ip) VALUES(NOW(), 0, '${email}', '${ip}')`,
 		function (success, result) {
 			if (success == false) {
 				console.log('[App.js][ERROR] SQL query error')
@@ -78,15 +78,15 @@ function user_logout(id) {
 	if (!data) {
 		return
 	}
-	let username = sqlAdapter.removeSpecialCharacter(data.username);
+	let email = sqlAdapter.removeSpecialCharacter(data.email);
 	let ip = sqlAdapter.removeSpecialCharacter(data.ip);
-	if (!username || !ip) {
+	if (!email || !ip) {
 		return;
 	}
-	console.log('[App.js] User "' + username + '" logged out!')
+	console.log('[App.js] User "' + email + '" logged out!')
 	clientList.printList()
 	// save logout history  to sql
-	sqlAdapter.query(`INSERT INTO loginhistory (time, type, username, ip) VALUES(NOW(), 1, '${username}', '${ip}')`,
+	sqlAdapter.query(`INSERT INTO loginhistory (time, type, email, ip) VALUES(NOW(), 1, '${email}', '${ip}')`,
 		function (success, result) {
 			if (success == false) {
 				console.log('[App.js][ERROR] SQL query error')
@@ -94,23 +94,23 @@ function user_logout(id) {
 		});
 }
 
-function updateLoginHistoryTable(io, socket, username) {
-	sqlAdapter.query(`SELECT * FROM loginhistory WHERE username='${username}' ORDER BY id DESC LIMIT 10`,
+function updateLoginHistoryTable(io, socket, email) {
+	sqlAdapter.query(`SELECT * FROM loginhistory WHERE email='${email}' ORDER BY id DESC LIMIT 10`,
 		function (success, result) {
 			if (success == false) {
 				console.log('[App.js][ERROR] SQL query error')
 			}
 			else if (result.length <= 0) {
-				console.log('[App.js][ERROR] Cannot find data of user "' + username + '"')
+				console.log('[App.js][ERROR] Cannot find data of user "' + email + '"')
 			}
 			else {
 				let data = [];
 				result.forEach(element => {
-					data.push([element.id, new Date(element.time).toLocaleString(), element.username, element.ip, element.type]);
+					data.push([element.id, new Date(element.time).toLocaleString(), element.email, element.ip, element.type]);
 				});
 				let tableData = {
 					id: 'login-history-table',
-					columnName: ['#', 'Time', 'Username', 'IP', 'Status'],
+					columnName: ['#', 'Time', 'Email', 'IP', 'Status'],
 					data: data
 				}
 				io.to(socket.id).emit('update table', tableData);
@@ -135,23 +135,23 @@ io.on('connection', function (socket) {
 	});
 
 	// user logged in
-	socket.on('login', function (username) {
-		username = sqlAdapter.removeSpecialCharacter(username);
-		if (!username) {
+	socket.on('login', function (email) {
+		email = sqlAdapter.removeSpecialCharacter(email);
+		if (!email) {
 			return
 		}
-		user_login(username, socket.id, socket.handshake.address)
+		user_login(email, socket.id, socket.handshake.address)
 		// send data to client
-		sqlAdapter.query(`SELECT name, email FROM userinfo WHERE username='${username}'`,
+		sqlAdapter.query(`SELECT firstname, lastname, email FROM userinfo WHERE email='${email}'`,
 			function (success, result) {
 				if (success == false) {
 					console.log('[App.js][ERROR] SQL query error')
 				}
 				else if (result.length <= 0) {
-					console.log('[App.js][ERROR] Cannot find data of user "' + username + '"')
+					console.log('[App.js][ERROR] Cannot find data of user "' + email + '"')
 				}
 				else {
-					io.to(socket.id).emit('user info', { name: result[0].name, email: result[0].email });
+					io.to(socket.id).emit('user info', { name: result[0].firstname + ' ' + result[0].lastname, email: result[0].email });
 				}
 			});
 
@@ -164,12 +164,12 @@ io.on('connection', function (socket) {
 		sendDataInterval(io, socket);
 	});
 
-	socket.on('req loginhistory', function (username) {
-		username = sqlAdapter.removeSpecialCharacter(username);
-		if (!username) {
+	socket.on('req loginhistory', function (email) {
+		email = sqlAdapter.removeSpecialCharacter(email);
+		if (!email) {
 			return
 		}
-		updateLoginHistoryTable(io, socket, username);
+		updateLoginHistoryTable(io, socket, email);
 	});
 
 	let interval = setInterval(function () {

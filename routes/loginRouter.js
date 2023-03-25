@@ -17,11 +17,11 @@ var sqlAdapter = require('../modules/sqlAdapter')
 sqlAdapter.connect()
 
 var authHistoryList = [];
-function saveAuthHistory(username, isValid) {
-	let index = authHistoryList.findIndex(x => x.username === username)
+function saveAuthHistory(email, isValid) {
+	let index = authHistoryList.findIndex(x => x.email === email)
 	if (!isValid) {
 		if (index < 0) {
-			authHistoryList.push({ username: username, retry: 0, totalretry: 0, unlocktime: new Date() });
+			authHistoryList.push({ email: email, retry: 0, totalretry: 0, unlocktime: new Date() });
 		}
 		else {
 			authHistoryList[index].retry++;
@@ -41,8 +41,8 @@ function saveAuthHistory(username, isValid) {
 	}
 }
 
-function allowLogin(username) {
-	let index = authHistoryList.findIndex(x => x.username === username)
+function allowLogin(email) {
+	let index = authHistoryList.findIndex(x => x.email === email)
 	if (index < 0) {
 		return { allow: true, timeout: null };
 	}
@@ -62,56 +62,56 @@ function allowLogin(username) {
 // Http request
 router.get('/', function (req, res) {
 	// clear the cookie
-	res.clearCookie('username');
+	res.clearCookie('email');
 	res.clearCookie('token');
 	// go to login page
 	res.render('loginPage');
 });
 
 router.post('/', function (req, res) {
-	let username = sqlAdapter.removeSpecialCharacter(req.body.username);
+	let email = sqlAdapter.removeSpecialCharacter(req.body.email);
 	let password = sqlAdapter.removeSpecialCharacter(req.body.pass);
-	if (!username || !password) {
+	if (!email || !password) {
 		// deny request
 		res.send({ response: 'deny', timeout: null });
 		return
 	}
 
-	let data = allowLogin(username);
+	let data = allowLogin(email);
 	if (!data.allow) {
 		// clear the cookie
-		res.clearCookie('username');
+		res.clearCookie('email');
 		res.clearCookie('token');
 		// deny request
 		res.send({ response: 'retry', timeout: data.timeout });
 		return;
 	}
 
-	sqlAdapter.query(`SELECT username FROM userinfo WHERE username='${username}' AND password='${password}'`,
+	sqlAdapter.query(`SELECT email FROM userinfo WHERE email='${email}' AND password='${password}'`,
 		function (success, result) {
 			if (success === false || result.length !== 1) {
-				saveAuthHistory(username, false)
+				saveAuthHistory(email, false)
 				// clear the cookie
-				res.clearCookie('username');
+				res.clearCookie('email');
 				res.clearCookie('token');
 				// deny request
 				res.send({ response: 'deny', timeout: null });
 				return;
 			}
 			
-			saveAuthHistory(username, true);
+			saveAuthHistory(email, true);
 			// set data to cookie
 			let token = sqlAdapter.removeSpecialCharacter(generateToken());
 			if (!token) {
 				return
 			}
 			let expires_date = new Date(Date.now() + 60 * 60 * 1000) //cookie will expire in 1 hour
-			// res.cookie('username', username, { expires: expires_date, httpOnly: true, secure: true });
+			// res.cookie('email', email, { expires: expires_date, httpOnly: true, secure: true });
 			// res.cookie('token', token, { expires: expires_date, httpOnly: true, secure: true });
-			res.cookie('username', username, { expires: expires_date, httpOnly: true });
+			res.cookie('email', email, { expires: expires_date, httpOnly: true });
 			res.cookie('token', token, { expires: expires_date, httpOnly: true });
 			// save token to sql
-			sqlAdapter.query(`UPDATE userinfo SET token = '${token}' , lastlogin = NOW() WHERE username = '${username}'`,
+			sqlAdapter.query(`UPDATE userinfo SET token = '${token}' , lastlogin = NOW() WHERE email = '${email}'`,
 				function (success, result) {
 					if (success == false) {
 						console.log("[Login.js][Error] Can't update token to sql")

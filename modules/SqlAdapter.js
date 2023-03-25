@@ -30,7 +30,7 @@ function connect() {
 function query(query, callback) {
 	sqlcon.query(query, (error, result) => {
 		if (error) {
-			console.log('[SqlAdapter][ERROR] Sql query error: ' + error)
+			console.log(`[SqlAdapter][ERROR] Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
 			callback(false, undefined)
 		}
 		else {

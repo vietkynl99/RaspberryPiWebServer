@@ -41,7 +41,7 @@ $('.validate-form').on('submit', function (e) {
             url: '/login',
             type: 'POST',
             data: {
-                username: $(input[0]).val().trim(),
+                email: $(input[0]).val().trim(),
                 pass: $(input[1]).val().trim()
             },
             success: function (data) {
@@ -57,7 +57,7 @@ $('.validate-form').on('submit', function (e) {
                     }
                 }
                 else if (data.response === 'deny') {
-                    AlertBox('Username or password is incorrect');
+                    AlertBox('Email or password is incorrect');
                 }
             },
             error: function (xhr, status, error) {
@@ -68,16 +68,31 @@ $('.validate-form').on('submit', function (e) {
 });
 
 function validate(input) {
-    if ($(input).attr('type') == 'email' || $(input).attr('name') == 'email') {
-        if ($(input).val().trim().match(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{1,5}|[0-9]{1,3})(\]?)$/) == null) {
+    if ($(input).val().trim() == '') {
+        $(input).parent().attr('data-validate', "This entry cannot be empty");
+        return false;
+    }
+    if ($(input).attr('name') == 'email') {
+        if ($(input).val().trim().match(/^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/) == null) {
+            $(input).parent().attr('data-validate', "Email is invalid");
             return false;
         }
     }
-    else {
-        if ($(input).val().trim() == '') {
+    else if ($(input).attr('name') == 'pass') {
+        if ($(input).val().trim().length < 6) {
+            $(input).parent().attr('data-validate', 'Password must be at least 6 characters');
+            return false;
+        }
+        if ($(input).val().trim().match(/^([a-zA-Z0-9!-~ ]+)$/) == null) {
+            $(input).parent().attr('data-validate', "Password cannot contain special characters");
+            return false;
+        }
+        if ($(input).val().trim().match(/(['"`]+)/) != null) {
+            $(input).parent().attr('data-validate', "Password cannot contain characters (' \" `)");
             return false;
         }
     }
+    return true;
 }
 
 function showValidate(input) {

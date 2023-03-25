@@ -92,11 +92,11 @@
 	}
 	// ===============================================================================================
 
-	var username = document.getElementById("navbar_username").textContent.trim();
+	var email = document.getElementById("navbar_username").textContent.trim();
 	// conntec to socket
 	var socket = io();
 	socket.on('connect', function () {
-		socket.emit('login', username);
+		socket.emit('login', email);
 	});
 
 	socket.on('user info', function (data) {
