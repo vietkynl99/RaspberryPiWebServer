@@ -27,3 +27,12 @@ CREATE TABLE `kynlwebdb`.`loginhistory` (
   `email` VARCHAR(50) NOT NULL,
   `ip` VARCHAR(30) NOT NULL,
   PRIMARY KEY (`id`));
+
+DROP TABLE IF EXISTS `kynlwebdb`.`event`;
+
+CREATE TABLE `kynlwebdb`.`event` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `time` DATETIME NOT NULL,
+  `type` TINYINT NOT NULL,
+  `data` VARCHAR(100) NOT NULL,
+  PRIMARY KEY (`id`));

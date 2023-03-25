@@ -1,6 +1,12 @@
 var mysql = require('mysql');
 var sqlcon = undefined;
 
+const EventType = {
+	LOG_IN: 0,
+	LOG_OUT: 1,
+	SIGN_UP: 2
+}
+
 function removeSpecialCharacter(str) {
 	if (str) {
 		str = str.trim();
@@ -41,6 +47,7 @@ function query(query, callback) {
 
 
 module.exports = {
+	EventType,
 	removeSpecialCharacter,
 	connect,
 	query

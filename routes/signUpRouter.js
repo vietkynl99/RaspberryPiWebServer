@@ -24,7 +24,6 @@ function validate(arr) {
 		if (!type || !data) {
 			return false;
 		}
-		console.log(`\ncheck type '${type}' data '${data}'`);
 		switch (type) {
 			case 'name':
 				if (data.match(/^([a-zA-Z0-9 ]+)$/) == null) {
@@ -103,9 +102,19 @@ router.post('/', function (req, res) {
 							return;
 						}
 						else {
-							console.log('[SignUpRouter] New account has been registered: ' + reqData[2].data);
-							res.send({ response: 'accept' });
-							return;
+							sqlAdapter.query(`INSERT INTO event (time, type, data) VALUES (NOW(), ${sqlAdapter.EventType.SIGN_UP}, '${reqData[2].data}')`,
+								function (success, result) {
+									if (success === false) {
+										// deny request
+										res.send({ response: 'deny' });
+										return;
+									}
+									else {
+										console.log('[SignUpRouter] New account has been registered: ' + reqData[2].data);
+										res.send({ response: 'accept' });
+										return;
+									}
+								});
 						}
 					});
 			}
