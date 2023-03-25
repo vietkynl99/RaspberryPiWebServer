@@ -1,17 +1,15 @@
 var list = new Array();
 
 function printList() {
-	console.log();
 	if (list.length == 0) {
 		console.log('[ClientList] There are no client!')
 	}
 	else {
 		console.log('[ClientList] There are ' + list.length + ' client:')
 		list.forEach(function (data, index) {
-			console.log((index + 1) + '. email=' + data.email + ' id=' + data.id + ' ip=' + data.ip)
+			console.log('\t' + (index + 1) + '. email=' + data.email + ' id=' + data.id + ' ip=' + data.ip)
 		})
 	}
-	console.log();
 }
 
 function add(email, id, ip) {
