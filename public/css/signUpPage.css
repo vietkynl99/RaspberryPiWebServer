@@ -377,7 +377,7 @@ iframe {
 [ Alert box ]*/
 .log-box {
   position: fixed;
-  width: 390px;
+  width: 490px;
   top: 120px;
   cursor: pointer;
   z-index: 9999;
