@@ -65,7 +65,7 @@ function user_login(email, id, ip) {
 	clientList.add(email, id, ip)
 	clientList.printList()
 	// save login history  to sql
-	sqlAdapter.query(`INSERT INTO loginhistory (time, type, email, ip) VALUES(NOW(), 0, '${email}', '${ip}')`,
+	sqlAdapter.query(`INSERT INTO loginhistory (time, type, email, ip) VALUES(NOW(), ${sqlAdapter.EventType.LOG_IN}, '${email}', '${ip}')`,
 		function (success, result) {
 			if (success == false) {
 				console.log('[App.js][ERROR] SQL query error')
@@ -86,7 +86,7 @@ function user_logout(id) {
 	console.log('[App.js] User "' + email + '" logged out!')
 	clientList.printList()
 	// save logout history  to sql
-	sqlAdapter.query(`INSERT INTO loginhistory (time, type, email, ip) VALUES(NOW(), 1, '${email}', '${ip}')`,
+	sqlAdapter.query(`INSERT INTO loginhistory (time, type, email, ip) VALUES(NOW(), ${sqlAdapter.EventType.LOG_OUT}, '${email}', '${ip}')`,
 		function (success, result) {
 			if (success == false) {
 				console.log('[App.js][ERROR] SQL query error')
