@@ -24,6 +24,6 @@ CREATE TABLE `kynlwebdb`.`loginhistory` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `time` DATETIME NOT NULL,
   `type` TINYINT NOT NULL,
-  `username` VARCHAR(50) NOT NULL,
+  `email` VARCHAR(50) NOT NULL,
   `ip` VARCHAR(30) NOT NULL,
   PRIMARY KEY (`id`));
