@@ -9,6 +9,55 @@ app.use(bodyParser.urlencoded({ extended: true }));
 var sqlAdapter = require('../modules/sqlAdapter')
 sqlAdapter.connect()
 
+function validate(arr) {
+	if (!arr) {
+		return false;
+	}
+	for (let index = 0; index < arr.length; index++) {
+		let item = arr[index];
+
+		if (!item.type || !item.data) {
+			return false;
+		}
+		let type = item.type.trim();
+		let data = item.data.trim();
+		if (!type || !data) {
+			return false;
+		}
+		console.log(`\ncheck type '${type}' data '${data}'`);
+		switch (type) {
+			case 'name':
+				if (data.match(/^([a-zA-Z0-9 ]+)$/) == null) {
+					return false;
+				}
+				break;
+			case 'email':
+				if (data.match(/^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+\.[a-zA-Z]{2,})$/) == null) {
+					return false;
+				}
+				break;
+			case 'phone':
+				if (data.match(/^(\+84|0)\d{9}$/) == null) {
+					return false;
+				}
+				break;
+			case 'pass':
+				if (data.length < 6 || data.match(/^([a-zA-Z0-9!-~ ]+)$/) == null || data.match(/(['"`]+)/) != null) {
+					return false;
+				}
+				break;
+			case 'birthday':
+				if (data.match(/^\d{4}-\d{2}-\d{2}$/) == null) {
+					return false;
+				}
+				break;
+			default:
+				return false;
+		}
+	}
+	return true;
+}
+
 // Http request
 router.get('/', function (req, res) {
 	// go to signup page
@@ -16,13 +65,15 @@ router.get('/', function (req, res) {
 });
 
 router.post('/', function (req, res) {
-	let firstname = sqlAdapter.removeSpecialCharacter(req.body.firstname);
-	let lastname = sqlAdapter.removeSpecialCharacter(req.body.lastname);
-	let phone = sqlAdapter.removeSpecialCharacter(req.body.phone);
-	let birthday = sqlAdapter.removeSpecialCharacter(req.body.birthday);
-	let email = sqlAdapter.removeSpecialCharacter(req.body.email);
-	let password = sqlAdapter.removeSpecialCharacter(req.body.pass);
-	if (!firstname || !lastname || !phone || !birthday || !email || !password) {
+
+	let reqData = [{ type: 'name', data: req.body.firstname.trim() },
+	{ type: 'name', data: req.body.lastname.trim() },
+	{ type: 'email', data: req.body.email.trim() },
+	{ type: 'pass', data: req.body.pass.trim() },
+	{ type: 'phone', data: req.body.phone.trim() },
+	{ type: 'birthday', data: req.body.birthday.trim() }];
+
+	if (validate(reqData) == false) {
 		// deny request
 		res.send({ response: 'deny' });
 		return
@@ -30,7 +81,7 @@ router.post('/', function (req, res) {
 
 	let permission = 2;
 
-	sqlAdapter.query(`SELECT email FROM userinfo WHERE email='${email}'`,
+	sqlAdapter.query(`SELECT email FROM userinfo WHERE email='${reqData[2].data}'`,
 		function (success, result) {
 			if (success === false) {
 				// deny request
@@ -43,14 +94,16 @@ router.post('/', function (req, res) {
 				return;
 			}
 			else {
-				sqlAdapter.query(`INSERT INTO userinfo (firstname, lastname, email, password, phone, birthday, permission) VALUES ('${firstname}', '${lastname}', '${email}', '${password}', '${phone}', '${birthday}', ${permission})`,
+				sqlAdapter.query(`INSERT INTO userinfo (firstname, lastname, email, password, phone, birthday, permission) 
+				VALUES ('${reqData[0].data}', '${reqData[1].data}', '${reqData[2].data}', '${reqData[3].data}', '${reqData[4].data}', '${reqData[5].data}', ${permission})`,
 					function (success, result) {
-						if (success === false || result.length !== 1) {
+						if (success === false) {
 							// deny request
 							res.send({ response: 'deny' });
 							return;
 						}
 						else {
+							console.log('[SignUpRouter] New account has been registered: ' + reqData[2].data);
 							res.send({ response: 'accept' });
 							return;
 						}
