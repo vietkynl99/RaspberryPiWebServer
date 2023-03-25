@@ -34,7 +34,7 @@
         }
         // ===============================================================================================
 
-        var email = document.getElementById("navbar_username").textContent.trim();
+        var email = document.getElementById("navbar_email").textContent.trim();
 
         // conntec to socket
         var socket = io();
@@ -45,7 +45,6 @@
 
         socket.on('user info', function (data) {
             document.getElementById('navbar_fullname').textContent = data.name;
-            document.getElementById('navbar_email').textContent = data.email;
         });
 
         socket.on('update table', function (data) {

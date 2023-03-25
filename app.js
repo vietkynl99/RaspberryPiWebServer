@@ -142,7 +142,7 @@ io.on('connection', function (socket) {
 		}
 		user_login(email, socket.id, socket.handshake.address)
 		// send data to client
-		sqlAdapter.query(`SELECT firstname, lastname, email FROM userinfo WHERE email='${email}'`,
+		sqlAdapter.query(`SELECT firstname, lastname FROM userinfo WHERE email='${email}'`,
 			function (success, result) {
 				if (success == false) {
 					console.log('[App.js][ERROR] SQL query error')
@@ -151,7 +151,7 @@ io.on('connection', function (socket) {
 					console.log('[App.js][ERROR] Cannot find data of user "' + email + '"')
 				}
 				else {
-					io.to(socket.id).emit('user info', { name: result[0].firstname + ' ' + result[0].lastname, email: result[0].email });
+					io.to(socket.id).emit('user info', { name: result[0].firstname + ' ' + result[0].lastname });
 				}
 			});
 
