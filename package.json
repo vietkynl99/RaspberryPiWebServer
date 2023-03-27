@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "nodemon app.js"
   },
   "dependencies": {
     "@serialport/bindings": "^9.2.9",
@@ -19,5 +19,8 @@
     "mysql": "^2.18.1",
     "serialport": "^10.5.0",
     "socket.io": "^4.6.1"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.22"
   }
 }
