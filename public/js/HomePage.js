@@ -96,7 +96,7 @@
 	// conntec to socket
 	var socket = io();
 	socket.on('connect', function () {
-		socket.emit('login', email);
+		socket.emit('login', {email: email, page: 'home'});
 	});
 
 	socket.on('user info', function (data) {

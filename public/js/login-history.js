@@ -39,7 +39,7 @@
         // conntec to socket
         var socket = io();
         socket.on('connect', function () {
-            socket.emit('login', email);
+            socket.emit('login', {email: email, page: 'loginhistory'});
             socket.emit('req loginhistory', email);
         });
 

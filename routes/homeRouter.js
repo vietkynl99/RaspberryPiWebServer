@@ -46,5 +46,23 @@ router.get('/account/login-history', function (req, res) {
 			}
 		})
 });
+router.get('/setting/connectivity', function (req, res) {
+	let email = sqlAdapter.removeSpecialCharacter(req.cookies.email);
+	let token = sqlAdapter.removeSpecialCharacter(req.cookies.token);
+	if (!email || !token) {
+		res.redirect('/login');
+		return;
+	}
+	// check token
+	sqlAdapter.query(`SELECT email FROM userinfo WHERE email='${email}' AND token='${token}' AND lastlogin >= DATE_SUB(NOW(), INTERVAL 1 HOUR)`,
+		function (success, result) {
+			if (success == false || result.length != 1) {
+				res.redirect('/login');
+			}
+			else {
+				res.render('setting/connectivity', { email: email });
+			}
+		})
+});
 
 module.exports = router;

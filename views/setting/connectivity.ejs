@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Connectivity</title>
+  <!-- plugins:css -->
+  <link rel="stylesheet" href="../../vendors/feather/feather.css">
+  <link rel="stylesheet" href="../../vendors/mdi/css/materialdesignicons.min.css">
+  <link rel="stylesheet" href="../../vendors/ti-icons/css/themify-icons.css">
+  <link rel="stylesheet" href="../../vendors/typicons/typicons.css">
+  <link rel="stylesheet" href="../../vendors/simple-line-icons/css/simple-line-icons.css">
+  <link rel="stylesheet" href="../../vendors/css/vendor.bundle.base.css">
+  <!-- endinject -->
+  <!-- Plugin css for this page -->
+  <link rel="stylesheet" href="../../vendors/select2/select2.min.css">
+  <link rel="stylesheet" href="../../vendors/select2-bootstrap-theme/select2-bootstrap.min.css">
+  <!-- End plugin css for this page -->
+  <!-- inject:css -->
+  <link rel="stylesheet" href="../../css/vertical-layout-light/style.css">
+  <!-- endinject -->
+  <link rel="shortcut icon" href="../../images/logo.png" />
+</head>
+
+<body>
+  <div class="container-scroller">
+
+    <!-- partial:partials/_navbar.html -->
+    <%- include('../partials/navbar') %>
+
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+
+        <!-- partial:partials/_settings-panel.html -->
+        <%- include('../partials/settings-panel') %>
+
+          <!-- partial:partials/_sidebar.html -->
+          <%- include('../partials/sidebar') %>
+
+            <!-- partial -->
+            <div class="main-panel">
+              <div class="content-wrapper">
+                <div class="row">
+
+
+                  <div class="col-md-6 grid-margin stretch-card">
+                    <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title">Arduino</h4>
+                        <p class="card-description">Connect to Arduino via Serial Port</p>
+                        <div class="form-group">
+                          <label for="portSelect">Port</label>
+                          <select class="form-control" id="portSelect">
+                          </select>
+                        </div>
+                        <button id="button-refesh" type="button" class="btn btn-sm btn-warning btn-icon-text">
+                          <i class="ti-reload btn-icon-prepend"></i>
+                          Refesh
+                        </button>
+                        <div class="template-demo">
+                          <button id="button-connect" type="button" class="btn btn-primary btn-fw">Connect</button>
+                          <!-- <button type="button" class="btn btn-secondary btn-rounded btn-fw">Secondary</button>
+                          <button type="button" class="btn btn-success btn-rounded btn-fw">Success</button>
+                          <button type="button" class="btn btn-danger btn-rounded btn-fw">Danger</button>
+                          <button type="button" class="btn btn-warning btn-rounded btn-fw">Warning</button>
+                          <button type="button" class="btn btn-info btn-rounded btn-fw">Info</button>
+                          <button type="button" class="btn btn-light btn-rounded btn-fw">Light</button>
+                          <button type="button" class="btn btn-dark btn-rounded btn-fw">Dark</button>
+                          <button type="button" class="btn btn-link btn-rounded btn-fw">Link</button> -->
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+              <!-- content-wrapper ends -->
+
+              <!-- partial:../../partials/_footer.html -->
+              <%- include('../partials/footer') %>
+              <!-- partial -->
+
+            </div>
+            <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+  </div>
+  <!-- container-scroller -->
+  <!-- plugins:js -->
+  <script src="../../vendors/js/vendor.bundle.base.js"></script>
+  <!-- endinject -->
+  <!-- Plugin js for this page -->
+  <script src="../../vendors/typeahead.js/typeahead.bundle.min.js"></script>
+  <script src="../../vendors/select2/select2.min.js"></script>
+  <script src="../../vendors/bootstrap-datepicker/bootstrap-datepicker.min.js"></script>
+  <!-- End plugin js for this page -->
+  <!-- inject:js -->
+  <script src="../../js/off-canvas.js"></script>
+  <script src="../../js/hoverable-collapse.js"></script>
+  <script src="../../js/template.js"></script>
+  <script src="../../js/settings.js"></script>
+  <script src="../../js/todolist.js"></script>
+  <!-- endinject -->
+  <!-- Custom js for this page-->
+  <script src="../../js/file-upload.js"></script>
+  <script src="../../js/typeahead.js"></script>
+  <script src="../../js/select2.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="../../js/connectivity.js"></script>
+  <!-- End custom js for this page-->
+</body>
+
+</html>

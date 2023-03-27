@@ -16,6 +16,8 @@ var port = process.env.PORT || 80;
 
 // get data from system
 var systemManager = require('./modules/systemManager');
+var serialPortAdapter = require('./modules/serialPortAdapter');
+var bindings = require("@serialport/bindings");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -54,15 +56,16 @@ sqlAdapter.connect()
 // client list
 var clientList = require('./modules/clientList')
 
-function user_login(email, id, ip) {
+function user_login(email, page, id, ip) {
 	email = sqlAdapter.removeSpecialCharacter(email);
+	page = sqlAdapter.removeSpecialCharacter(page);
 	id = sqlAdapter.removeSpecialCharacter(id);
 	ip = sqlAdapter.removeSpecialCharacter(ip);
-	if (!email || !id || !ip) {
+	if (!email || !page || !id || !ip) {
 		return;
 	}
-	console.log('[App.js] User "' + email + '" logged in!')
-	clientList.add(email, id, ip)
+	console.log('[App.js] User "' + email + '" logged in ' + page + '!')
+	clientList.add(email, page, id, ip)
 	clientList.printList()
 	// save login history  to sql
 	sqlAdapter.query(`INSERT INTO loginhistory (time, type, email, ip) VALUES(NOW(), ${sqlAdapter.EventType.LOG_IN}, '${email}', '${ip}')`,
@@ -79,11 +82,12 @@ function user_logout(id) {
 		return
 	}
 	let email = sqlAdapter.removeSpecialCharacter(data.email);
+	let page = sqlAdapter.removeSpecialCharacter(data.page);
 	let ip = sqlAdapter.removeSpecialCharacter(data.ip);
-	if (!email || !ip) {
+	if (!email || !page || !ip) {
 		return;
 	}
-	console.log('[App.js] User "' + email + '" logged out!')
+	console.log('[App.js] User "' + email + '" logged out ' + page + '!')
 	clientList.printList()
 	// save logout history  to sql
 	sqlAdapter.query(`INSERT INTO loginhistory (time, type, email, ip) VALUES(NOW(), ${sqlAdapter.EventType.LOG_OUT}, '${email}', '${ip}')`,
@@ -118,11 +122,23 @@ function updateLoginHistoryTable(io, socket, email) {
 		});
 }
 
+function sendDataToClientInPage(io, socket, page, event, data) {
+	if (!io || !socket || !page) {
+		return;
+	}
+	let index = clientList.list.findIndex(element => element.page === page)
+	if (index >= 0) {
+		io.to(socket.id).emit(event, data);
+	}
+}
+
 function sendDataInterval(io, socket) {
-	io.to(socket.id).emit('cpu usage', systemManager.getCPUUsage());
-	io.to(socket.id).emit('mem usage', systemManager.getMemoryUsage());
-	io.to(socket.id).emit('total mem usage', systemManager.getTotalMemoryUsage());
-	io.to(socket.id).emit('total mem', systemManager.getTotalMemory());
+	// io.to(socket.id).emit('cpu usage', systemManager.getCPUUsage());
+	// io.to(socket.id).emit('mem usage', systemManager.getMemoryUsage());
+	// io.to(socket.id).emit('total mem usage', systemManager.getTotalMemoryUsage());
+	// io.to(socket.id).emit('total mem', systemManager.getTotalMemory());
+
+	sendDataToClientInPage(io, socket, 'connectivity', 'port status', { status: serialPortAdapter.isConnected() });
 }
 
 // new connection to server
@@ -135,12 +151,13 @@ io.on('connection', function (socket) {
 	});
 
 	// user logged in
-	socket.on('login', function (email) {
-		email = sqlAdapter.removeSpecialCharacter(email);
-		if (!email) {
+	socket.on('login', function (data) {
+		let email = sqlAdapter.removeSpecialCharacter(data.email);
+		let page = sqlAdapter.removeSpecialCharacter(data.page);
+		if (!email || !page) {
 			return
 		}
-		user_login(email, socket.id, socket.handshake.address)
+		user_login(email, page, socket.id, socket.handshake.address)
 		// send data to client
 		sqlAdapter.query(`SELECT firstname, lastname FROM userinfo WHERE email='${email}'`,
 			function (success, result) {
@@ -172,9 +189,40 @@ io.on('connection', function (socket) {
 		updateLoginHistoryTable(io, socket, email);
 	});
 
+	socket.on('req portlist', function (email) {
+		bindings.list()
+			.then(function (data) {
+				let list = [];
+				data.forEach(element => {
+					let description = '';
+					if (element.locationId) {
+						description += element.locationId + ' ';
+					}
+					if (element.manufacturer) {
+						description += element.manufacturer;
+					}
+					list.push({ path: element.path, description: description })
+				});
+				io.to(socket.id).emit('update portlist', list);
+			})
+			.catch(function (error) {
+				console.log('[App.js][ERROR] Cannot read Port List\n\tError: ' + error);
+			})
+	});
+
+	socket.on('req connect', function (data) {
+		let email = sqlAdapter.removeSpecialCharacter(data.email);
+		let port = sqlAdapter.removeSpecialCharacter(data.port);
+		if (!email || !port) {
+			return
+		}
+		console.log('Request connect to ' + port + ' from user ' + data.email);
+		serialPortAdapter.connect(port);
+	});
+
 	let interval = setInterval(function () {
 		sendDataInterval(io, socket);
-	}, 5000);
+	}, 1000);
 });
 
 

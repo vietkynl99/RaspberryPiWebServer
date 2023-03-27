@@ -1,19 +1,22 @@
+const configShowList = false;
 var list = new Array();
 
 function printList() {
 	if (list.length == 0) {
-		console.log('[ClientList] There are no client!')
+		console.log('[ClientList] There are no client')
 	}
 	else {
-		console.log('[ClientList] There are ' + list.length + ' client:')
-		list.forEach(function (data, index) {
-			console.log('\t' + (index + 1) + '. email=' + data.email + ' id=' + data.id + ' ip=' + data.ip)
-		})
+		console.log('[ClientList] There are ' + list.length + ' client')
+		if (configShowList) {
+			list.forEach(function (data, index) {
+				console.log('\t' + (index + 1) + '. email=' + data.email + ' page=' + data.page + ' id=' + data.id + ' ip=' + data.ip)
+			})
+		}
 	}
 }
 
-function add(email, id, ip) {
-	list.push({ email: email, id: id, ip: ip })
+function add(email, page, id, ip) {
+	list.push({ email: email, page: page, id: id, ip: ip })
 }
 
 function removeId(id) {
@@ -30,6 +33,7 @@ function removeId(id) {
 }
 
 module.exports = {
+	list,
 	add,
 	removeId,
 	printList
