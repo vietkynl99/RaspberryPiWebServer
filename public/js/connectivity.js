@@ -26,7 +26,10 @@
         });
 
         socket.on('update portlist', function (data) {
-            updatePortList(data)
+            updatePortList(data);
+            let button = document.getElementById('button-refesh');
+            button.innerHTML = `<i class="ti-reload btn-icon-prepend"></i>Refesh`;
+            button.disabled = false;
         });
 
         socket.on('port status', function (data) {
@@ -39,6 +42,9 @@
 
         $("#button-refesh").click(function () {
             document.getElementById('portSelect').innerHTML = '';
+            let button = document.getElementById('button-refesh');
+            button.innerHTML = `<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span> Refeshing...`;
+            button.disabled = true;
             socket.emit('req portlist', email);
         });
 

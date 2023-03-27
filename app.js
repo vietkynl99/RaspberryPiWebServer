@@ -190,24 +190,26 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('req portlist', function (email) {
-		bindings.list()
-			.then(function (data) {
-				let list = [];
-				data.forEach(element => {
-					let description = '';
-					if (element.locationId) {
-						description += element.locationId + ' ';
-					}
-					if (element.manufacturer) {
-						description += element.manufacturer;
-					}
-					list.push({ path: element.path, description: description })
-				});
-				io.to(socket.id).emit('update portlist', list);
-			})
-			.catch(function (error) {
-				console.log('[App.js][ERROR] Cannot read Port List\n\tError: ' + error);
-			})
+		setTimeout(() => {
+			bindings.list()
+				.then(function (data) {
+					let list = [];
+					data.forEach(element => {
+						let description = '';
+						if (element.locationId) {
+							description += element.locationId + ' ';
+						}
+						if (element.manufacturer) {
+							description += element.manufacturer;
+						}
+						list.push({ path: element.path, description: description })
+					});
+					io.to(socket.id).emit('update portlist', list);
+				})
+				.catch(function (error) {
+					console.log('[App.js][ERROR] Cannot read Port List\n\tError: ' + error);
+				})
+		}, 500);
 	});
 
 	socket.on('req connect', function (data) {
