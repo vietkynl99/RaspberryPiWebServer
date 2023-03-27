@@ -1,6 +1,10 @@
 var mysql = require('mysql');
 var sqlcon = undefined;
 
+const UserPermission = {
+	ADMIN: 1,
+    USER: 2
+}
 const EventType = {
 	LOG_IN: 0,
 	LOG_OUT: 1,
@@ -47,6 +51,7 @@ function query(query, callback) {
 
 
 module.exports = {
+	UserPermission,
 	EventType,
 	removeSpecialCharacter,
 	connect,
