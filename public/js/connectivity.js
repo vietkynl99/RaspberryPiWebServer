@@ -44,8 +44,10 @@
         });
 
         socket.on('port status', function (data) {
-            console.log('get port status', data);
             if(data) {
+                if(data.status === 'error') {
+                    AlertBox(data.error);
+                }
                 updatePortStatus(data.status);
             }
         });

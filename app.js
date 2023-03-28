@@ -233,8 +233,8 @@ io.on('connection', function (socket) {
 				function closeCallback() {
 					io.to(socket.id).emit('port status', { status: serialPortAdapter.isConnected() });
 				},
-				function errorCallback(err) {
-					io.to(socket.id).emit('port status', { status: 'error', err: err });
+				function errorCallback(path, error) {
+					io.to(socket.id).emit('port status', { status: 'error', error: error });
 				});
 		}, 500);
 	});

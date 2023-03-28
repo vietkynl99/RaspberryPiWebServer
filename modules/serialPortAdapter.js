@@ -54,9 +54,9 @@ function connectSerialPort(comPort, openCallback, closeCallback, errorCallback, 
         closeCallback(port.path);
     });
 
-    port.on('error', (err) => {
-        console.log('[SerialPortAdapter] Error ' + port.path + ': ', err.message);
-        errorCallback(port.path, err);
+    port.on('error', (error) => {
+        console.log('[SerialPortAdapter] Error ' + port.path + ': ', error.message);
+        errorCallback(port.path, error.message);
     });
 
     port.on('data', function (data) {
