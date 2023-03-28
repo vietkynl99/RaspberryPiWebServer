@@ -210,6 +210,17 @@ io.on('connection', function (socket) {
 						}
 						list.push({ path: element.path, description: description })
 					});
+					list.sort(function (a, b) {
+						if (a.path < b.path) {
+							return -1;
+						}
+						else if (a.path > b.path) {
+							return 1;
+						}
+						else {
+							return 0;
+						}
+					})
 					io.to(socket.id).emit('update portlist', list);
 				})
 				.catch(function (error) {
