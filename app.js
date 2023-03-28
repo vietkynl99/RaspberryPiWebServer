@@ -172,6 +172,7 @@ io.on('connection', function (socket) {
 
 		switch (page) {
 			case 'home':
+				// chart
 				let chartId = 'performance-line';
 				let chartLabel = 'Memory used';
 				let ChartXData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
@@ -179,6 +180,11 @@ io.on('connection', function (socket) {
 				io.to(socket.id).emit('update chart', { id: chartId, label: chartLabel, xData: ChartXData, yData: ChartYData });
 				break;
 			case 'connectivity':
+				// port list
+				serialPortAdapter.getPortList(function (list) {
+					io.to(socket.id).emit('update portlist', list);
+				})
+				// port status
 				io.to(socket.id).emit('port status', { status: serialPortAdapter.isConnected() });
 				break;
 			default:
@@ -196,7 +202,7 @@ io.on('connection', function (socket) {
 
 	socket.on('req portlist', function (email) {
 		setTimeout(() => {
-			serialPortAdapter.getPortList(function(list) {
+			serialPortAdapter.getPortList(function (list) {
 				io.to(socket.id).emit('update portlist', list);
 			})
 		}, 500);

@@ -27,7 +27,6 @@
         // ===============================================================================================
         socket.on('connect', function () {
             socket.emit('login', { email: email, page: 'connectivity' });
-            socket.emit('req portlist', email);
         });
 
         socket.on('user info', function (data) {
