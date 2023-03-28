@@ -22,6 +22,10 @@
   <link rel="stylesheet" href="../../css/vertical-layout-light/style.css">
   <!-- endinject -->
   <link rel="shortcut icon" href="../../images/logo.png" />
+  <!-- Custom for this page -->
+  <link rel="stylesheet" href="../../css/connectivity.css">
+  <link rel="stylesheet" href="../../fonts/font-awesome/css/font-awesome.min.css">
+  <!-- end custom -->
 </head>
 
 <body>
@@ -43,24 +47,25 @@
             <div class="main-panel">
               <div class="content-wrapper">
                 <div class="row">
-
-
                   <div class="col-md-6 grid-margin stretch-card">
                     <div class="card">
-                    <div class="card-body">
+                      <div class="card-body">
                         <h4 class="card-title">Arduino</h4>
                         <p class="card-description">Connect to Arduino via Serial Port</p>
                         <div class="form-group">
-                          <label for="portSelect">Port</label>
-                          <select class="form-control" id="portSelect">
-                          </select>
+                          <label for="portSelect">Port:</label>
+                          <i id="icon-refesh" class="fa fa-refresh" style="font-size:14px"></i>
+                          <select class="form-control" id="portSelect"></select>
                         </div>
-                        <button id="button-refesh" type="button" class="btn btn-sm btn-warning btn-icon-text">
-                          <i class="ti-reload btn-icon-prepend"></i>
-                          Refesh
-                        </button>
-                        <div class="template-demo">
-                          <button id="button-connect" type="button" class="btn btn-primary btn-fw">Connect</button>
+                        <div class="form-group">
+                          <div id="port-status">
+                            <p>Status:</p>
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <div class="template-demo">
+                            <button id="button-connect" type="button" class="btn btn-primary btn-fw">Connect</button>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -72,7 +77,7 @@
 
               <!-- partial:../../partials/_footer.html -->
               <%- include('../partials/footer') %>
-              <!-- partial -->
+                <!-- partial -->
 
             </div>
             <!-- main-panel ends -->

@@ -4,6 +4,11 @@
 
         // ===============================================================================================
 
+        var socket = io();
+        var email = document.getElementById("navbar_email").textContent.trim();
+        var portStatus = false;
+        // ===============================================================================================
+
         function updatePortList(PortList) {
             let html = '';
             PortList.forEach(element => {
@@ -11,11 +16,18 @@
             });
             document.getElementById('portSelect').innerHTML = html;
         }
-        // ===============================================================================================
 
-        var email = document.getElementById("navbar_email").textContent.trim();
-        // conntec to socket
-        var socket = io();
+        function updatePortStatus(status) {
+            if (status === true) {
+                document.getElementById('port-status').innerHTML = `<p>Status: <span class="text-success">Connected</span></p>`;
+
+            }
+            else {
+                document.getElementById('port-status').innerHTML = `<p>Status: <span class="text-danger">Disconnected</span></p>`;
+
+            }
+        }
+        // ===============================================================================================
         socket.on('connect', function () {
             socket.emit('login', { email: email, page: 'connectivity' });
             socket.emit('req portlist', email);
@@ -27,24 +39,42 @@
 
         socket.on('update portlist', function (data) {
             updatePortList(data);
-            let button = document.getElementById('button-refesh');
-            button.innerHTML = `<i class="ti-reload btn-icon-prepend"></i>Refesh`;
-            button.disabled = false;
+            $("#icon-refesh").removeClass("fast-spin");
         });
 
         socket.on('port status', function (data) {
-            console.log(data);
+            console.log('get port status', data);
+            if (data.status === true) {
+                portStatus = true;
+                document.getElementById('port-status').innerHTML = `<p>Status: <span class="text-success">Connected</span></p>`;
+                document.getElementById('button-connect').textContent = 'Disconnect';
+                document.getElementById('button-connect').disabled = false;
+            }
+            else {
+                portStatus = false;
+                document.getElementById('port-status').innerHTML = `<p>Status: <span class="text-danger">Disconnected</span></p>`;
+                document.getElementById('button-connect').textContent = 'Connect';
+                document.getElementById('button-connect').disabled = false;
+            }
         });
 
         $("#button-connect").click(function () {
-            socket.emit('req connect', { email: email, port: $('#portSelect').val() });
+            let button = document.getElementById('button-connect');
+            if (portStatus) {
+                button.textContent = 'Disconnecting...';
+                button.disabled = true;
+                socket.emit('req disconnect', { email: email });
+            }
+            else {
+                button.textContent = 'Connecting...';
+                button.disabled = true;
+                socket.emit('req connect', { email: email, port: $('#portSelect').val() });
+            }
         });
 
-        $("#button-refesh").click(function () {
+        $("#icon-refesh").click(function () {
             document.getElementById('portSelect').innerHTML = '';
-            let button = document.getElementById('button-refesh');
-            button.innerHTML = `<span class='spinner-border spinner-border-sm' role='status' aria-hidden='true'></span> Refeshing...`;
-            button.disabled = true;
+            $("#icon-refesh").addClass("fast-spin");
             socket.emit('req portlist', email);
         });
 

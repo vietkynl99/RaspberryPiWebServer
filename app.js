@@ -137,8 +137,7 @@ function sendDataInterval(io, socket) {
 	// io.to(socket.id).emit('mem usage', systemManager.getMemoryUsage());
 	// io.to(socket.id).emit('total mem usage', systemManager.getTotalMemoryUsage());
 	// io.to(socket.id).emit('total mem', systemManager.getTotalMemory());
-
-	sendDataToClientInPage(io, socket, 'connectivity', 'port status', { status: serialPortAdapter.isConnected() });
+	// sendDataToClientInPage(io, socket, 'connectivity', 'port status', { status: serialPortAdapter.isConnected() });
 }
 
 // new connection to server
@@ -172,13 +171,20 @@ io.on('connection', function (socket) {
 				}
 			});
 
-		let chartId = 'performance-line';
-		let chartLabel = 'Memory used';
-		let ChartXData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
-		let ChartYData = [100, 500, 300, 400, 900, 500, 700, 600, 600, 700];
-		io.to(socket.id).emit('update chart', { id: chartId, label: chartLabel, xData: ChartXData, yData: ChartYData });
-
-		sendDataInterval(io, socket);
+		switch (page) {
+			case 'home':
+				let chartId = 'performance-line';
+				let chartLabel = 'Memory used';
+				let ChartXData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+				let ChartYData = [100, 500, 300, 400, 900, 500, 700, 600, 600, 700];
+				io.to(socket.id).emit('update chart', { id: chartId, label: chartLabel, xData: ChartXData, yData: ChartYData });
+				break;
+			case 'connectivity':
+				io.to(socket.id).emit('port status', { status: serialPortAdapter.isConnected() });
+				break;
+			default:
+				break;
+		}
 	});
 
 	socket.on('req loginhistory', function (email) {
@@ -213,18 +219,40 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('req connect', function (data) {
-		let email = sqlAdapter.removeSpecialCharacter(data.email);
-		let port = sqlAdapter.removeSpecialCharacter(data.port);
-		if (!email || !port) {
-			return
-		}
-		console.log('Request connect to ' + port + ' from user ' + data.email);
-		serialPortAdapter.connect(port);
+		setTimeout(() => {
+			let email = sqlAdapter.removeSpecialCharacter(data.email);
+			let port = sqlAdapter.removeSpecialCharacter(data.port);
+			if (!email || !port) {
+				return
+			}
+			console.log('[App.js] Request connect to ' + port + ' from user ' + email);
+			serialPortAdapter.connect(port,
+				function openCallback() {
+					io.to(socket.id).emit('port status', { status: serialPortAdapter.isConnected() });
+				},
+				function closeCallback() {
+					io.to(socket.id).emit('port status', { status: serialPortAdapter.isConnected() });
+				},
+				function errorCallback(err) {
+					io.to(socket.id).emit('port status', { status: 'error', err: err });
+				});
+		}, 500);
 	});
 
-	let interval = setInterval(function () {
-		sendDataInterval(io, socket);
-	}, 1000);
+	socket.on('req disconnect', function (data) {
+		setTimeout(() => {
+			let email = sqlAdapter.removeSpecialCharacter(data.email);
+			if (!email) {
+				return
+			}
+			console.log('[App.js] Request disconnect to from user ' + email);
+			serialPortAdapter.disconnect();
+		}, 500);
+	});
+
+	// let interval = setInterval(function () {
+	// 	sendDataInterval(io, socket);
+	// }, 1000);
 });
 
 
