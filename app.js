@@ -17,7 +17,6 @@ var port = process.env.PORT || 80;
 // get data from system
 var systemManager = require('./modules/systemManager');
 var serialPortAdapter = require('./modules/serialPortAdapter');
-var bindings = require("@serialport/bindings");
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -197,35 +196,9 @@ io.on('connection', function (socket) {
 
 	socket.on('req portlist', function (email) {
 		setTimeout(() => {
-			bindings.list()
-				.then(function (data) {
-					let list = [];
-					data.forEach(element => {
-						let description = '';
-						if (element.locationId) {
-							description += element.locationId + ' ';
-						}
-						if (element.manufacturer) {
-							description += element.manufacturer;
-						}
-						list.push({ path: element.path, description: description })
-					});
-					list.sort(function (a, b) {
-						if (a.path < b.path) {
-							return -1;
-						}
-						else if (a.path > b.path) {
-							return 1;
-						}
-						else {
-							return 0;
-						}
-					})
-					io.to(socket.id).emit('update portlist', list);
-				})
-				.catch(function (error) {
-					console.log('[App.js][ERROR] Cannot read Port List\n\tError: ' + error);
-				})
+			serialPortAdapter.getPortList(function(list) {
+				io.to(socket.id).emit('update portlist', list);
+			})
 		}, 500);
 	});
 

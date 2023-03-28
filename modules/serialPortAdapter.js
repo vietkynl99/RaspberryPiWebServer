@@ -1,4 +1,5 @@
 var SerialPort = require('serialport').SerialPort;
+var bindings = require("@serialport/bindings");
 
 const configBaudRate = 115200;
 
@@ -13,6 +14,38 @@ var port = new SerialPort({
 port.on('error', (err) => {
     console.log('[SerialPortAdapter] Error ' + port.path + ': ', err.message);
 });
+
+function getPortList(successCallback) {
+    bindings.list()
+        .then(function (data) {
+            let list = [];
+            data.forEach(element => {
+                let description = '';
+                if (element.locationId) {
+                    description += element.locationId + ' ';
+                }
+                if (element.manufacturer) {
+                    description += element.manufacturer;
+                }
+                list.push({ path: element.path, description: description })
+            });
+            list.sort(function (a, b) {
+                if (a.path < b.path) {
+                    return -1;
+                }
+                else if (a.path > b.path) {
+                    return 1;
+                }
+                else {
+                    return 0;
+                }
+            })
+            successCallback(list);
+        })
+        .catch(function (error) {
+            console.log('[SerialPortAdapter][ERROR] Cannot read Port List\n\tError: ' + error);
+        })
+}
 
 function connect(comPort, openCallback, closeCallback, errorCallback, dataCallback) {
     if (!comPort) {
@@ -83,6 +116,7 @@ function isConnected() {
 }
 
 module.exports = {
+    getPortList,
     isConnected,
     connect,
     disconnect
