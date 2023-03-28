@@ -3,6 +3,11 @@
   	animation: fa-spin 1s infinite linear;
   }
 
+  .fa-refresh {
+  	cursor: pointer;
+  	color: #172D88;
+  }
+
   .log-box {
   	position: fixed;
   	right: 50px;
