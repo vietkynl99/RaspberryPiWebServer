@@ -181,11 +181,9 @@ io.on('connection', function (socket) {
 				break;
 			case 'connectivity':
 				// port list
-				serialPortAdapter.getPortList(function (list) {
-					io.to(socket.id).emit('update portlist', list);
-				})
+				sendPortList(io, socket);
 				// port status
-				io.to(socket.id).emit('port status', { status: serialPortAdapter.isConnected() });
+				sendPortStatus(io, socket);
 				break;
 			default:
 				break;
@@ -202,9 +200,7 @@ io.on('connection', function (socket) {
 
 	socket.on('req portlist', function (email) {
 		setTimeout(() => {
-			serialPortAdapter.getPortList(function (list) {
-				io.to(socket.id).emit('update portlist', list);
-			})
+			sendPortList(io, socket);
 		}, 500);
 	});
 
@@ -218,13 +214,14 @@ io.on('connection', function (socket) {
 			console.log('[App.js] Request connect to ' + port + ' from user ' + email);
 			serialPortAdapter.connect(port,
 				function openCallback() {
-					io.to(socket.id).emit('port status', { status: serialPortAdapter.isConnected() });
+					sendPortStatus(io, socket);
 				},
 				function closeCallback() {
-					io.to(socket.id).emit('port status', { status: serialPortAdapter.isConnected() });
+					sendPortStatus(io, socket);
 				},
 				function errorCallback(path, error) {
-					io.to(socket.id).emit('port status', { status: 'error', error: error });
+					sendPortStatus(io, socket);
+					sendAlert(io, socket, 'error', error);
 				});
 		}, 500);
 	});
@@ -249,3 +246,22 @@ io.on('connection', function (socket) {
 http.listen(port, function () {
 	console.log('Server started on port:' + port);
 });
+
+function sendPortList(io, socket,) {
+	serialPortAdapter.getPortList(function (list) {
+		if (serialPortAdapter.isConnected()) {
+			io.to(socket.id).emit('update portlist', { list: list, path: serialPortAdapter.getPath() });
+		}
+		else {
+			io.to(socket.id).emit('update portlist', { list: list });
+		}
+	})
+}
+
+function sendPortStatus(io, socket) {
+	io.to(socket.id).emit('port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath() });
+}
+
+function sendAlert(io, socket, type, message) {
+	io.to(socket.id).emit('alert', { type: type, message: message });
+}

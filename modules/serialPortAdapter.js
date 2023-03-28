@@ -115,9 +115,14 @@ function isConnected() {
     return port.isOpen;
 }
 
+function getPath() {
+    return port.path;
+}
+
 module.exports = {
     getPortList,
-    isConnected,
     connect,
-    disconnect
+    disconnect,
+    isConnected,
+    getPath
 };
