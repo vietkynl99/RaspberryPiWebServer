@@ -81,22 +81,22 @@ function connectSerialPort(comPort, openCallback, closeCallback, errorCallback, 
     });
     port.on('open', () => {
         uilog.log(uilog.Level.SERIALPORT, 'Port ' + port.path + ' is open!');
-        openCallback(port.path);
+        openCallback();
     });
 
     port.on('close', () => {
         uilog.log(uilog.Level.SERIALPORT, 'Port ' + port.path + ' is closed!');
-        closeCallback(port.path);
+        closeCallback();
     });
 
     port.on('error', (error) => {
         uilog.log(uilog.Level.ERROR, 'Error ' + port.path + ': ' + error.message);
-        errorCallback(port.path, error.message);
+        errorCallback(error.message);
     });
 
     port.on('data', function (data) {
         // uilog.log(uilog.Level.SERIALPORT, data.toString());
-        dataCallback(port.path, data);
+        dataCallback(data);
     });
 }
 

@@ -215,17 +215,17 @@ io.on('connection', function (socket) {
 			}
 			uilog.log(uilog.Level.SYSTEM, 'Request connect to ' + port + ' from user ' + email);
 			serialPortAdapter.connect(port,
-				function openCallback(path) {
+				function openCallback() {
 					sendPortStatus(true);
 				},
-				function closeCallback(path) {
+				function closeCallback() {
 					sendPortStatus(true);
 				},
-				function errorCallback(path, error) {
+				function errorCallback(error) {
 					sendDataToClient(socket.id, 'alert', { type: 'error', message: error });
 					sendPortStatus(true);
 				},
-				function dataCallback(path, data) {
+				function dataCallback(data) {
 					uilog.log(uilog.Level.SERIALPORT, data);
 				});
 		}, 500);
