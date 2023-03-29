@@ -53,6 +53,21 @@ app.use(function (err, req, res, next) {
 var sqlAdapter = require('./modules/sqlAdapter')
 sqlAdapter.connect()
 
+function readOldSetting() {
+	sqlAdapter.query(`SELECT * FROM setting`,
+		function (success, result) {
+			if (success == false) {
+				uilog.log(uilog.Level.ERROR, 'SQL query error')
+			}
+			else {
+				uilog.log(uilog.Level.SQL, 'old setting: ');
+				uilog.log(uilog.Level.SQL, result);
+			}
+		});
+}
+
+readOldSetting();
+
 // client list
 var clientList = require('./modules/clientList')
 

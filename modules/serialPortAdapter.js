@@ -3,6 +3,7 @@ var SerialPort = require('serialport').SerialPort;
 var bindings = require("@serialport/bindings");
 
 const configBaudRate = 115200;
+var autoConnect = false;
 
 var port = new SerialPort({
     path: 'COM0',
@@ -122,6 +123,7 @@ function getPath() {
 }
 
 module.exports = {
+    autoConnect,
     getPortList,
     connect,
     disconnect,
