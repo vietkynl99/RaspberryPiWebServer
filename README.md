@@ -29,6 +29,7 @@ sử dụng mysql làm cơ sở dữ liệu để lưu trữ thông tin của c�
 3. Tạo database cho hệ thống:
 
 	$ cd database
+	
 	$ node createDatabase.js
 
 5. Khởi chạy server:
