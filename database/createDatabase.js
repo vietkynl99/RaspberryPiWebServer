@@ -1,4 +1,5 @@
 // connect to database
+var uilog = require('../modules/uiLog')
 var sqlAdapter = require('../modules/sqlAdapter')
 sqlAdapter.connect()
 
@@ -18,14 +19,14 @@ fs.readFile('kynlweb.sql', (err, data) => {
 
     for (let i = 0; i < queryArray.length; i++) {
         let query = queryArray[i].trim();
-        // console.log('\n' + (i + 1) + '. ' + query);
+        // uilog.log(uilog.Level.SQL, '\n' + (i + 1) + '. ' + query);
         sqlAdapter.query(query, function (success, result) {
             if (success == false) {
-                console.log('\n[ERROR] SQL query error: index=' + (i+1) + ' query=' + query);
+                uilog.log(uilog.Level.ERROR, 'SQL query error: index=' + (i + 1) + ' query=' + query);
                 process.exit()
             }
             if (i === queryArray.length - 1) {
-                console.log('\nExecute ' + queryArray.length + ' queries successfully!!');
+                uilog.log(uilog.Level.SQL, 'Execute ' + queryArray.length + ' queries successfully!!');
                 process.exit()
             }
         })

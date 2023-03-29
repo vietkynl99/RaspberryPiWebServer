@@ -1,3 +1,4 @@
+var uilog = require('../modules/uiLog')
 var mysql = require('mysql');
 var sqlcon = undefined;
 
@@ -30,17 +31,17 @@ function connect() {
 	});
 	sqlcon.connect((error) => {
 		if (error) {
-			console.log('[SqlAdapter][ERROR] Cannot connect to database: ' + error)
+			uilog.log(uilog.Level.ERROR, 'Cannot connect to database: ' + error)
 			throw error
 		}
-		console.log('[SqlAdapter] Database connected!')
+		uilog.log(uilog.Level.SQL, 'Database connected!')
 	});
 }
 
 function query(query, callback) {
 	sqlcon.query(query, (error, result) => {
 		if (error) {
-			console.log(`[SqlAdapter][ERROR] Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
+			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
 			callback(false, undefined)
 		}
 		else {

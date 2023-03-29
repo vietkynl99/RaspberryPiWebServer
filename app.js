@@ -14,7 +14,8 @@ var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 80;
 
-// get data from system
+// plugin
+var uilog = require('./modules/uiLog')
 var systemManager = require('./modules/systemManager');
 var serialPortAdapter = require('./modules/serialPortAdapter');
 
@@ -63,14 +64,14 @@ function user_login(email, page, id, ip) {
 	if (!email || !page || !id || !ip) {
 		return;
 	}
-	console.log('[App.js] User "' + email + '" logged in ' + page + '!')
+	uilog.log(uilog.Level.SYSTEM, 'User "' + email + '" logged in ' + page + '!')
 	clientList.add(email, page, id, ip)
 	clientList.printList()
 	// save login history  to sql
 	sqlAdapter.query(`INSERT INTO loginhistory (time, type, email, ip) VALUES(NOW(), ${sqlAdapter.EventType.LOG_IN}, '${email}', '${ip}')`,
 		function (success, result) {
 			if (success == false) {
-				console.log('[App.js][ERROR] SQL query error')
+				uilog.log(uilog.Level.ERROR, 'SQL query error')
 			}
 		});
 }
@@ -86,13 +87,13 @@ function user_logout(id) {
 	if (!email || !page || !ip) {
 		return;
 	}
-	console.log('[App.js] User "' + email + '" logged out ' + page + '!')
+	uilog.log(uilog.Level.SYSTEM, 'User "' + email + '" logged out ' + page + '!')
 	clientList.printList()
 	// save logout history  to sql
 	sqlAdapter.query(`INSERT INTO loginhistory (time, type, email, ip) VALUES(NOW(), ${sqlAdapter.EventType.LOG_OUT}, '${email}', '${ip}')`,
 		function (success, result) {
 			if (success == false) {
-				console.log('[App.js][ERROR] SQL query error')
+				uilog.log(uilog.Level.ERROR, 'SQL query error')
 			}
 		});
 }
@@ -101,10 +102,10 @@ function updateLoginHistoryTable(id, email) {
 	sqlAdapter.query(`SELECT * FROM loginhistory WHERE email='${email}' ORDER BY id DESC LIMIT 10`,
 		function (success, result) {
 			if (success == false) {
-				console.log('[App.js][ERROR] SQL query error')
+				uilog.log(uilog.Level.ERROR, 'SQL query error')
 			}
 			else if (result.length <= 0) {
-				console.log('[App.js][ERROR] Cannot find data of user "' + email + '"')
+				uilog.log(uilog.Level.ERROR, 'Cannot find data of user "' + email + '"')
 			}
 			else {
 				let data = [];
@@ -142,7 +143,7 @@ function sendDataToAllClientInPage(page, event, data) {
 
 // new connection to server
 io.on('connection', function (socket) {
-	// console.log('Address [' + socket.handshake.address + '] ID [' + socket.id + '] connected')
+	// uilog.log(uilog.Level.SYSTEM, 'Address [' + socket.handshake.address + '] ID [' + socket.id + '] connected')
 
 	// client disconnect
 	socket.on('disconnect', function () {
@@ -161,10 +162,10 @@ io.on('connection', function (socket) {
 		sqlAdapter.query(`SELECT firstname, lastname FROM userinfo WHERE email='${email}'`,
 			function (success, result) {
 				if (success == false) {
-					console.log('[App.js][ERROR] SQL query error')
+					uilog.log(uilog.Level.ERROR, 'SQL query error')
 				}
 				else if (result.length <= 0) {
-					console.log('[App.js][ERROR] Cannot find data of user "' + email + '"')
+					uilog.log(uilog.Level.ERROR, 'Cannot find data of user "' + email + '"')
 				}
 				else {
 					sendDataToClient(socket.id, 'user info', { name: result[0].firstname + ' ' + result[0].lastname });
@@ -212,7 +213,7 @@ io.on('connection', function (socket) {
 			if (!email || !port) {
 				return
 			}
-			console.log('[App.js] Request connect to ' + port + ' from user ' + email);
+			uilog.log(uilog.Level.SYSTEM, 'Request connect to ' + port + ' from user ' + email);
 			serialPortAdapter.connect(port,
 				serialPortOpenCallback,
 				serialPortCloseCallback,
@@ -226,7 +227,7 @@ io.on('connection', function (socket) {
 			if (!email) {
 				return
 			}
-			console.log('[App.js] Request disconnect to from user ' + email);
+			uilog.log(uilog.Level.SYSTEM, 'Request disconnect to from user ' + email);
 			serialPortAdapter.disconnect();
 		}, 500);
 	});
@@ -235,7 +236,7 @@ io.on('connection', function (socket) {
 
 
 http.listen(port, function () {
-	console.log('Server started on port:' + port);
+	uilog.log(uilog.Level.SYSTEM, 'Server started on port:' + port);
 });
 
 function serialPortOpenCallback(path) {

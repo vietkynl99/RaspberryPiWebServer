@@ -1,15 +1,17 @@
+var uilog = require('../modules/uiLog')
+
 const configShowList = false;
 var list = new Array();
 
 function printList() {
 	if (list.length == 0) {
-		console.log('[ClientList] There are no client')
+		uilog.log(uilog.Level.CLIENT, 'There are no client')
 	}
 	else {
-		console.log('[ClientList] There are ' + list.length + ' client')
+		uilog.log(uilog.Level.CLIENT, 'There are ' + list.length + ' client')
 		if (configShowList) {
 			list.forEach(function (data, index) {
-				console.log('\t' + (index + 1) + '. email=' + data.email + ' page=' + data.page + ' id=' + data.id + ' ip=' + data.ip)
+				uilog.log(uilog.Level.CLIENT, '\t' + (index + 1) + '. email=' + data.email + ' page=' + data.page + ' id=' + data.id + ' ip=' + data.ip)
 			})
 		}
 	}
@@ -27,7 +29,7 @@ function removeId(id) {
 		return data
 	}
 	else {
-		console.log('[ClientList][ERROR] Cannot find user with id=' + id)
+		uilog.log(uilog.Level.ERROR, 'Cannot find user with id=' + id)
 		return null
 	}
 }

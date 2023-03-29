@@ -4,6 +4,7 @@ var app = express();
 var router = express.Router();
 var cookieParser = require('cookie-parser');
 const crypto = require('crypto');
+var uilog = require('../modules/uiLog')
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -114,7 +115,7 @@ router.post('/', function (req, res) {
 			sqlAdapter.query(`UPDATE userinfo SET token = '${token}' , lastlogin = NOW() WHERE email = '${email}'`,
 				function (success, result) {
 					if (success == false) {
-						console.log("[Login.js][Error] Can't update token to sql")
+						uilog.log(uilog.Level.ERROR, "Can't update token to sql")
 						// deny request
 						res.send({ response: 'deny', timeout: null });
 					}

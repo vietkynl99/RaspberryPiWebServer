@@ -1,3 +1,4 @@
+var uilog = require('../modules/uiLog')
 var SerialPort = require('serialport').SerialPort;
 var bindings = require("@serialport/bindings");
 
@@ -12,7 +13,7 @@ var port = new SerialPort({
     autoOpen: false
 });
 port.on('error', (err) => {
-    console.log('[SerialPortAdapter] Error ' + port.path + ': ', err.message);
+    uilog.log(uilog.Level.ERROR, 'Error ' + port.path + ': ', err.message);
 });
 
 function getPortList(successCallback) {
@@ -43,16 +44,16 @@ function getPortList(successCallback) {
             successCallback(list);
         })
         .catch(function (error) {
-            console.log('[SerialPortAdapter][ERROR] Cannot read Port List\n\tError: ' + error);
+            uilog.log(uilog.Level.ERROR, 'Cannot read Port List\n\tError: ' + error);
         })
 }
 
 function connect(comPort, openCallback, closeCallback, errorCallback, dataCallback) {
     if (!comPort) {
-        console.log('[SerialPortAdapter] [ERROR] comPort is null')
+        uilog.log(uilog.Level.ERROR, 'comPort is null')
         return
     }
-    console.log('[SerialPortAdapter] Try to connect to ' + comPort);
+    uilog.log(uilog.Level.SERIALPORT, 'Try to connect to ' + comPort);
     if (!port.isOpen) {
         connectSerialPort(comPort, openCallback, closeCallback, errorCallback, dataCallback);
     }
@@ -60,9 +61,9 @@ function connect(comPort, openCallback, closeCallback, errorCallback, dataCallba
         // close the current port
         port.close((error) => {
             if (error) {
-                console.log('[SerialPortAdapter] Error while closing port ' + port.path + ': ' + error);
+                uilog.log(uilog.Level.ERROR, 'Error while closing port ' + port.path + ': ' + error);
             } else {
-                console.log('[SerialPortAdapter] Closed port ' + port.path);
+                uilog.log(uilog.Level.SERIALPORT, 'Closed port ' + port.path);
                 connectSerialPort(comPort, openCallback, closeCallback, errorCallback, dataCallback);
             }
         });
@@ -78,22 +79,22 @@ function connectSerialPort(comPort, openCallback, closeCallback, errorCallback, 
         parity: 'none'
     });
     port.on('open', () => {
-        console.log('[SerialPortAdapter] Port ' + port.path + ' is open!');
+        uilog.log(uilog.Level.SERIALPORT, 'Port ' + port.path + ' is open!');
         openCallback(port.path);
     });
 
     port.on('close', () => {
-        console.log('[SerialPortAdapter] Port ' + port.path + ' is closed!');
+        uilog.log(uilog.Level.SERIALPORT, 'Port ' + port.path + ' is closed!');
         closeCallback(port.path);
     });
 
     port.on('error', (error) => {
-        console.log('[SerialPortAdapter] Error ' + port.path + ': ', error.message);
+        uilog.log(uilog.Level.ERROR, 'Error ' + port.path + ': ', error.message);
         errorCallback(port.path, error.message);
     });
 
     port.on('data', function (data) {
-        console.log('[SerialPortAdapter] ' + data.toString());
+        uilog.log(uilog.Level.SERIALPORT, data.toString());
         dataCallback(port.path, data);
     });
 }
@@ -102,10 +103,10 @@ function disconnect() {
     if (port.isOpen) {
         port.close((error) => {
             if (error) {
-                console.log('[SerialPortAdapter] Error while closing port ' + port.path + ': ' + error);
+                uilog.log(uilog.Level.ERROR, 'Error while closing port ' + port.path + ': ' + error);
             }
             else {
-                console.log('[SerialPortAdapter] Closed port ' + port.path);
+                uilog.log(uilog.Level.SERIALPORT, 'Closed port ' + port.path);
             }
         });
     }

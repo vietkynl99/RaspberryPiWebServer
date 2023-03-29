@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var router = express.Router();
 var bodyParser = require("body-parser");
+var uilog = require('../modules/uiLog')
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -110,7 +111,7 @@ router.post('/', function (req, res) {
 										return;
 									}
 									else {
-										console.log('[SignUpRouter] New account has been registered: ' + reqData[2].data);
+										uilog.log(uilog.Level.SYSTEM, 'New account has been registered: ' + reqData[2].data);
 										res.send({ response: 'accept' });
 										return;
 									}
