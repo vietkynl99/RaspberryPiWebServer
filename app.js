@@ -121,22 +121,23 @@ function updateLoginHistoryTable(io, socket, email) {
 		});
 }
 
-function sendDataToClientInPage(io, socket, page, event, data) {
-	if (!io || !socket || !page) {
+function sendDataToClient(io, id, event, data) {
+	if (!io || !id || !event || !data) {
 		return;
 	}
-	let index = clientList.list.findIndex(element => element.page === page)
-	if (index >= 0) {
-		io.to(socket.id).emit(event, data);
-	}
+	io.to(id).emit(event, data);
 }
 
-function sendDataInterval(io, socket) {
-	// io.to(socket.id).emit('cpu usage', systemManager.getCPUUsage());
-	// io.to(socket.id).emit('mem usage', systemManager.getMemoryUsage());
-	// io.to(socket.id).emit('total mem usage', systemManager.getTotalMemoryUsage());
-	// io.to(socket.id).emit('total mem', systemManager.getTotalMemory());
-	// sendDataToClientInPage(io, socket, 'connectivity', 'port status', { status: serialPortAdapter.isConnected() });
+function sendDataToAllClientInPage(io, page, event, data) {
+	if (!io || !page || !event || !data) {
+		return;
+	}
+	for (let index = 0; index < clientList.list.length; index++) {
+		const client = clientList.list[index];
+		if (client.page === page) {
+			sendDataToClient(io, client.id, event, data);
+		}
+	}
 }
 
 // new connection to server
@@ -181,9 +182,9 @@ io.on('connection', function (socket) {
 				break;
 			case 'connectivity':
 				// port list
-				sendPortList(io, socket);
+				sendPortList(socket.id);
 				// port status
-				sendPortStatus(io, socket);
+				sendPortStatus(false, socket.id);
 				break;
 			default:
 				break;
@@ -200,7 +201,7 @@ io.on('connection', function (socket) {
 
 	socket.on('req portlist', function (email) {
 		setTimeout(() => {
-			sendPortList(io, socket);
+			sendPortList(socket.id);
 		}, 500);
 	});
 
@@ -213,16 +214,9 @@ io.on('connection', function (socket) {
 			}
 			console.log('[App.js] Request connect to ' + port + ' from user ' + email);
 			serialPortAdapter.connect(port,
-				function openCallback() {
-					sendPortStatus(io, socket);
-				},
-				function closeCallback() {
-					sendPortStatus(io, socket);
-				},
-				function errorCallback(path, error) {
-					sendPortStatus(io, socket);
-					sendAlert(io, socket, 'error', error);
-				});
+				serialPortOpenCallback,
+				serialPortCloseCallback,
+				serialPortErrorCallback);
 		}, 500);
 	});
 
@@ -237,9 +231,6 @@ io.on('connection', function (socket) {
 		}, 500);
 	});
 
-	// let interval = setInterval(function () {
-	// 	sendDataInterval(io, socket);
-	// }, 1000);
 });
 
 
@@ -247,21 +238,30 @@ http.listen(port, function () {
 	console.log('Server started on port:' + port);
 });
 
-function sendPortList(io, socket,) {
+function serialPortOpenCallback(path) {
+	sendPortStatus(true);
+}
+
+function serialPortCloseCallback(path) {
+	sendPortStatus(true);
+}
+
+function serialPortErrorCallback(path, error) {
+	sendPortStatus(true);
+	sendDataToAllClientInPage(io, 'connectivity', 'alert', { type: 'error', message: error });
+}
+
+function sendPortList(id) {
 	serialPortAdapter.getPortList(function (list) {
-		if (serialPortAdapter.isConnected()) {
-			io.to(socket.id).emit('update portlist', { list: list, path: serialPortAdapter.getPath() });
-		}
-		else {
-			io.to(socket.id).emit('update portlist', { list: list });
-		}
+		io.to(id).emit('update portlist', { list: list, path: serialPortAdapter.getPath() });
 	})
 }
 
-function sendPortStatus(io, socket) {
-	io.to(socket.id).emit('port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath() });
-}
-
-function sendAlert(io, socket, type, message) {
-	io.to(socket.id).emit('alert', { type: type, message: message });
+function sendPortStatus(sendAll, id) {
+	if (sendAll === true) {
+		sendDataToAllClientInPage(io, 'connectivity', 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath() });
+	}
+	else if (id) {
+		sendDataToClient(io, id, 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath() });
+	}
 }

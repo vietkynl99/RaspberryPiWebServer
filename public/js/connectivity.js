@@ -23,7 +23,9 @@
             document.getElementById('button-connect').textContent = (status === true) ? 'Disconnect' : 'Connect';
             document.getElementById('button-connect').disabled = false;
             document.getElementById('port-select').disabled = portStatus === true;
-            document.getElementById('port-select').value = path;
+            if(path) {
+                document.getElementById('port-select').value = path;
+            }
         }
 
         function alertBox(message) {

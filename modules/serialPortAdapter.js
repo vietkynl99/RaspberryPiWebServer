@@ -116,7 +116,7 @@ function isConnected() {
 }
 
 function getPath() {
-    return port.path;
+    return port.isOpen ? port.path : '';
 }
 
 module.exports = {
