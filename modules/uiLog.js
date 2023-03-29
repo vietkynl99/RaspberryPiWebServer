@@ -1,3 +1,5 @@
+const moment = require('moment');
+
 const red = '\x1b[31m'
 const green = '\x1b[32m'
 const yellow = '\x1b[33m'
@@ -21,7 +23,10 @@ function log(level, message) {
   const stack = error.stack.split("\n")[2].trim();
   const functionName = stack.split(' ')[1] + '|' + stack.match(/\\[^\\]+(?=:)/gm)[0].replace('\\', '');
   const levelName = Object.keys(Level).find(key => Level[key] === level);
-  console.log(level, `[${new Date().toLocaleString()}][${levelName}][${functionName}] ${message}`, '\x1b[0m');
+  const date = new Date();
+  const formattedDateTime = moment(date).format('DD/MM/YYYY HH:mm:ss');
+  
+  console.log(level, `[${formattedDateTime}][${levelName}][${functionName}] ${message}`, '\x1b[0m');
 }
 
 module.exports = {
