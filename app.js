@@ -224,6 +224,9 @@ io.on('connection', function (socket) {
 				function errorCallback(path, error) {
 					sendDataToClient(socket.id, 'alert', { type: 'error', message: error });
 					sendPortStatus(true);
+				},
+				function dataCallback(path, data) {
+					uilog.log(uilog.Level.SERIALPORT, data);
 				});
 		}, 500);
 	});
