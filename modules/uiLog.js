@@ -9,24 +9,28 @@ const cyan = '\x1b[36m'
 const white = '\x1b[37m'
 
 const Level = {
-  ERROR: red,
-  LOG: white,
-  SYSTEM: green,
-  CLIENT: yellow,
-  SERIALPORT: blue,
-  SQL: cyan,
-  CTRL: purple
+	ERROR: red,
+	LOG: white,
+	SYSTEM: green,
+	CLIENT: yellow,
+	SERIALPORT: blue,
+	SQL: cyan,
+	CTRL: purple
 }
 
 function log(level, message) {
-  const error = new Error();
-  const stack = error.stack.split("\n")[2].trim();
-  const functionName = stack.split(' ')[1] + '|' + stack.match(/\\[^\\]+(?=:)/gm)[0].replace('\\', '');
-  const levelName = Object.keys(Level).find(key => Level[key] === level);
-  const date = new Date();
-  const formattedDateTime = moment(date).format('DD/MM/YYYY HH:mm:ss');
-  
-  console.log(level, `[${formattedDateTime}][${levelName}][${functionName}] ${message}`, '\x1b[0m');
+	const error = new Error();
+	const stack = error.stack.split("\n")[2].trim();
+	let functionName = stack.match(/ .+ /);
+	if (functionName) {
+		functionName = functionName[0].trim();
+	}
+	functionName = functionName + '|' + stack.match(/\\[^\\]+(?=:)/)[0].replace('\\', '');
+	const levelName = Object.keys(Level).find(key => Level[key] === level);
+	const date = new Date();
+	const formattedDateTime = moment(date).format('DD/MM/YYYY HH:mm:ss');
+
+	console.log(level, `[${formattedDateTime}][${levelName}][${functionName}] ${message}`, '\x1b[0m');
 }
 
 module.exports = {
