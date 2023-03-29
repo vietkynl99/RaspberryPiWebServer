@@ -97,7 +97,7 @@ function user_logout(id) {
 		});
 }
 
-function updateLoginHistoryTable(io, socket, email) {
+function updateLoginHistoryTable(id, email) {
 	sqlAdapter.query(`SELECT * FROM loginhistory WHERE email='${email}' ORDER BY id DESC LIMIT 10`,
 		function (success, result) {
 			if (success == false) {
@@ -116,26 +116,26 @@ function updateLoginHistoryTable(io, socket, email) {
 					columnName: ['#', 'Time', 'Email', 'IP', 'Status'],
 					data: data
 				}
-				io.to(socket.id).emit('update table', tableData);
+				sendDataToClient(id, 'update table', tableData);
 			}
 		});
 }
 
-function sendDataToClient(io, id, event, data) {
-	if (!io || !id || !event || !data) {
+function sendDataToClient(id, event, data) {
+	if (!id || !event || !data) {
 		return;
 	}
 	io.to(id).emit(event, data);
 }
 
-function sendDataToAllClientInPage(io, page, event, data) {
-	if (!io || !page || !event || !data) {
+function sendDataToAllClientInPage(page, event, data) {
+	if (!page || !event || !data) {
 		return;
 	}
 	for (let index = 0; index < clientList.list.length; index++) {
 		const client = clientList.list[index];
 		if (client.page === page) {
-			sendDataToClient(io, client.id, event, data);
+			sendDataToClient(client.id, event, data);
 		}
 	}
 }
@@ -167,7 +167,7 @@ io.on('connection', function (socket) {
 					console.log('[App.js][ERROR] Cannot find data of user "' + email + '"')
 				}
 				else {
-					io.to(socket.id).emit('user info', { name: result[0].firstname + ' ' + result[0].lastname });
+					sendDataToClient(socket.id, 'user info', { name: result[0].firstname + ' ' + result[0].lastname });
 				}
 			});
 
@@ -178,7 +178,7 @@ io.on('connection', function (socket) {
 				let chartLabel = 'Memory used';
 				let ChartXData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 				let ChartYData = [100, 500, 300, 400, 900, 500, 700, 600, 600, 700];
-				io.to(socket.id).emit('update chart', { id: chartId, label: chartLabel, xData: ChartXData, yData: ChartYData });
+				sendDataToClient(socket.id, 'update chart', { id: chartId, label: chartLabel, xData: ChartXData, yData: ChartYData });
 				break;
 			case 'connectivity':
 				// port list
@@ -196,7 +196,7 @@ io.on('connection', function (socket) {
 		if (!email) {
 			return
 		}
-		updateLoginHistoryTable(io, socket, email);
+		updateLoginHistoryTable(socket.id, email);
 	});
 
 	socket.on('req portlist', function (email) {
@@ -248,20 +248,20 @@ function serialPortCloseCallback(path) {
 
 function serialPortErrorCallback(path, error) {
 	sendPortStatus(true);
-	sendDataToAllClientInPage(io, 'connectivity', 'alert', { type: 'error', message: error });
+	sendDataToAllClientInPage('connectivity', 'alert', { type: 'error', message: error });
 }
 
 function sendPortList(id) {
 	serialPortAdapter.getPortList(function (list) {
-		io.to(id).emit('update portlist', { list: list, path: serialPortAdapter.getPath() });
+		sendDataToClient(id, 'update portlist', { list: list, path: serialPortAdapter.getPath() });
 	})
 }
 
 function sendPortStatus(sendAll, id) {
 	if (sendAll === true) {
-		sendDataToAllClientInPage(io, 'connectivity', 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath() });
+		sendDataToAllClientInPage('connectivity', 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath() });
 	}
 	else if (id) {
-		sendDataToClient(io, id, 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath() });
+		sendDataToClient(id, 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath() });
 	}
 }
