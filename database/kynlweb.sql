@@ -36,3 +36,8 @@ CREATE TABLE `kynlwebdb`.`event` (
   `type` TINYINT NOT NULL,
   `data` VARCHAR(100) NOT NULL,
   PRIMARY KEY (`id`));
+
+DROP TABLE IF EXISTS `kynlwebdb`.`setting`;
+
+CREATE TABLE `kynlwebdb`.`setting` (
+  `autoconnect` TINYINT);
