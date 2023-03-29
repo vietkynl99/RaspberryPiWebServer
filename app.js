@@ -215,9 +215,16 @@ io.on('connection', function (socket) {
 			}
 			uilog.log(uilog.Level.SYSTEM, 'Request connect to ' + port + ' from user ' + email);
 			serialPortAdapter.connect(port,
-				serialPortOpenCallback,
-				serialPortCloseCallback,
-				serialPortErrorCallback);
+				function openCallback(path) {
+					sendPortStatus(true);
+				},
+				function closeCallback(path) {
+					sendPortStatus(true);
+				},
+				function errorCallback(path, error) {
+					sendDataToClient(socket.id, 'alert', { type: 'error', message: error });
+					sendPortStatus(true);
+				});
 		}, 500);
 	});
 
@@ -239,18 +246,6 @@ http.listen(port, function () {
 	uilog.log(uilog.Level.SYSTEM, 'Server started on port:' + port);
 });
 
-function serialPortOpenCallback(path) {
-	sendPortStatus(true);
-}
-
-function serialPortCloseCallback(path) {
-	sendPortStatus(true);
-}
-
-function serialPortErrorCallback(path, error) {
-	sendPortStatus(true);
-	sendDataToAllClientInPage('connectivity', 'alert', { type: 'error', message: error });
-}
 
 function sendPortList(id) {
 	serialPortAdapter.getPortList(function (list) {

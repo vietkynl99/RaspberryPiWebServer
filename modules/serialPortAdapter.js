@@ -12,8 +12,9 @@ var port = new SerialPort({
     parity: 'none',
     autoOpen: false
 });
+
 port.on('error', (err) => {
-    uilog.log(uilog.Level.ERROR, 'Error ' + port.path + ': ', err.message);
+    uilog.log(uilog.Level.ERROR, 'Error ' + port.path + ': ' + err.message);
 });
 
 function getPortList(successCallback) {
@@ -89,7 +90,7 @@ function connectSerialPort(comPort, openCallback, closeCallback, errorCallback, 
     });
 
     port.on('error', (error) => {
-        uilog.log(uilog.Level.ERROR, 'Error ' + port.path + ': ', error.message);
+        uilog.log(uilog.Level.ERROR, 'Error ' + port.path + ': ' + error.message);
         errorCallback(port.path, error.message);
     });
 
