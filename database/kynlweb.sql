@@ -41,3 +41,5 @@ DROP TABLE IF EXISTS `kynlwebdb`.`setting`;
 
 CREATE TABLE `kynlwebdb`.`setting` (
   `autoconnect` TINYINT);
+
+INSERT INTO `kynlwebdb`.`setting` (`autoconnect`) VALUES ('0');
