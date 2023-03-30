@@ -97,7 +97,7 @@ function connectSerialPort(comPort, openCallback, closeCallback, errorCallback, 
 
     port.on('data', function (data) {
         // uilog.log(uilog.Level.SERIALPORT, data.toString());
-        dataCallback(data);
+        dataCallback(data.toString());
     });
 }
 
