@@ -30747,6 +30747,7 @@ div.tagsinput span.tag a {
   -ms-animation-fill-mode: both;
   -o-animation-fill-mode: both;
   animation-fill-mode: both;
+  cursor: pointer;
 }
 
 #settings-trigger i {
