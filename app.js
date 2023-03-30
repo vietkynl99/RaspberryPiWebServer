@@ -70,11 +70,14 @@ sqlAdapter.query(`SELECT * FROM setting`,
 				serialPortAdapter.connect(result.serialport,
 					function openCallback() {
 						sendPortStatus(true);
+						sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is connected!' });
 					},
 					function closeCallback() {
+						sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is disconnected!' });
 						sendPortStatus(true);
 					},
 					function errorCallback(error) {
+						sendDataToAllClientInPage('connectivity', 'alert', { type: 'danger', message: 'Error! ' + error });
 						sendPortStatus(true);
 					},
 					function dataCallback(data) {
@@ -257,13 +260,14 @@ io.on('connection', function (socket) {
 			serialPortAdapter.connect(port,
 				function openCallback() {
 					sendPortStatus(true);
-					sendDataToClient(socket.id, 'alert', { type: 'success', message: 'Connect to serial port successfully' });
+					sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is connected!' });
 				},
 				function closeCallback() {
+					sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is disconnected!' });
 					sendPortStatus(true);
 				},
 				function errorCallback(error) {
-					sendDataToClient(socket.id, 'alert', { type: 'danger', message: 'Error! ' + error });
+					sendDataToAllClientInPage('connectivity', 'alert', { type: 'danger', message: 'Error! ' + error });
 					sendPortStatus(true);
 				},
 				function dataCallback(data) {
