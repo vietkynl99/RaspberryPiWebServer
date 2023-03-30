@@ -40,6 +40,7 @@ CREATE TABLE `kynlwebdb`.`event` (
 DROP TABLE IF EXISTS `kynlwebdb`.`setting`;
 
 CREATE TABLE `kynlwebdb`.`setting` (
-  `autoconnect` TINYINT);
+  `autoconnect` TINYINT,
+  `serialport` VARCHAR(10));
 
 INSERT INTO `kynlwebdb`.`setting` (`autoconnect`) VALUES ('0');
