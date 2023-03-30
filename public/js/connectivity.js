@@ -17,15 +17,17 @@
             document.getElementById('port-select').innerHTML = html;
         }
 
-        function alertBox(message) {
+        function alertBox(type, message) {
+            $(".log-box").addClass("alert-" + type);
             $(".log-box").addClass("log-show");
             $(".log-box .log-text").html(message);
             setTimeout(function () {
+                $(".log-box").removeClass("alert-" + type);
                 $(".log-box").removeClass('log-show');
             }, 5000);
         }
         // ===============================================================================================
-        
+
         socket.on('connect', function () {
             socket.emit('login', { email: email, page: 'connectivity' });
         });
@@ -50,19 +52,15 @@
             document.getElementById('button-connect').textContent = (data.status === true) ? 'Disconnect' : 'Connect';
             document.getElementById('button-connect').disabled = false;
             document.getElementById('port-select').disabled = portStatus === true;
-            if(data.path) {
+            if (data.path) {
                 document.getElementById('port-select').value = data.path;
             }
             document.getElementById('checkbox-auto-connect').checked = data.autoConnect
         });
 
         socket.on('alert', function (data) {
-            switch (data.type) {
-                case 'error':
-                    alertBox(data.message);
-                    break;
-                default:
-                    break;
+            if (data.type && data.message) {
+                alertBox(data.type.trim(), data.message.trim());
             }
         });
         // ===============================================================================================
@@ -86,7 +84,7 @@
             $("#icon-refesh").addClass("fast-spin");
             socket.emit('req portlist', email);
         });
-        
+
         $("#checkbox-auto-connect").click(function () {
             socket.emit('save autoconnect', { email: email, status: document.getElementById('checkbox-auto-connect').checked });
         });

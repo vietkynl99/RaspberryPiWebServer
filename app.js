@@ -257,12 +257,13 @@ io.on('connection', function (socket) {
 			serialPortAdapter.connect(port,
 				function openCallback() {
 					sendPortStatus(true);
+					sendDataToClient(socket.id, 'alert', { type: 'success', message: 'Connect to serial port successfully' });
 				},
 				function closeCallback() {
 					sendPortStatus(true);
 				},
 				function errorCallback(error) {
-					sendDataToClient(socket.id, 'alert', { type: 'error', message: error });
+					sendDataToClient(socket.id, 'alert', { type: 'danger', message: 'Error! ' + error });
 					sendPortStatus(true);
 				},
 				function dataCallback(data) {
