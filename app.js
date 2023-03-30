@@ -53,20 +53,37 @@ app.use(function (err, req, res, next) {
 var sqlAdapter = require('./modules/sqlAdapter')
 sqlAdapter.connect()
 
-function readOldSetting() {
-	sqlAdapter.query(`SELECT * FROM setting`,
-		function (success, result) {
-			if (success == false) {
-				uilog.log(uilog.Level.ERROR, 'SQL query error')
-			}
-			else {
-				uilog.log(uilog.Level.SQL, 'old setting: ');
-				uilog.log(uilog.Level.SQL, result);
-			}
-		});
-}
+// read old setting
+sqlAdapter.query(`SELECT * FROM setting`,
+	function (success, result) {
+		if (success == false) {
+			uilog.log(uilog.Level.ERROR, 'SQL query error')
+		}
+		else {
+			result = result[0];
+			uilog.log(uilog.Level.SQL, 'Old setting: ');
+			uilog.log(uilog.Level.SQL, result);
 
-readOldSetting();
+			serialPortAdapter.autoConnect = result.autoconnect === 1;
+			if (result.autoconnect === 1 && result.serialport != '') {
+				uilog.log(uilog.Level.SQL, 'Auto connect to ' + result.serialport);
+				serialPortAdapter.connect(result.serialport,
+					function openCallback() {
+						sendPortStatus(true);
+					},
+					function closeCallback() {
+						sendPortStatus(true);
+					},
+					function errorCallback(error) {
+						sendPortStatus(true);
+					},
+					function dataCallback(data) {
+						uilog.log(uilog.Level.SERIALPORT, data);
+					});
+			}
+		}
+	});
+
 
 // client list
 var clientList = require('./modules/clientList')
@@ -229,6 +246,14 @@ io.on('connection', function (socket) {
 				return
 			}
 			uilog.log(uilog.Level.SYSTEM, 'Request connect to ' + port + ' from user ' + email);
+			// save settings 
+			sqlAdapter.query(`UPDATE setting SET serialport = '${port}'`,
+				function (success, result) {
+					if (success == false) {
+						uilog.log(uilog.Level.ERROR, 'SQL query error. Cannot save settings')
+					}
+				});
+			// connect to serial port
 			serialPortAdapter.connect(port,
 				function openCallback() {
 					sendPortStatus(true);
@@ -257,6 +282,26 @@ io.on('connection', function (socket) {
 		}, 500);
 	});
 
+	socket.on('save autoconnect', function (data) {
+		setTimeout(() => {
+			let autoconnect;
+			if (data.status === true) {
+				autoconnect = 1;
+			}
+			else {
+				autoconnect = 0;
+			}
+
+			uilog.log(uilog.Level.SQL, 'Request save autoconnect = ' + autoconnect + ' from user ' + data.email);
+			sqlAdapter.query(`UPDATE setting SET autoconnect = '${autoconnect}'`,
+				function (success, result) {
+					if (success == false) {
+						uilog.log(uilog.Level.ERROR, 'SQL query error. Cannot save settings')
+					}
+				});
+		}, 500);
+	});
+
 });
 
 
@@ -273,9 +318,9 @@ function sendPortList(id) {
 
 function sendPortStatus(sendAll, id) {
 	if (sendAll === true) {
-		sendDataToAllClientInPage('connectivity', 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath() });
+		sendDataToAllClientInPage('connectivity', 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath(), autoConnect: serialPortAdapter.autoConnect });
 	}
 	else if (id) {
-		sendDataToClient(id, 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath() });
+		sendDataToClient(id, 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath(), autoConnect: serialPortAdapter.autoConnect });
 	}
 }

@@ -17,17 +17,6 @@
             document.getElementById('port-select').innerHTML = html;
         }
 
-        function updatePortStatus(path, status) {
-            portStatus = status === true;
-            document.getElementById('port-status').innerHTML = (status === true) ? `<p>Status: <span class="text-success">Connected</span></p>` : `<p>Status: <span class="text-danger">Disconnected</span></p>`;
-            document.getElementById('button-connect').textContent = (status === true) ? 'Disconnect' : 'Connect';
-            document.getElementById('button-connect').disabled = false;
-            document.getElementById('port-select').disabled = portStatus === true;
-            if(path) {
-                document.getElementById('port-select').value = path;
-            }
-        }
-
         function alertBox(message) {
             $(".log-box").addClass("log-show");
             $(".log-box .log-text").html(message);
@@ -56,7 +45,15 @@
         });
 
         socket.on('port status', function (data) {
-            updatePortStatus(data.path, data.status);
+            portStatus = data.status === true;
+            document.getElementById('port-status').innerHTML = (data.status === true) ? `<p>Status: <span class="text-success">Connected</span></p>` : `<p>Status: <span class="text-danger">Disconnected</span></p>`;
+            document.getElementById('button-connect').textContent = (data.status === true) ? 'Disconnect' : 'Connect';
+            document.getElementById('button-connect').disabled = false;
+            document.getElementById('port-select').disabled = portStatus === true;
+            if(data.path) {
+                document.getElementById('port-select').value = data.path;
+            }
+            document.getElementById('checkbox-auto-connect').checked = data.autoConnect
         });
 
         socket.on('alert', function (data) {
@@ -88,6 +85,10 @@
             document.getElementById('port-select').innerHTML = '';
             $("#icon-refesh").addClass("fast-spin");
             socket.emit('req portlist', email);
+        });
+        
+        $("#checkbox-auto-connect").click(function () {
+            socket.emit('save autoconnect', { email: email, status: document.getElementById('checkbox-auto-connect').checked });
         });
 
     });
