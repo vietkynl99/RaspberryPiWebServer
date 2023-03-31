@@ -115,6 +115,19 @@ function insertToTable(table, dataName, dataValue, callback) {
 	});
 }
 
+function updateTable(table, dataName, dataValue, callback) {
+	let query = `UPDATE ${table} SET ${dataName} = ${dataValue}`;
+	sqlcon.query(query, (error, result) => {
+		if (error) {
+			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
+			callback(false, undefined)
+		}
+		else {
+			callback(true, result)
+		}
+	});
+}
+
 
 module.exports = {
 	UserPermission,
@@ -126,5 +139,6 @@ module.exports = {
 	checkAuthWithToken,
 	updateToken,
 	readUserInformation,
-	insertToTable
+	insertToTable,
+	updateTable
 }

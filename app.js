@@ -249,7 +249,7 @@ io.on('connection', function (socket) {
 			}
 			uilog.log(uilog.Level.SYSTEM, 'Request connect to ' + port + ' from user ' + email);
 			// save settings 
-			sqlAdapter.query(`UPDATE setting SET serialport = '${port}'`,
+			sqlAdapter.updateTable('setting', 'serialport', port,
 				function (success, result) {
 					if (success == false) {
 						uilog.log(uilog.Level.ERROR, 'SQL query error. Cannot save settings')
@@ -297,7 +297,7 @@ io.on('connection', function (socket) {
 			}
 			serialPortAdapter.autoConnect = data.status === true;
 			uilog.log(uilog.Level.SYSTEM, 'Request save autoconnect = ' + autoconnect + ' from user ' + data.email);
-			sqlAdapter.query(`UPDATE setting SET autoconnect = '${autoconnect}'`,
+			sqlAdapter.updateTable('setting', 'autoconnect', autoconnect,
 				function (success, result) {
 					if (success == false) {
 						uilog.log(uilog.Level.ERROR, 'SQL query error. Cannot save settings')
