@@ -194,8 +194,7 @@ io.on('connection', function (socket) {
 		}
 		user_login(email, page, socket.id, socket.handshake.address)
 		// send data to client
-		sqlAdapter.query(`SELECT firstname, lastname FROM userinfo WHERE email='${email}'`,
-			function (success, result) {
+		sqlAdapter.readUserInformation(email, function (success, result) {
 				if (success == false) {
 					uilog.log(uilog.Level.ERROR, 'SQL query error')
 				}

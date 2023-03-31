@@ -18,11 +18,10 @@ router.get('/', function (req, res) {
 		return;
 	}
 	// check token
-	sqlAdapter.query(`SELECT email FROM userinfo WHERE email='${email}' AND token='${token}' AND lastlogin >= DATE_SUB(NOW(), INTERVAL 1 HOUR)`,
-		function (success, result) {
-			if (success == false || result.length != 1) {
-				res.redirect('/login');
-			}
+	sqlAdapter.checkAuthWithToken(email, token,	function (success, result) {
+		if (success !== true || result.length !== 1) {
+			res.redirect('/login');
+		}
 			else {
 				res.render('homePage', { email: email });
 			}
@@ -36,14 +35,10 @@ router.get('/account/login-history', function (req, res) {
 		return;
 	}
 	// check token
-	sqlAdapter.query(`SELECT permission FROM userinfo WHERE email='${email}' AND token='${token}' AND lastlogin >= DATE_SUB(NOW(), INTERVAL 1 HOUR)`,
-		function (success, result) {
-			if (success !== true) {
-				res.redirect('/login');
-			}
-			else if (result.length !== 1) {
-				res.redirect('/login');
-			}
+	sqlAdapter.checkAuthWithToken(email, token,	function (success, result) {
+		if (success !== true || result.length !== 1) {
+			res.redirect('/login');
+		}
 			else if (result[0].permission !== sqlAdapter.UserPermission.ADMIN) {
 				// res.redirect('/login');
 				res.send('You do not have permission to access this page.');
@@ -61,14 +56,10 @@ router.get('/setting/connectivity', function (req, res) {
 		return;
 	}
 	// check token
-	sqlAdapter.query(`SELECT permission FROM userinfo WHERE email='${email}' AND token='${token}' AND lastlogin >= DATE_SUB(NOW(), INTERVAL 1 HOUR)`,
-		function (success, result) {
-			if (success !== true) {
-				res.redirect('/login');
-			}
-			else if (result.length !== 1) {
-				res.redirect('/login');
-			}
+	sqlAdapter.checkAuthWithToken(email, token,	function (success, result) {
+		if (success !== true || result.length !== 1) {
+			res.redirect('/login');
+		}
 			else if (result[0].permission !== sqlAdapter.UserPermission.ADMIN) {
 				// res.redirect('/login');
 				res.send('You do not have permission to access this page.');

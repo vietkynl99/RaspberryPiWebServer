@@ -88,8 +88,7 @@ router.post('/', function (req, res) {
 		return;
 	}
 
-	sqlAdapter.query(`SELECT email FROM userinfo WHERE email='${email}' AND password='${password}'`,
-		function (success, result) {
+	sqlAdapter.checkAuthWithPass(email, password, function (success, result) {
 			if (success === false || result.length !== 1) {
 				saveAuthHistory(email, false)
 				// clear the cookie
@@ -99,7 +98,7 @@ router.post('/', function (req, res) {
 				res.send({ response: 'deny', timeout: null });
 				return;
 			}
-			
+			uilog.log(uilog.Level.SYSTEM, "User " + email + " logged in successfully")
 			saveAuthHistory(email, true);
 			// set data to cookie
 			let token = sqlAdapter.removeSpecialCharacter(generateToken());
@@ -112,10 +111,9 @@ router.post('/', function (req, res) {
 			res.cookie('email', email, { expires: expires_date, httpOnly: true });
 			res.cookie('token', token, { expires: expires_date, httpOnly: true });
 			// save token to sql
-			sqlAdapter.query(`UPDATE userinfo SET token = '${token}' , lastlogin = NOW() WHERE email = '${email}'`,
-				function (success, result) {
-					if (success == false) {
-						uilog.log(uilog.Level.ERROR, "Can't update token to sql")
+			sqlAdapter.updateToken(email, token, function (success, result) {
+					if (success == false || result.changedRows !== 1) {
+						uilog.log(uilog.Level.ERROR, "Cannot update token to sql")
 						// deny request
 						res.send({ response: 'deny', timeout: null });
 					}
