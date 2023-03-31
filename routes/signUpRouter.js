@@ -61,7 +61,7 @@ function validate(arr) {
 // Http request
 router.get('/', function (req, res) {
 	// go to signup page
-	res.render('signUpPage');
+	res.render('signup');
 });
 
 router.post('/', function (req, res) {

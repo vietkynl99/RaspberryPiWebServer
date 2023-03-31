@@ -66,7 +66,7 @@ router.get('/', function (req, res) {
 	res.clearCookie('email');
 	res.clearCookie('token');
 	// go to login page
-	res.render('loginPage');
+	res.render('login');
 });
 
 router.post('/', function (req, res) {
