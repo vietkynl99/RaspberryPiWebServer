@@ -54,38 +54,37 @@ var sqlAdapter = require('./modules/sqlAdapter')
 sqlAdapter.connect()
 
 // read old setting
-sqlAdapter.query(`SELECT * FROM setting`,
-	function (success, result) {
-		if (success == false) {
-			uilog.log(uilog.Level.ERROR, 'SQL query error')
-		}
-		else {
-			result = result[0];
-			uilog.log(uilog.Level.SQL, 'Old setting: ');
-			uilog.log(uilog.Level.SQL, result);
+sqlAdapter.readAllFromTable('setting', function (success, result) {
+	if (success == false) {
+		uilog.log(uilog.Level.ERROR, 'SQL query error')
+	}
+	else {
+		result = result[0];
+		uilog.log(uilog.Level.SQL, 'Old setting: ');
+		uilog.log(uilog.Level.SQL, result);
 
-			serialPortAdapter.autoConnect = result.autoconnect === 1;
-			if (result.autoconnect === 1 && result.serialport != '') {
-				uilog.log(uilog.Level.SQL, 'Auto connect to ' + result.serialport);
-				serialPortAdapter.connect(result.serialport,
-					function openCallback() {
-						sendPortStatus(true);
-						sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is connected!' });
-					},
-					function closeCallback() {
-						sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is disconnected!' });
-						sendPortStatus(true);
-					},
-					function errorCallback(error) {
-						sendDataToAllClientInPage('connectivity', 'alert', { type: 'danger', message: 'Error! ' + error });
-						sendPortStatus(true);
-					},
-					function dataCallback(data) {
-						uilog.log(uilog.Level.SERIALPORT, data);
-					});
-			}
+		serialPortAdapter.autoConnect = result.autoconnect === 1;
+		if (result.autoconnect === 1 && result.serialport != '') {
+			uilog.log(uilog.Level.SQL, 'Auto connect to ' + result.serialport);
+			serialPortAdapter.connect(result.serialport,
+				function openCallback() {
+					sendPortStatus(true);
+					sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is connected!' });
+				},
+				function closeCallback() {
+					sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is disconnected!' });
+					sendPortStatus(true);
+				},
+				function errorCallback(error) {
+					sendDataToAllClientInPage('connectivity', 'alert', { type: 'danger', message: 'Error! ' + error });
+					sendPortStatus(true);
+				},
+				function dataCallback(data) {
+					uilog.log(uilog.Level.SERIALPORT, data);
+				});
 		}
-	});
+	}
+});
 
 
 // client list

@@ -128,6 +128,19 @@ function updateTable(table, dataName, dataValue, callback) {
 	});
 }
 
+function readAllFromTable(table, callback) {
+	let query = `SELECT * FROM ${table}`;
+	sqlcon.query(query, (error, result) => {
+		if (error) {
+			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
+			callback(false, undefined)
+		}
+		else {
+			callback(true, result)
+		}
+	});
+}
+
 
 module.exports = {
 	UserPermission,
@@ -140,5 +153,6 @@ module.exports = {
 	updateToken,
 	readUserInformation,
 	insertToTable,
-	updateTable
+	updateTable,
+	readAllFromTable
 }
