@@ -20,15 +20,16 @@ fs.readFile('kynlweb.sql', (err, data) => {
     for (let i = 0; i < queryArray.length; i++) {
         let query = queryArray[i].trim();
         // uilog.log(uilog.Level.SQL, '\n' + (i + 1) + '. ' + query);
-        sqlAdapter.query(query, function (success, result) {
-            if (success == false) {
+        sqlAdapter.query(query,
+            function successCallback(result) {
+                if (i === queryArray.length - 1) {
+                    uilog.log(uilog.Level.SQL, 'Execute ' + queryArray.length + ' queries successfully!!');
+                    process.exit()
+                }
+            },
+            function errorCallback(error) {
                 uilog.log(uilog.Level.ERROR, 'SQL query error: index=' + (i + 1) + ' query=' + query);
                 process.exit()
-            }
-            if (i === queryArray.length - 1) {
-                uilog.log(uilog.Level.SQL, 'Execute ' + queryArray.length + ' queries successfully!!');
-                process.exit()
-            }
-        })
+            });
     }
 })

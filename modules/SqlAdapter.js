@@ -38,97 +38,97 @@ function connect() {
 	});
 }
 
-function query(query, callback) {
+function query(query, successCallback, errorCallback) {
 	sqlcon.query(query, (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-			callback(false, undefined)
+			errorCallback(error)
 		}
 		else {
-			callback(true, result)
+			successCallback(result)
 		}
 	});
 }
 
-function checkAuthWithPass(email, password, callback) {
+function checkAuthWithPass(email, password, successCallback, errorCallback) {
 	let query = `SELECT permission FROM userinfo WHERE email = ? AND password = ?`;
 	sqlcon.query(query, [email, password], (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-			callback(false, undefined)
+			errorCallback(error)
 		}
 		else {
-			callback(true, result)
+			successCallback(result)
 		}
 	});
 }
 
-function checkAuthWithToken(email, token, callback) {
+function checkAuthWithToken(email, token, successCallback, errorCallback) {
 	let query = `SELECT permission FROM userinfo WHERE email = ? AND token = ? AND lastlogin >= DATE_SUB(NOW(), INTERVAL 1 HOUR)`;
 	sqlcon.query(query, [email, token], (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-			callback(false, undefined)
+			errorCallback(error)
 		}
 		else {
-			callback(true, result)
+			successCallback(result)
 		}
 	});
 }
 
-function updateToken(email, token, callback) {
+function updateToken(email, token, successCallback, errorCallback) {
 	let query = `UPDATE userinfo SET token = ? , lastlogin = NOW() WHERE email = ?`;
 	sqlcon.query(query, [token, email], (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-			callback(false, undefined)
+			errorCallback(error)
 		}
 		else {
-			callback(true, result)
+			successCallback(result)
 		}
 	});
 }
 
-function readUserInformation(email, callback) {
+function readUserInformation(email, successCallback, errorCallback) {
 	let query = `SELECT firstname, lastname FROM userinfo WHERE email = ?`;
 	sqlcon.query(query, [email], (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-			callback(false, undefined)
+			errorCallback(error)
 		}
 		else {
-			callback(true, result)
+			successCallback(result)
 		}
 	});
 }
 
-function insertToTable(table, dataName, dataValue, callback) {
+function insertToTable(table, dataName, dataValue, successCallback, errorCallback) {
 	let query = `INSERT INTO ${table} (${dataName}) VALUES (${dataValue})`;
 	sqlcon.query(query, (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-			callback(false, undefined)
+			errorCallback(error)
 		}
 		else {
-			callback(true, result)
+			successCallback(result)
 		}
 	});
 }
 
-function updateTable(table, dataName, dataValue, callback) {
+function updateTable(table, dataName, dataValue, successCallback, errorCallback) {
 	let query = `UPDATE ${table} SET ${dataName} = '${dataValue}'`;
 	sqlcon.query(query, [ dataName, dataValue], (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-			callback(false, undefined)
+			errorCallback(error)
 		}
 		else {
-			callback(true, result)
+			successCallback(result)
 		}
 	});
 }
 
-function readAllFromTable(table, limit, callback) {
+function readAllFromTable(table, limit, successCallback, errorCallback) {
 	let query;
 	if (limit) {
 		query = `SELECT * FROM ${table} ORDER BY id DESC LIMIT ${limit}`;
@@ -139,10 +139,10 @@ function readAllFromTable(table, limit, callback) {
 	sqlcon.query(query, (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-			callback(false, undefined)
+			errorCallback(error)
 		}
 		else {
-			callback(true, result)
+			successCallback(result)
 		}
 	});
 }

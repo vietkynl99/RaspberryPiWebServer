@@ -54,11 +54,8 @@ var sqlAdapter = require('./modules/sqlAdapter')
 sqlAdapter.connect()
 
 // read old setting
-sqlAdapter.readAllFromTable('setting', undefined, function (success, result) {
-	if (success == false) {
-		uilog.log(uilog.Level.ERROR, 'SQL query error')
-	}
-	else {
+sqlAdapter.readAllFromTable('setting', undefined,
+	function successCallback(result) {
 		result = result[0];
 		uilog.log(uilog.Level.SQL, 'Old setting: ');
 		uilog.log(uilog.Level.SQL, result);
@@ -83,8 +80,9 @@ sqlAdapter.readAllFromTable('setting', undefined, function (success, result) {
 					uilog.log(uilog.Level.SERIALPORT, data);
 				});
 		}
-	}
-});
+	}, function errorCallback(error) {
+		uilog.log(uilog.Level.ERROR, 'SQL query error')
+	})
 
 
 // client list
@@ -103,10 +101,9 @@ function user_login(email, page, id, ip) {
 	clientList.printList()
 	// save login history  to sql
 	sqlAdapter.insertToTable('loginhistory', `time, type, email, ip`, `NOW(), ${sqlAdapter.EventType.LOG_IN}, '${email}', '${ip}'`,
-		function (success, result) {
-			if (success == false) {
-				uilog.log(uilog.Level.ERROR, 'SQL query error')
-			}
+		function successCallback(result) { },
+		function errorCallback(error) {
+			uilog.log(uilog.Level.ERROR, 'SQL query error')
 		});
 }
 
@@ -125,34 +122,34 @@ function user_logout(id) {
 	clientList.printList()
 	// save logout history  to sql
 	sqlAdapter.insertToTable('loginhistory', `time, type, email, ip`, `NOW(), ${sqlAdapter.EventType.LOG_OUT}, '${email}', '${ip}'`,
-		function (success, result) {
-			if (success == false) {
-				uilog.log(uilog.Level.ERROR, 'SQL query error')
-			}
+		function successCallback(result) { },
+		function errorCallback(error) {
+			uilog.log(uilog.Level.ERROR, 'SQL query error')
 		});
 }
 
 function updateLoginHistoryTable(id, email) {
-	sqlAdapter.readAllFromTable('loginhistory', 10, function (success, result) {
-		if (success == false) {
-			uilog.log(uilog.Level.ERROR, 'SQL query error')
-		}
-		else if (result.length <= 0) {
-			uilog.log(uilog.Level.ERROR, 'Cannot find data in loginhistory table')
-		}
-		else {
-			let data = [];
-			result.forEach(element => {
-				data.push([element.id, new Date(element.time).toLocaleString(), element.email, element.ip, element.type]);
-			});
-			let tableData = {
-				id: 'login-history-table',
-				columnName: ['#', 'Time', 'Email', 'IP', 'Status'],
-				data: data
+	sqlAdapter.readAllFromTable('loginhistory', 10,
+		function successCallback(result) {
+			if (result.length <= 0) {
+				uilog.log(uilog.Level.ERROR, 'Cannot find data in loginhistory table')
 			}
-			sendDataToClient(id, 'update table', tableData);
-		}
-	});
+			else {
+				let data = [];
+				result.forEach(element => {
+					data.push([element.id, new Date(element.time).toLocaleString(), element.email, element.ip, element.type]);
+				});
+				let tableData = {
+					id: 'login-history-table',
+					columnName: ['#', 'Time', 'Email', 'IP', 'Status'],
+					data: data
+				}
+				sendDataToClient(id, 'update table', tableData);
+			}
+		},
+		function errorCallback(error) {
+			uilog.log(uilog.Level.ERROR, 'SQL query error')
+		});
 }
 
 function sendDataToClient(id, event, data) {
@@ -192,17 +189,18 @@ io.on('connection', function (socket) {
 		}
 		user_login(email, page, socket.id, socket.handshake.address)
 		// send data to client
-		sqlAdapter.readUserInformation(email, function (success, result) {
-			if (success == false) {
+		sqlAdapter.readUserInformation(email, 
+			function successCallback(result) { 
+				if (result.length <= 0) {
+					uilog.log(uilog.Level.ERROR, 'Cannot find data of user "' + email + '"')
+				}
+				else {
+					sendDataToClient(socket.id, 'user info', { name: result[0].firstname + ' ' + result[0].lastname });
+				}
+			},
+			function errorCallback(error) {
 				uilog.log(uilog.Level.ERROR, 'SQL query error')
-			}
-			else if (result.length <= 0) {
-				uilog.log(uilog.Level.ERROR, 'Cannot find data of user "' + email + '"')
-			}
-			else {
-				sendDataToClient(socket.id, 'user info', { name: result[0].firstname + ' ' + result[0].lastname });
-			}
-		});
+			});
 
 		switch (page) {
 			case 'home':
@@ -248,10 +246,9 @@ io.on('connection', function (socket) {
 			uilog.log(uilog.Level.SYSTEM, 'Request connect to ' + port + ' from user ' + email);
 			// save settings 
 			sqlAdapter.updateTable('setting', 'serialport', port,
-				function (success, result) {
-					if (success == false) {
-						uilog.log(uilog.Level.ERROR, 'SQL query error. Cannot save settings')
-					}
+				function successCallback(result) { },
+				function errorCallback(error) {
+					uilog.log(uilog.Level.ERROR, 'SQL query error. Cannot save settings')
 				});
 			// connect to serial port
 			serialPortAdapter.connect(port,
@@ -296,10 +293,9 @@ io.on('connection', function (socket) {
 			serialPortAdapter.autoConnect = data.status === true;
 			uilog.log(uilog.Level.SYSTEM, 'Request save autoconnect = ' + autoconnect + ' from user ' + data.email);
 			sqlAdapter.updateTable('setting', 'autoconnect', autoconnect,
-				function (success, result) {
-					if (success == false) {
-						uilog.log(uilog.Level.ERROR, 'SQL query error. Cannot save settings')
-					}
+				function successCallback(result) { },
+				function errorCallback(error) {
+					uilog.log(uilog.Level.ERROR, 'SQL query error. Cannot save settings')
 				});
 		}, 500);
 	});

@@ -74,50 +74,33 @@ router.post('/', function (req, res) {
 	{ type: 'birthday', data: req.body.birthday.trim() }];
 
 	if (validate(reqData) == false) {
-		// deny request
-		res.send({ response: 'deny' });
+		res.send({ response: 'deny' });  // deny request
 		return
 	}
 
 	let permission = 2;
 
-	sqlAdapter.query(`SELECT email FROM userinfo WHERE email='${reqData[2].data}'`,
-		function (success, result) {
-			if (success === false) {
-				// deny request
-				res.send({ response: 'deny' });
-				return
-			}
-			else if (result.length !== 0) {
-				// deny request
-				res.send({ response: 'registered' });
-				return;
-			}
-			else {
-				sqlAdapter.insertToTable('userinfo', 'firstname, lastname, email, password, phone, birthday, permission',
-					`'${reqData[0].data}', '${reqData[1].data}', '${reqData[2].data}', '${reqData[3].data}', '${reqData[4].data}', '${reqData[5].data}', ${permission}`,
-					function (success, result) {
-						if (success === false) {
-							// deny request
-							res.send({ response: 'deny' });
-							return;
-						}
-						else {
-							sqlAdapter.insertToTable('event', 'time, type, data', `NOW(), ${sqlAdapter.EventType.SIGN_UP}, '${reqData[2].data}'`,
-								function (success, result) {
-									if (success === false) {
-										// deny request
-										res.send({ response: 'deny' });
-										return;
-									}
-									else {
-										uilog.log(uilog.Level.SYSTEM, 'New account has been registered: ' + reqData[2].data);
-										res.send({ response: 'accept' });
-										return;
-									}
-								});
-						}
-					});
+	uilog.log(uilog.Level.SYSTEM, 'Request new account registration from email "' + req.body.email.trim() + '"')
+
+	sqlAdapter.insertToTable('userinfo', 'firstname, lastname, email, password, phone, birthday, permission',
+		`'${reqData[0].data}', '${reqData[1].data}', '${reqData[2].data}', '${reqData[3].data}', '${reqData[4].data}', '${reqData[5].data}', ${permission}`,
+		function successCallback(result) {
+			sqlAdapter.insertToTable('event', 'time, type, data', `NOW(), ${sqlAdapter.EventType.SIGN_UP}, '${reqData[2].data}'`,
+				function (result) {
+					uilog.log(uilog.Level.SYSTEM, 'New account has been registered: ' + reqData[2].data);
+					res.send({ response: 'accept' }); // accept
+				},
+				function (error) {
+					uilog.log(uilog.Level.ERROR, 'SQL query error')
+					res.send({ response: 'deny' }); // deny request
+				});
+		},
+		function errorCallback(error) {
+			if (error.code === 'ER_DUP_ENTRY') {
+				res.send({ response: 'registered' }); // deny request
+			} else {
+				uilog.log(uilog.Level.ERROR, 'SQL query error')
+				res.send({ response: 'deny' }); // deny request
 			}
 		});
 });

@@ -88,8 +88,9 @@ router.post('/', function (req, res) {
 		return;
 	}
 
-	sqlAdapter.checkAuthWithPass(email, password, function (success, result) {
-			if (success === false || result.length !== 1) {
+	sqlAdapter.checkAuthWithPass(email, password,
+		function successCallback(result) {
+			if (result.length !== 1) {
 				saveAuthHistory(email, false)
 				// clear the cookie
 				res.clearCookie('email');
@@ -98,31 +99,47 @@ router.post('/', function (req, res) {
 				res.send({ response: 'deny', timeout: null });
 				return;
 			}
-			uilog.log(uilog.Level.SYSTEM, "User " + email + " logged in successfully")
-			saveAuthHistory(email, true);
-			// set data to cookie
-			let token = sqlAdapter.removeSpecialCharacter(generateToken());
-			if (!token) {
-				return
-			}
-			let expires_date = new Date(Date.now() + 60 * 60 * 1000) //cookie will expire in 1 hour
-			// res.cookie('email', email, { expires: expires_date, httpOnly: true, secure: true });
-			// res.cookie('token', token, { expires: expires_date, httpOnly: true, secure: true });
-			res.cookie('email', email, { expires: expires_date, httpOnly: true });
-			res.cookie('token', token, { expires: expires_date, httpOnly: true });
-			// save token to sql
-			sqlAdapter.updateToken(email, token, function (success, result) {
-					if (success == false || result.changedRows !== 1) {
+			else {
+				uilog.log(uilog.Level.SYSTEM, "User " + email + " logged in successfully")
+				saveAuthHistory(email, true);
+				// set data to cookie
+				let token = sqlAdapter.removeSpecialCharacter(generateToken());
+				if (!token) {
+					return
+				}
+				let expires_date = new Date(Date.now() + 60 * 60 * 1000) //cookie will expire in 1 hour
+				// res.cookie('email', email, { expires: expires_date, httpOnly: true, secure: true });
+				// res.cookie('token', token, { expires: expires_date, httpOnly: true, secure: true });
+				res.cookie('email', email, { expires: expires_date, httpOnly: true });
+				res.cookie('token', token, { expires: expires_date, httpOnly: true });
+				// save token to sql
+				sqlAdapter.updateToken(email, token,
+					function (result) {
+						if (result.changedRows !== 1) {
+							uilog.log(uilog.Level.ERROR, "Cannot update token to sql")
+							// deny request
+							res.send({ response: 'deny', timeout: null });
+						}
+						else {
+							res.send({ response: 'accept', timeout: null });
+						}
+					},
+					function (error) {
 						uilog.log(uilog.Level.ERROR, "Cannot update token to sql")
 						// deny request
 						res.send({ response: 'deny', timeout: null });
-					}
-					else {
-						// accept request
-						res.send({ response: 'accept', timeout: null });
-					}
-				})
-		})
+					});
+			}
+		},
+		function errorCallback(error) {
+			uilog.log(uilog.Level.ERROR, 'SQL query error')
+			saveAuthHistory(email, false)
+			// clear the cookie
+			res.clearCookie('email');
+			res.clearCookie('token');
+			// deny request
+			res.send({ response: 'deny', timeout: null });
+		});
 });
 
 module.exports = router;
