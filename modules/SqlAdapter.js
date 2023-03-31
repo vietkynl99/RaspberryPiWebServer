@@ -51,7 +51,8 @@ function query(query, callback) {
 }
 
 function checkAuthWithPass(email, password, callback) {
-	sqlcon.query(`SELECT permission FROM userinfo WHERE email = ? AND password = ?`, [email, password], (error, result) => {
+	let query = `SELECT permission FROM userinfo WHERE email = ? AND password = ?`;
+	sqlcon.query(query, [email, password], (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
 			callback(false, undefined)
@@ -63,7 +64,8 @@ function checkAuthWithPass(email, password, callback) {
 }
 
 function checkAuthWithToken(email, token, callback) {
-	sqlcon.query(`SELECT permission FROM userinfo WHERE email = ? AND token = ? AND lastlogin >= DATE_SUB(NOW(), INTERVAL 1 HOUR)`, [email, token], (error, result) => {
+	let query = `SELECT permission FROM userinfo WHERE email = ? AND token = ? AND lastlogin >= DATE_SUB(NOW(), INTERVAL 1 HOUR)`;
+	sqlcon.query(query, [email, token], (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
 			callback(false, undefined)
@@ -75,7 +77,8 @@ function checkAuthWithToken(email, token, callback) {
 }
 
 function updateToken(email, token, callback) {
-	sqlcon.query(`UPDATE userinfo SET token = ? , lastlogin = NOW() WHERE email = ?`, [token, email], (error, result) => {
+	let query = `UPDATE userinfo SET token = ? , lastlogin = NOW() WHERE email = ?`;
+	sqlcon.query(query, [token, email], (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
 			callback(false, undefined)
@@ -87,7 +90,8 @@ function updateToken(email, token, callback) {
 }
 
 function readUserInformation(email, callback) {
-	sqlcon.query(`SELECT firstname, lastname FROM userinfo WHERE email = ?`, [email], (error, result) => {
+	let query = `SELECT firstname, lastname FROM userinfo WHERE email = ?`;
+	sqlcon.query(query, [email], (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
 			callback(false, undefined)
@@ -99,7 +103,8 @@ function readUserInformation(email, callback) {
 }
 
 function insertToTable(table, dataName, dataValue, callback) {
-	sqlAdapter.query(`INSERT INTO ${table} (${dataName}) VALUES (${dataValue})`, (error, result) => {
+	let query = `INSERT INTO ${table} (${dataName}) VALUES (${dataValue})`;
+	sqlcon.query(query, (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
 			callback(false, undefined)

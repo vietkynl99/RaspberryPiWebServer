@@ -94,8 +94,8 @@ router.post('/', function (req, res) {
 				return;
 			}
 			else {
-				sqlAdapter.query(`INSERT INTO userinfo (firstname, lastname, email, password, phone, birthday, permission) 
-				VALUES ('${reqData[0].data}', '${reqData[1].data}', '${reqData[2].data}', '${reqData[3].data}', '${reqData[4].data}', '${reqData[5].data}', ${permission})`,
+				sqlAdapter.insertToTable('userinfo', 'firstname, lastname, email, password, phone, birthday, permission',
+					`'${reqData[0].data}', '${reqData[1].data}', '${reqData[2].data}', '${reqData[3].data}', '${reqData[4].data}', '${reqData[5].data}', ${permission}`,
 					function (success, result) {
 						if (success === false) {
 							// deny request
@@ -103,7 +103,7 @@ router.post('/', function (req, res) {
 							return;
 						}
 						else {
-							sqlAdapter.query(`INSERT INTO event (time, type, data) VALUES (NOW(), ${sqlAdapter.EventType.SIGN_UP}, '${reqData[2].data}')`,
+							sqlAdapter.insertToTable('event', 'time, type, data', `NOW(), ${sqlAdapter.EventType.SIGN_UP}, '${reqData[2].data}'`,
 								function (success, result) {
 									if (success === false) {
 										// deny request

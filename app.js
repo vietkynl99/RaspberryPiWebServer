@@ -103,7 +103,7 @@ function user_login(email, page, id, ip) {
 	clientList.add(email, page, id, ip)
 	clientList.printList()
 	// save login history  to sql
-	sqlAdapter.query(`INSERT INTO loginhistory (time, type, email, ip) VALUES(NOW(), ${sqlAdapter.EventType.LOG_IN}, '${email}', '${ip}')`,
+	sqlAdapter.insertToTable('loginhistory', `time, type, email, ip`, `NOW(), ${sqlAdapter.EventType.LOG_IN}, '${email}', '${ip}'`,
 		function (success, result) {
 			if (success == false) {
 				uilog.log(uilog.Level.ERROR, 'SQL query error')
@@ -125,7 +125,7 @@ function user_logout(id) {
 	uilog.log(uilog.Level.SYSTEM, 'User "' + email + '" logged out ' + page + '!')
 	clientList.printList()
 	// save logout history  to sql
-	sqlAdapter.query(`INSERT INTO loginhistory (time, type, email, ip) VALUES(NOW(), ${sqlAdapter.EventType.LOG_OUT}, '${email}', '${ip}')`,
+	sqlAdapter.insertToTable('loginhistory', `time, type, email, ip`, `NOW(), ${sqlAdapter.EventType.LOG_OUT}, '${email}', '${ip}'`,
 		function (success, result) {
 			if (success == false) {
 				uilog.log(uilog.Level.ERROR, 'SQL query error')
@@ -195,16 +195,16 @@ io.on('connection', function (socket) {
 		user_login(email, page, socket.id, socket.handshake.address)
 		// send data to client
 		sqlAdapter.readUserInformation(email, function (success, result) {
-				if (success == false) {
-					uilog.log(uilog.Level.ERROR, 'SQL query error')
-				}
-				else if (result.length <= 0) {
-					uilog.log(uilog.Level.ERROR, 'Cannot find data of user "' + email + '"')
-				}
-				else {
-					sendDataToClient(socket.id, 'user info', { name: result[0].firstname + ' ' + result[0].lastname });
-				}
-			});
+			if (success == false) {
+				uilog.log(uilog.Level.ERROR, 'SQL query error')
+			}
+			else if (result.length <= 0) {
+				uilog.log(uilog.Level.ERROR, 'Cannot find data of user "' + email + '"')
+			}
+			else {
+				sendDataToClient(socket.id, 'user info', { name: result[0].firstname + ' ' + result[0].lastname });
+			}
+		});
 
 		switch (page) {
 			case 'home':
