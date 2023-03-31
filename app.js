@@ -297,7 +297,7 @@ io.on('connection', function (socket) {
 				autoconnect = 0;
 			}
 			serialPortAdapter.autoConnect = data.status === true;
-			uilog.log(uilog.Level.SQL, 'Request save autoconnect = ' + autoconnect + ' from user ' + data.email);
+			uilog.log(uilog.Level.SYSTEM, 'Request save autoconnect = ' + autoconnect + ' from user ' + data.email);
 			sqlAdapter.query(`UPDATE setting SET autoconnect = '${autoconnect}'`,
 				function (success, result) {
 					if (success == false) {
