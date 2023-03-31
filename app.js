@@ -54,7 +54,7 @@ var sqlAdapter = require('./modules/sqlAdapter')
 sqlAdapter.connect()
 
 // read old setting
-sqlAdapter.readAllFromTable('setting', function (success, result) {
+sqlAdapter.readAllFromTable('setting', undefined, function (success, result) {
 	if (success == false) {
 		uilog.log(uilog.Level.ERROR, 'SQL query error')
 	}
@@ -133,27 +133,26 @@ function user_logout(id) {
 }
 
 function updateLoginHistoryTable(id, email) {
-	sqlAdapter.query(`SELECT * FROM loginhistory WHERE email='${email}' ORDER BY id DESC LIMIT 10`,
-		function (success, result) {
-			if (success == false) {
-				uilog.log(uilog.Level.ERROR, 'SQL query error')
+	sqlAdapter.readAllFromTable('loginhistory', 10, function (success, result) {
+		if (success == false) {
+			uilog.log(uilog.Level.ERROR, 'SQL query error')
+		}
+		else if (result.length <= 0) {
+			uilog.log(uilog.Level.ERROR, 'Cannot find data in loginhistory table')
+		}
+		else {
+			let data = [];
+			result.forEach(element => {
+				data.push([element.id, new Date(element.time).toLocaleString(), element.email, element.ip, element.type]);
+			});
+			let tableData = {
+				id: 'login-history-table',
+				columnName: ['#', 'Time', 'Email', 'IP', 'Status'],
+				data: data
 			}
-			else if (result.length <= 0) {
-				uilog.log(uilog.Level.ERROR, 'Cannot find data of user "' + email + '"')
-			}
-			else {
-				let data = [];
-				result.forEach(element => {
-					data.push([element.id, new Date(element.time).toLocaleString(), element.email, element.ip, element.type]);
-				});
-				let tableData = {
-					id: 'login-history-table',
-					columnName: ['#', 'Time', 'Email', 'IP', 'Status'],
-					data: data
-				}
-				sendDataToClient(id, 'update table', tableData);
-			}
-		});
+			sendDataToClient(id, 'update table', tableData);
+		}
+	});
 }
 
 function sendDataToClient(id, event, data) {

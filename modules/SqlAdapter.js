@@ -116,8 +116,8 @@ function insertToTable(table, dataName, dataValue, callback) {
 }
 
 function updateTable(table, dataName, dataValue, callback) {
-	let query = `UPDATE ${table} SET ${dataName} = ${dataValue}`;
-	sqlcon.query(query, (error, result) => {
+	let query = `UPDATE ${table} SET ${dataName} = '${dataValue}'`;
+	sqlcon.query(query, [ dataName, dataValue], (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
 			callback(false, undefined)
@@ -128,8 +128,14 @@ function updateTable(table, dataName, dataValue, callback) {
 	});
 }
 
-function readAllFromTable(table, callback) {
-	let query = `SELECT * FROM ${table}`;
+function readAllFromTable(table, limit, callback) {
+	let query;
+	if (limit) {
+		query = `SELECT * FROM ${table} ORDER BY id DESC LIMIT ${limit}`;
+	}
+	else {
+		query = `SELECT * FROM ${table}`;
+	}
 	sqlcon.query(query, (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
