@@ -46,7 +46,7 @@ $('.validate-form').on('submit', function (e) {
             },
             success: function (data) {
                 if (data.response === 'accept') {
-                    window.location.href = "/home";
+                    window.location.href = "/dashboard";
                 }
                 else if (data.response === 'retry') {
                     if (data.timeout === 1) {

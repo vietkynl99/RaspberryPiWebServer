@@ -6,7 +6,6 @@ var logger = require('morgan');
 var rootRouter = require('./routes/rootRouter');
 var loginRouter = require('./routes/loginRouter');
 var signUpRouter = require('./routes/signUpRouter');
-var homeRouter = require('./routes/homeRouter');
 var app = express();
 
 // socket.io
@@ -30,7 +29,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', rootRouter);
 app.use('/login', loginRouter);
 app.use('/signup', signUpRouter);
-app.use('/home', homeRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
