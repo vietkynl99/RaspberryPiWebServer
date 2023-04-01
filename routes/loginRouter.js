@@ -3,15 +3,10 @@ var bodyParser = require("body-parser");
 var app = express();
 var router = express.Router();
 var cookieParser = require('cookie-parser');
-const crypto = require('crypto');
 var uilog = require('../modules/uiLog')
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
-
-function generateToken() {
-	return crypto.randomBytes(20).toString('hex');
-}
 
 // connect to database
 var sqlAdapter = require('../modules/sqlAdapter')
@@ -103,17 +98,13 @@ router.post('/', function (req, res) {
 				uilog.log(uilog.Level.SYSTEM, "User " + email + " logged in successfully")
 				saveAuthHistory(email, true);
 				// set data to cookie
-				let token = sqlAdapter.removeSpecialCharacter(generateToken());
-				if (!token) {
-					return
-				}
+				let encryptedEmail = sqlAdapter.encrypte(email);
+				let token = sqlAdapter.generateToken();
 				let expires_date = new Date(Date.now() + 60 * 60 * 1000) //cookie will expire in 1 hour
-				// res.cookie('email', email, { expires: expires_date, httpOnly: true, secure: true });
-				// res.cookie('token', token, { expires: expires_date, httpOnly: true, secure: true });
-				res.cookie('email', email, { expires: expires_date, httpOnly: true });
-				res.cookie('token', token, { expires: expires_date, httpOnly: true });
+				res.cookie('key1', encryptedEmail, { expires: expires_date, httpOnly: true });
+				res.cookie('key2', token.encrypted, { expires: expires_date, httpOnly: true });
 				// save token to sql
-				sqlAdapter.updateToken(email, token,
+				sqlAdapter.updateToken(email, token.raw,
 					function (result) {
 						if (result.changedRows !== 1) {
 							uilog.log(uilog.Level.ERROR, "Cannot update token to sql")

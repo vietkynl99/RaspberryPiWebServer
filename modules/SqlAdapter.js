@@ -1,7 +1,37 @@
+const crypto = require('crypto');
 var uilog = require('../modules/uiLog')
 var mysql = require('mysql');
 var sqlcon = undefined;
 
+// crypto
+const crypto_key = crypto.randomBytes(32);
+const crypto_iv = crypto.randomBytes(16);
+
+function encrypte(data) {
+	let cipher = crypto.createCipheriv('aes-256-cbc', crypto_key, crypto_iv);
+	let encrypted = cipher.update(data, 'utf8', 'hex');
+	encrypted += cipher.final('hex');
+	return encrypted;
+}
+
+function decrypte(data) {
+	try {
+		let decipher = crypto.createDecipheriv('aes-256-cbc', crypto_key, crypto_iv);
+		let decrypted = decipher.update(data, 'hex', 'utf8');
+		decrypted += decipher.final('utf8');
+		return decrypted;
+	} catch (error) {
+		return '';
+	}
+}
+
+function generateToken() {
+	let token = crypto.randomBytes(20).toString('hex');
+	let encrypted = encrypte(token);
+	return { raw: token, encrypted: encrypted }
+}
+
+// sql function
 const UserPermission = {
 	ADMIN: 1,
 	USER: 2
@@ -63,9 +93,11 @@ function checkAuthWithPass(email, password, successCallback, errorCallback) {
 	});
 }
 
-function checkAuthWithToken(email, token, successCallback, errorCallback) {
+function checkAuthWithToken(encryptedEmail, encryptedToken, successCallback, errorCallback) {
+	let rawEmail = decrypte(encryptedEmail);
+	let rawToken = decrypte(encryptedToken);
 	let query = `SELECT permission FROM userinfo WHERE email = ? AND token = ? AND lastlogin >= DATE_SUB(NOW(), INTERVAL 1 HOUR)`;
-	sqlcon.query(query, [email, token], (error, result) => {
+	sqlcon.query(query, [rawEmail, rawToken], (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
 			errorCallback(error)
@@ -117,7 +149,7 @@ function insertToTable(table, dataName, dataValue, successCallback, errorCallbac
 
 function updateTable(table, dataName, dataValue, successCallback, errorCallback) {
 	let query = `UPDATE ${table} SET ${dataName} = '${dataValue}'`;
-	sqlcon.query(query, [ dataName, dataValue], (error, result) => {
+	sqlcon.query(query, [dataName, dataValue], (error, result) => {
 		if (error) {
 			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
 			errorCallback(error)
@@ -149,6 +181,9 @@ function readAllFromTable(table, limit, successCallback, errorCallback) {
 
 
 module.exports = {
+	encrypte,
+	decrypte,
+	generateToken,
 	UserPermission,
 	EventType,
 	removeSpecialCharacter,
