@@ -58,8 +58,8 @@ function allowLogin(email) {
 // Http request
 router.get('/', function (req, res) {
 	// clear the cookie
-	res.clearCookie('email');
-	res.clearCookie('token');
+	res.clearCookie('key1');
+	res.clearCookie('key2');
 	// go to login page
 	res.render('login');
 });
@@ -76,8 +76,8 @@ router.post('/', function (req, res) {
 	let data = allowLogin(email);
 	if (!data.allow) {
 		// clear the cookie
-		res.clearCookie('email');
-		res.clearCookie('token');
+		res.clearCookie('key1');
+		res.clearCookie('key2');
 		// deny request
 		res.send({ response: 'retry', timeout: data.timeout });
 		return;
@@ -88,8 +88,8 @@ router.post('/', function (req, res) {
 			if (result.length !== 1) {
 				saveAuthHistory(email, false)
 				// clear the cookie
-				res.clearCookie('email');
-				res.clearCookie('token');
+				res.clearCookie('key1');
+				res.clearCookie('key2');
 				// deny request
 				res.send({ response: 'deny', timeout: null });
 				return;
@@ -126,8 +126,8 @@ router.post('/', function (req, res) {
 			uilog.log(uilog.Level.ERROR, 'SQL query error')
 			saveAuthHistory(email, false)
 			// clear the cookie
-			res.clearCookie('email');
-			res.clearCookie('token');
+			res.clearCookie('key1');
+			res.clearCookie('key2');
 			// deny request
 			res.send({ response: 'deny', timeout: null });
 		});
