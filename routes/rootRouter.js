@@ -26,7 +26,7 @@ function handleClientRequest(address, sourceFile, needAdminPermission) {
 				else if (needAdminPermission == true && result[0].permission !== sqlAdapter.UserPermission.ADMIN) {
 					// res.redirect('/login');
 					res.locals.message = 'You do not have permission to access this page.';
-					res.locals.error = {status: 401}
+					res.locals.status = 401;
 					res.render('error');
 				}
 				else {
