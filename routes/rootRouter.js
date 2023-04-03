@@ -27,6 +27,7 @@ function handleClientRequest(address, sourceFile, needAdminPermission) {
 					// res.redirect('/login');
 					res.locals.message = 'You do not have permission to access this page.';
 					res.locals.status = 401;
+					res.status(401);
 					res.render('error');
 				}
 				else {
