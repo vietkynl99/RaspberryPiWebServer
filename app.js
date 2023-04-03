@@ -7,16 +7,17 @@ var rootRouter = require('./routes/rootRouter');
 var loginRouter = require('./routes/loginRouter');
 var signUpRouter = require('./routes/signUpRouter');
 var app = express();
+var uilog = require('./modules/uiLog')
+var systemManager = require('./modules/systemManager');
+var serialPortAdapter = require('./modules/serialPortAdapter');
+require('dotenv').config();
+
+uilog.log(uilog.Level.SYSTEM, 'NODE_ENV: ' + process.env.NODE_ENV); 
 
 // socket.io
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 80;
-
-// plugin
-var uilog = require('./modules/uiLog')
-var systemManager = require('./modules/systemManager');
-var serialPortAdapter = require('./modules/serialPortAdapter');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -37,11 +38,17 @@ app.use(function (req, res, next) {
 
 // error handler
 app.use(function (err, req, res, next) {
-	// set locals, only providing error in development
-	res.locals.message = err.message;
-	res.locals.error = req.app.get('env') === 'development' ? err : {};
-
+	res.locals.status = err.status;
+	
 	// render the error page
+	if(req.app.get('env') === 'development') {
+		res.locals.message = err.message;
+		uilog.log(uilog.Level.ERROR, "Client get error " + err.status)
+		console.log(err);
+	}
+	else {
+		res.locals.message = 'Something went wrong. Please try again.';
+	}
 	res.status(err.status || 500);
 	res.render('error');
 });
@@ -187,8 +194,8 @@ io.on('connection', function (socket) {
 		}
 		user_login(email, page, socket.id, socket.handshake.address)
 		// send data to client
-		sqlAdapter.readUserInformation(email, 
-			function successCallback(result) { 
+		sqlAdapter.readUserInformation(email,
+			function successCallback(result) {
 				if (result.length <= 0) {
 					uilog.log(uilog.Level.ERROR, 'Cannot find data of user "' + email + '"')
 				}
