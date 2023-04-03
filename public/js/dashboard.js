@@ -93,6 +93,30 @@
 		}
 		// ===============================================================================================
 
+		const checkboxList = document.querySelectorAll('.controlled-checkbox');
+		const buttonList = document.querySelectorAll('.controlled-button');
+		const iconList = document.querySelectorAll('.controlled-icon');
+
+
+		if (checkboxList.length == buttonList.length && iconList.length == buttonList.length) {
+			for (let index = 0; index < checkboxList.length; index++) {
+				const checkbox = checkboxList[index];
+				const button = buttonList[index];
+				const icon = iconList[index];
+				checkbox.addEventListener('click', () => {
+					icon.style.color = checkbox.checked ? '#2196F3' : 'black';
+				});
+				button.addEventListener('click', () => {
+					checkbox.checked = !checkbox.checked;
+					icon.style.color = checkbox.checked ? '#2196F3' : 'black';
+				});
+			}
+		}
+		else {
+			console.log('Devices list error!!!');
+		}
+		// ===============================================================================================
+
 		var email = document.getElementById("navbar_email").textContent.trim();
 		// conntec to socket
 		var socket = io();
