@@ -12,12 +12,16 @@ var systemManager = require('./modules/systemManager');
 var serialPortAdapter = require('./modules/serialPortAdapter');
 require('dotenv').config();
 
-uilog.log(uilog.Level.SYSTEM, 'NODE_ENV: ' + process.env.NODE_ENV); 
+uilog.log(uilog.Level.SYSTEM, 'NODE_ENV: ' + process.env.NODE_ENV);
 
 // socket.io
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 var port = process.env.PORT || 80;
+
+http.listen(port, function () {
+	uilog.log(uilog.Level.SYSTEM, 'Server started on port:' + port);
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -39,12 +43,12 @@ app.use(function (req, res, next) {
 // error handler
 app.use(function (err, req, res, next) {
 	res.locals.status = err.status;
-	
+
 	// render the error page
-	if(req.app.get('env') === 'development') {
+	if (req.app.get('env') === 'development') {
 		res.locals.message = err.message;
-		uilog.log(uilog.Level.ERROR, "Client get error " + err.status)
-		console.log(err);
+		// uilog.log(uilog.Level.ERROR, "Client get error " + err.status)
+		// console.log(err);
 	}
 	else {
 		res.locals.message = 'Something went wrong. Please try again.';
@@ -307,10 +311,6 @@ io.on('connection', function (socket) {
 
 });
 
-
-http.listen(port, function () {
-	uilog.log(uilog.Level.SYSTEM, 'Server started on port:' + port);
-});
 
 
 function sendPortList(id) {
