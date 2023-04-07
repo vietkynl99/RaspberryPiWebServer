@@ -93,16 +93,46 @@
 		}
 		// ===============================================================================================
 
-		const checkboxList = document.querySelectorAll('.controlled-checkbox');
-		const buttonList = document.querySelectorAll('.controlled-button');
-		const iconList = document.querySelectorAll('.controlled-icon');
+		function updateDeviceList(list) {
+			let html = '';
+			let index = 0;
+			list.forEach(element => {
+				index++;
+				html += `<div class="col-6 col-sm-6 col-md-6 col-lg-3 d-flex flex-column">
+				<div class="row flex-grow">
+				<div class="col-12 grid-margin stretch-card">
+				<div class="card card-rounded">
+				  <div class="card-body pb-0">
+					<div class="row">
+					<div class="col-7">
+						<p class="text-small mb-2">${element.name}</p>
+						<h4 class="mb-0 fw-bold">${element.value}</h4>
+						<label class="switch">
+						  <input id="controlled-checkbox-${index}" type="checkbox">
+						  <span class="slider round"></span>
+						  </label>
+						  </div>
+						  <div class="col-5">
+						<div class="d-flex justify-content-between align-items-center mb-2 mb-sm-0">
+						  <button id="controlled-button-${index}" class="circle-btn">
+						  <i id="controlled-icon-${index}" class="fa fa-lightbulb-o pointer"></i>
+						  </button>
+						</div>
+					  </div>
+					  </div>
+					  </div>
+					  </div>
+					  </div>
+					  </div>
+					  </div>`;
+			});
+			document.getElementById('controlled-devices').innerHTML = html;
 
-
-		if (checkboxList.length == buttonList.length && iconList.length == buttonList.length) {
-			for (let index = 0; index < checkboxList.length; index++) {
-				const checkbox = checkboxList[index];
-				const button = buttonList[index];
-				const icon = iconList[index];
+			// click event
+			for (let index = 1; index <= list.length; index++) {
+				const checkbox = document.getElementById(`controlled-checkbox-${index}`);
+				const button = document.getElementById(`controlled-button-${index}`);
+				const icon = document.getElementById(`controlled-icon-${index}`);
 				checkbox.addEventListener('click', () => {
 					icon.style.color = checkbox.checked ? '#2196F3' : 'black';
 				});
@@ -112,9 +142,14 @@
 				});
 			}
 		}
-		else {
-			console.log('Devices list error!!!');
-		}
+		var deviceList = [
+			{type: 'onoff', name: 'Light 1', value: '20%'},
+			{type: 'onoff', name: 'Light 2', value: '30%'},
+			{type: 'slider', name: 'Light 3', value: '40%'},
+			{type: 'slider', name: 'Light 4', value: '50%'}
+		];
+		updateDeviceList(deviceList);
+
 		// ===============================================================================================
 
 		var email = document.getElementById("navbar_email").textContent.trim();
