@@ -16,9 +16,12 @@ require('dotenv').config();
 uilog.log(uilog.Level.SYSTEM, 'NODE_ENV: ' + process.env.NODE_ENV);
 
 // socket.io
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
-var port = process.env.PORT || 80;
+const port = process.env.PORT || 80;
+const http = require('http').Server(app);
+// const io = require('socket.io')(http);
+const io = require('socket.io')(http, {
+	allowEIO3: true
+  });
 
 http.listen(port, function () {
 	uilog.log(uilog.Level.SYSTEM, 'Server started on port:' + port);
@@ -183,7 +186,7 @@ function sendDataToAllClientInPage(page, event, data) {
 
 // new connection to server
 io.on('connection', function (socket) {
-	// uilog.log(uilog.Level.SYSTEM, 'Address [' + socket.handshake.address + '] ID [' + socket.id + '] connected')
+	uilog.log(uilog.Level.SYSTEM, 'Address [' + socket.handshake.address + '] ID [' + socket.id + '] connected')
 
 	// client disconnect
 	socket.on('disconnect', function () {
