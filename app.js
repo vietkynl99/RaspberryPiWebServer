@@ -1,15 +1,16 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
-var rootRouter = require('./routes/rootRouter');
-var loginRouter = require('./routes/loginRouter');
-var signUpRouter = require('./routes/signUpRouter');
-var app = express();
-var uilog = require('./modules/uiLog')
-var systemManager = require('./modules/systemManager');
-var serialPortAdapter = require('./modules/serialPortAdapter');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
+const rootRouter = require('./routes/rootRouter');
+const loginRouter = require('./routes/loginRouter');
+const signUpRouter = require('./routes/signUpRouter');
+const app = express();
+const uilog = require('./modules/uiLog')
+const systemManager = require('./modules/systemManager');
+const serialPortAdapter = require('./modules/serialPortAdapter');
+const { PythonShell } = require('python-shell');
 require('dotenv').config();
 
 uilog.log(uilog.Level.SYSTEM, 'NODE_ENV: ' + process.env.NODE_ENV);
@@ -327,3 +328,40 @@ function sendPortStatus(sendAll, id) {
 		sendDataToClient(id, 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath(), autoConnect: serialPortAdapter.autoConnect });
 	}
 }
+
+
+
+// NLP API methods
+const pyshell = new PythonShell('nlp_parser.py');
+
+function nlpAnalyze(sentence) {
+    sentence = sentence.toLowerCase().trim()
+    if (!sentence) {
+        uilog.log(uilog.Level.ERROR, 'Invalid NLP sentence')
+    }
+    pyshell.send(sentence);
+}
+
+pyshell.on('message', function (outputStr) {
+    try {
+        let data = JSON.parse(outputStr);
+        switch (data.event) {
+            case 'init error':
+                uilog.log(uilog.Level.ERROR, 'NLP initialization failed: ' + data.description)
+				process.exit(1)
+            case 'init done':
+                uilog.log(uilog.Level.SYSTEM, 'NLP initialization successful')
+            case 'parse error':
+                uilog.log(uilog.Level.ERROR, 'NLP Error parsing: ' + data.description)
+                break;
+            case 'result':
+				uilog.log(uilog.Level.SYSTEM, 'NLP successfully parsed:')
+                console.log('\t' + data.result);
+                break;
+            default:
+                break;
+        }
+    } catch (error) {
+        console.log('NLP raw data:', data);
+    }
+});
