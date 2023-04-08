@@ -30,7 +30,7 @@ function log(level, message) {
 	const date = new Date();
 	const formattedDateTime = moment(date).format('DD/MM/YYYY HH:mm:ss');
 
-	console.log(level, `[${formattedDateTime}][${levelName}][${functionName}]`, message, '\x1b[0m');
+	console.log(`${level}[${formattedDateTime}][${levelName}][${functionName}]`, message, '\x1b[0m');
 }
 
 module.exports = {

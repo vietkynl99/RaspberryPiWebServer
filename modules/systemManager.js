@@ -32,9 +32,26 @@ function getTotalMemory() {
     return (os.totalmem() / Math.pow(2, 30)).toFixed(2);
 }
 
+function getEthernetIP() {
+    const interfaces = os.networkInterfaces();
+    let ipList = '';
+
+    for (const interfaceName in interfaces) {
+        const interface = interfaces[interfaceName];
+        for (const address of interface) {
+            if (address.family === 'IPv4') {
+                ipList += '\r\n' + interfaceName + ': ' + address.address;
+            }
+        }
+    }
+
+    return ipList.trim();
+}
+
 module.exports = {
     getCPUUsage,
     getMemoryUsage,
     getTotalMemoryUsage,
-    getTotalMemory
+    getTotalMemory,
+    getEthernetIP
 }

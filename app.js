@@ -21,10 +21,10 @@ const http = require('http').Server(app);
 // const io = require('socket.io')(http);
 const io = require('socket.io')(http, {
 	allowEIO3: true
-  });
+});
 
 http.listen(port, function () {
-	uilog.log(uilog.Level.SYSTEM, 'Server started on port:' + port);
+	uilog.log(uilog.Level.SYSTEM, `Server starts running on port ${port} of the addresses:\n${systemManager.getEthernetIP()}`);
 });
 
 // view engine setup
@@ -338,33 +338,33 @@ function sendPortStatus(sendAll, id) {
 const pyshell = new PythonShell('nlp_parser.py');
 
 function nlpAnalyze(sentence) {
-    sentence = sentence.toLowerCase().trim()
-    if (!sentence) {
-        uilog.log(uilog.Level.ERROR, 'Invalid NLP sentence')
-    }
-    pyshell.send(sentence);
+	sentence = sentence.toLowerCase().trim()
+	if (!sentence) {
+		uilog.log(uilog.Level.ERROR, 'Invalid NLP sentence')
+	}
+	pyshell.send(sentence);
 }
 
 pyshell.on('message', function (outputStr) {
-    try {
-        let data = JSON.parse(outputStr);
-        switch (data.event) {
-            case 'init error':
-                uilog.log(uilog.Level.ERROR, 'NLP initialization failed: ' + data.description)
+	try {
+		let data = JSON.parse(outputStr);
+		switch (data.event) {
+			case 'init error':
+				uilog.log(uilog.Level.ERROR, 'NLP initialization failed: ' + data.description)
 				process.exit(1)
-            case 'init done':
-                uilog.log(uilog.Level.SYSTEM, 'NLP initialization successful')
-            case 'parse error':
-                uilog.log(uilog.Level.ERROR, 'NLP Error parsing: ' + data.description)
-                break;
-            case 'result':
+			case 'init done':
+				uilog.log(uilog.Level.SYSTEM, 'NLP initialization successful')
+			case 'parse error':
+				uilog.log(uilog.Level.ERROR, 'NLP Error parsing: ' + data.description)
+				break;
+			case 'result':
 				uilog.log(uilog.Level.SYSTEM, 'NLP successfully parsed:')
-                console.log('\t' + data.result);
-                break;
-            default:
-                break;
-        }
-    } catch (error) {
-        console.log('NLP raw data:', data);
-    }
+				console.log('\t' + data.result);
+				break;
+			default:
+				break;
+		}
+	} catch (error) {
+		console.log('NLP raw data:', data);
+	}
 });
