@@ -27,7 +27,10 @@ sendJsonData({"event": "init done"})
 while 1:
     try:
         # Get input from Node.js
-        sentence = input()
+        # sentence = input().lower().strip()
+        sentence = input().strip()
+        if sentence == "":
+            sendJsonData({"event": "parser error", "description": "Empty string"})
         # Parsing sentences using spaCy library
         doc = nlp(sentence)
         # Print out the syntactic elements in the sentence
