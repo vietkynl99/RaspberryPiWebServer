@@ -313,6 +313,13 @@ io.on('connection', function (socket) {
 		}, 500);
 	});
 
+	// Get data from mobile devices
+	socket.on('MD_message', function (data) {
+		let response = "Sorry. I don't understand your question."
+		uilog.log(uilog.Level.CLIENT, `received message from MD: [${data}] -> [${response}]`);
+		sendDataToClient(socket.id, 'MD_message_res', {message: response});
+	})
+
 });
 
 
