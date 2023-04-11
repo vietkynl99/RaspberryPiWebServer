@@ -1,3 +1,7 @@
+# pip install spacy
+# python -m spacy download en_core_web_lg
+# python -m spacy download en_core_web_sm
+
 USER_LARGE_VERSION = 1
 
 
