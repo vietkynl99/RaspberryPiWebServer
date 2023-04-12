@@ -315,11 +315,38 @@ io.on('connection', function (socket) {
 
 	// Get data from mobile devices
 	socket.on('MD_message', function (data) {
-		let response = "Sorry. I don't understand your question."
-		uilog.log(uilog.Level.CLIENT, `received message from MD: [${data}] -> [${response}]`);
-		sendDataToClient(socket.id, 'MD_message_res', {message: response});
+		let sentence = data.trim();
+		nlpAnalyze(sentence,
+			function successCallback(result) {
+				uilog.log(uilog.Level.CLIENT, `received message from MD: [${data}] -> [${result}]`);
+				sendDataToClient(socket.id, 'MD_message_res', { message: result });
+			},
+			function errorCallback(error) {
+				let result;
+				switch (error) {
+					case 'syntax':
+						result = "Sorry. I can only understand English."
+						uilog.log(uilog.Level.CLIENT, `received message from MD: [${data}] -> [${result}]`);
+						sendDataToClient(socket.id, 'MD_message_res', { message: result });
+						break;
+					case 'system':
+						result = "System error. Please try again."
+						uilog.log(uilog.Level.CLIENT, `received message from MD: [${data}] -> [${result}]`);
+						sendDataToClient(socket.id, 'MD_message_res', { message: result });
+						break;
+					case 'busy':
+						result = "System is busy. Please try again."
+						uilog.log(uilog.Level.CLIENT, `received message from MD: [${data}] -> [${result}]`);
+						sendDataToClient(socket.id, 'MD_message_res', { message: result });
+						break;
+					default:
+						result = "Sorry. I don't understand your question."
+						uilog.log(uilog.Level.CLIENT, `received message from MD: [${data}] -> [${result}]`);
+						sendDataToClient(socket.id, 'MD_message_res', { message: result });
+						break;
+				}
+			})
 	})
-
 });
 
 
@@ -344,34 +371,49 @@ function sendPortStatus(sendAll, id) {
 // NLP API methods
 const pyshell = new PythonShell('nlp_parser.py');
 
-function nlpAnalyze(sentence) {
+function nlpAnalyze(sentence, successCallback, errorCallback) {
 	sentence = sentence.toLowerCase().trim()
 	if (!sentence) {
 		uilog.log(uilog.Level.ERROR, 'Invalid NLP sentence')
+		errorCallback('syntax')
+		return
 	}
-	pyshell.send(sentence);
-}
 
-pyshell.on('message', function (outputStr) {
-	try {
-		let data = JSON.parse(outputStr);
-		switch (data.event) {
-			case 'init error':
-				uilog.log(uilog.Level.ERROR, 'NLP initialization failed: ' + data.description)
-				process.exit(1)
-			case 'init done':
-				uilog.log(uilog.Level.SYSTEM, 'NLP initialization successful')
-			case 'parse error':
-				uilog.log(uilog.Level.ERROR, 'NLP Error parsing: ' + data.description)
-				break;
-			case 'result':
-				uilog.log(uilog.Level.SYSTEM, 'NLP successfully parsed:')
-				console.log('\t' + data.result);
-				break;
-			default:
-				break;
-		}
-	} catch (error) {
-		console.log('NLP raw data:', data);
+	// check special characters
+	sentence2 = sentence.replace(/[^\x00-\x7F]/g, "")
+	if (sentence != sentence2) {
+		errorCallback('syntax')
+		return
 	}
-});
+
+	pyshell.on('message', function (outputStr) {
+		try {
+			let data = JSON.parse(outputStr)
+			switch (data.event) {
+				case 'init error':
+					uilog.log(uilog.Level.ERROR, 'NLP initialization failed: ' + data.description)
+					process.exit(1)
+				case 'init done':
+					uilog.log(uilog.Level.SYSTEM, 'NLP initialization successful')
+					errorCallback('busy')
+				case 'parse error':
+					uilog.log(uilog.Level.ERROR, 'NLP Error parsing: ' + data.description)
+					errorCallback('system')
+					break;
+				case 'result':
+					uilog.log(uilog.Level.SYSTEM, 'NLP successfully parsed:' + data.result)
+					successCallback(data.result)
+					break;
+				default:
+					break;
+			}
+		} catch (error) {
+			console.log('NLP raw data:', outputStr)
+			errorCallback('system')
+		}
+		// remove old callback
+		pyshell.removeAllListeners('message')
+	});
+
+	pyshell.send(sentence)
+}
