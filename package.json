@@ -1,7 +1,11 @@
 {
   "name": "KynlWeb",
   "version": "1.0.0",
-  "private": true,
+  "description": "",
+  "main": "app.js",
+  "engines": {
+    "node": "14.x"
+  },
   "scripts": {
     "start": "node app.js"
   },
