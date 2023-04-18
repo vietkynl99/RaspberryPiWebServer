@@ -97,7 +97,6 @@
 			let html = '';
 			let index = 0;
 			list.forEach(element => {
-				index++;
 				html += `<div class="col-6 col-sm-6 col-md-6 col-lg-3 d-flex flex-column">
 				<div class="row flex-grow">
 				<div class="col-12 grid-margin stretch-card">
@@ -125,11 +124,12 @@
 					  </div>
 					  </div>
 					  </div>`;
+				index++;
 			});
 			document.getElementById('controlled-devices').innerHTML = html;
 
 			// click event
-			for (let index = 1; index <= list.length; index++) {
+			for (let index = 0; index < list.length; index++) {
 				const checkbox = document.getElementById(`controlled-checkbox-${index}`);
 				const button = document.getElementById(`controlled-button-${index}`);
 				const icon = document.getElementById(`controlled-icon-${index}`);
@@ -143,10 +143,10 @@
 			}
 		}
 		var deviceList = [
-			{type: 'onoff', name: 'Light 1', value: '20%'},
-			{type: 'onoff', name: 'Light 2', value: '30%'},
-			{type: 'slider', name: 'Light 3', value: '40%'},
-			{type: 'slider', name: 'Light 4', value: '50%'}
+			{ type: 'onoff', name: 'Light 1', value: '20%' },
+			{ type: 'onoff', name: 'Light 2', value: '30%' },
+			{ type: 'slider', name: 'Light 3', value: '40%' },
+			{ type: 'slider', name: 'Light 4', value: '50%' }
 		];
 		updateDeviceList(deviceList);
 
@@ -156,7 +156,7 @@
 		// conntec to socket
 		var socket = io();
 		socket.on('connect', function () {
-			socket.emit('login', { email: email, page: 'home' });
+			socket.emit('login', { email: email, page: 'dashboard' });
 		});
 
 		socket.on('user info', function (data) {
@@ -181,6 +181,16 @@
 
 		socket.on('update chart', function (data) {
 			updateChartData(data)
+		});
+
+		socket.on('device status', function (data) {
+			let index = deviceList.findIndex(x => x.name === data.name)
+			if (index >= 0) {
+				const checkbox = document.getElementById(`controlled-checkbox-${index}`);
+				const icon = document.getElementById(`controlled-icon-${index}`);
+				checkbox.checked = data.status == '1';
+				icon.style.color = checkbox.checked ? '#2196F3' : 'black';
+			}
 		});
 
 

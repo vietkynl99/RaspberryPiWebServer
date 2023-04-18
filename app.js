@@ -347,6 +347,13 @@ io.on('connection', function (socket) {
 				}
 			})
 	})
+	socket.on('MD_data', function (data) {
+		uilog.log(uilog.Level.CLIENT, `received data from MD: ${data}`)
+		arr = data.split(';')
+		if (arr.length == 3) {
+			sendDataToAllClientInPage('dashboard', 'device status', { type: arr[0], name: arr[1], status: arr[2]})
+		}
+	})
 });
 
 
