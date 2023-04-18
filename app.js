@@ -318,7 +318,7 @@ io.on('connection', function (socket) {
 		let sentence = data.trim();
 		nlpAnalyze(sentence,
 			function successCallback(result) {
-				uilog.log(uilog.Level.CLIENT, `received message from MD: [${data}] -> [${result}]`);
+				uilog.log(uilog.Level.MD, `received message: [${data}] -> [${result}]`);
 				sendDataToClient(socket.id, 'MD_message_res', { message: result });
 			},
 			function errorCallback(error) {
@@ -326,29 +326,29 @@ io.on('connection', function (socket) {
 				switch (error) {
 					case 'syntax':
 						result = "Sorry. I can only understand English."
-						uilog.log(uilog.Level.CLIENT, `received message from MD: [${data}] -> [${result}]`);
+						uilog.log(uilog.Level.MD, `received message: [${data}] -> [${result}]`);
 						sendDataToClient(socket.id, 'MD_message_res', { message: result });
 						break;
 					case 'system':
 						result = "System error. Please try again."
-						uilog.log(uilog.Level.CLIENT, `received message from MD: [${data}] -> [${result}]`);
+						uilog.log(uilog.Level.MD, `received message: [${data}] -> [${result}]`);
 						sendDataToClient(socket.id, 'MD_message_res', { message: result });
 						break;
 					case 'busy':
 						result = "System is busy. Please try again."
-						uilog.log(uilog.Level.CLIENT, `received message from MD: [${data}] -> [${result}]`);
+						uilog.log(uilog.Level.MD, `received message: [${data}] -> [${result}]`);
 						sendDataToClient(socket.id, 'MD_message_res', { message: result });
 						break;
 					default:
 						result = "Sorry. I don't understand your question."
-						uilog.log(uilog.Level.CLIENT, `received message from MD: [${data}] -> [${result}]`);
+						uilog.log(uilog.Level.MD, `received message: [${data}] -> [${result}]`);
 						sendDataToClient(socket.id, 'MD_message_res', { message: result });
 						break;
 				}
 			})
 	})
 	socket.on('MD_data', function (data) {
-		uilog.log(uilog.Level.CLIENT, `received data from MD: ${data}`)
+		uilog.log(uilog.Level.MD, `received data: ${data}`)
 		arr = data.split(';')
 		if (arr.length == 3) {
 			sendDataToAllClientInPage('dashboard', 'device status', { type: arr[0], name: arr[1], status: arr[2]})

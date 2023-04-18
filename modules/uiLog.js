@@ -15,7 +15,7 @@ const Level = {
 	CLIENT: yellow,
 	SERIALPORT: blue,
 	SQL: cyan,
-	CTRL: purple
+	MD: purple
 }
 
 function log(level, message) {
