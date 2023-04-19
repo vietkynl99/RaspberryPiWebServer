@@ -25,7 +25,7 @@ function log(level, message) {
 	if (functionName) {
 		functionName = functionName[0].trim();
 	}
-	functionName = functionName + '|' + stack.match(/\/[^\/]+(?=:)/)[0].replace('\\', '');
+	functionName = functionName + '|' + stack.match(/\/[^\/]+(?=:)/)[0].replace(/\//g, '');
 	const levelName = Object.keys(Level).find(key => Level[key] === level);
 	const date = new Date();
 	const formattedDateTime = moment(date).format('DD/MM/YYYY HH:mm:ss');
