@@ -20,12 +20,12 @@ const Level = {
 
 function log(level, message) {
 	const error = new Error();
-	const stack = error.stack.split("\n")[2].trim();
+	const stack = error.stack.split("\n")[2].trim().replace(/\\/g,'/');
 	let functionName = stack.match(/ .+ /);
 	if (functionName) {
 		functionName = functionName[0].trim();
 	}
-	functionName = functionName + '|' + stack.match(/\\[^\\]+(?=:)/)[0].replace('\\', '');
+	functionName = functionName + '|' + stack.match(/\/[^\/]+(?=:)/)[0].replace('\\', '');
 	const levelName = Object.keys(Level).find(key => Level[key] === level);
 	const date = new Date();
 	const formattedDateTime = moment(date).format('DD/MM/YYYY HH:mm:ss');
