@@ -16,15 +16,37 @@ require('dotenv').config();
 uilog.log(uilog.Level.SYSTEM, 'NODE_ENV: ' + process.env.NODE_ENV);
 
 // socket.io
-const port = process.env.PORT || 80;
+const backup_port = 8080;
+let port = process.env.PORT || 80;
 const http = require('http').Server(app);
 // const io = require('socket.io')(http);
 const io = require('socket.io')(http, {
 	allowEIO3: true
 });
 
+uilog.log(uilog.Level.SYSTEM, `Server IP addresses:\n${systemManager.getEthernetIP()}`);
+
 http.listen(port, function () {
-	uilog.log(uilog.Level.SYSTEM, `Server starts running on port ${port} of the addresses:\n${systemManager.getEthernetIP()}`);
+	uilog.log(uilog.Level.SYSTEM, 'Server is running on port: ' + port);
+});
+
+http.on('error', (err) => {
+	uilog.log(uilog.Level.ERROR, 'Server error: ' + err.message);
+	uilog.log(uilog.Level.ERROR, 'Close current server and try to connect to backup port: ' + backup_port);
+
+	http.close();
+	http.removeAllListeners('error')
+	port = backup_port
+	
+	http.listen(port, function () {
+		uilog.log(uilog.Level.SYSTEM, 'Server is running on port: ' + port);
+	});
+
+	http.on('error', (err) => {
+		uilog.log(uilog.Level.ERROR, 'Server error: ' + err.message);
+		uilog.log(uilog.Level.ERROR, 'Exit program !!!');
+		process.exit(1)
+	});
 });
 
 // view engine setup
@@ -351,7 +373,7 @@ io.on('connection', function (socket) {
 		uilog.log(uilog.Level.MD, `received data: ${data}`)
 		arr = data.split(';')
 		if (arr.length == 3) {
-			sendDataToAllClientInPage('dashboard', 'device status', { type: arr[0], name: arr[1], status: arr[2]})
+			sendDataToAllClientInPage('dashboard', 'device status', { type: arr[0], name: arr[1], status: arr[2] })
 		}
 	})
 });
@@ -399,6 +421,7 @@ function nlpAnalyze(sentence, successCallback, errorCallback) {
 			switch (data.event) {
 				case 'init error':
 					uilog.log(uilog.Level.ERROR, 'NLP initialization failed: ' + data.description)
+					uilog.log(uilog.Level.ERROR, 'Exit program !!!');
 					process.exit(1)
 				case 'init done':
 					uilog.log(uilog.Level.SYSTEM, 'NLP initialization successful')
