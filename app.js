@@ -36,7 +36,7 @@ http.on('error', (err) => {
 	uilog.log(uilog.Level.ERROR, 'Close current server and try to connect to backup port: ' + backup_port);
 
 	http.close();
-	http.removeAllListeners('error')
+	http.removeAllListeners()
 	port = backup_port
 
 	http.listen(port, function () {
