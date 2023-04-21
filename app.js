@@ -424,6 +424,9 @@ if (config.enableNLP) {
 			return
 		}
 
+		// remove old callback
+		pyshell.removeAllListeners('message')
+
 		pyshell.on('message', function (outputStr) {
 			try {
 				let data = JSON.parse(outputStr)
@@ -450,12 +453,32 @@ if (config.enableNLP) {
 				console.log('NLP raw data:', outputStr)
 				errorCallback('system')
 			}
-			// remove old callback
-			pyshell.removeAllListeners('message')
 		});
 
 		pyshell.send(sentence)
 	}
+
+	pyshell.on('message', function (outputStr) {
+		try {
+			let data = JSON.parse(outputStr)
+			switch (data.event) {
+				case 'init error':
+					uilog.log(uilog.Level.ERROR, 'NLP initialization failed: ' + data.description)
+					uilog.log(uilog.Level.ERROR, 'Exit program !!!');
+					process.exit(1)
+				case 'init done':
+					uilog.log(uilog.Level.SYSTEM, 'NLP initialization successful')
+				case 'parse error':
+					uilog.log(uilog.Level.ERROR, 'NLP Error parsing: ' + data.description)
+					break;
+				default:
+					break;
+			}
+		} catch (error) {
+			console.log('NLP raw data:', outputStr)
+		}
+	});
+
 }
 else {
 	uilog.log(uilog.Level.ERROR, 'Warning! NLP is disable !!!');
