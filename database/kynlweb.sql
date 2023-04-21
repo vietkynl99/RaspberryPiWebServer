@@ -12,8 +12,7 @@ CREATE TABLE `kynlwebdb`.`userinfo` (
   `permission` INT NOT NULL,
   `token` VARCHAR(50),
   `lastlogin` DATETIME,
-  PRIMARY KEY (`email`),
-  UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE);
+  PRIMARY KEY (`email`));
 
 INSERT INTO `kynlwebdb`.`userinfo` (`firstname`, `lastname`, `email`, `password`, `phone`, `birthday`, `permission`) VALUES ('Viet', 'Kynl', 'vietkynl@gmail.com', '123456', '0869333444', '1999-01-01', '1');
 INSERT INTO `kynlwebdb`.`userinfo` (`firstname`, `lastname`, `email`, `password`, `phone`, `birthday`, `permission`) VALUES ('Admin', 'System', 'admin@gmail.com', '123456', '0869123123', '1999-01-01', '1');
