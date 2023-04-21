@@ -457,3 +457,6 @@ if (config.enableNLP) {
 		pyshell.send(sentence)
 	}
 }
+else {
+	uilog.log(uilog.Level.ERROR, 'Warning! NLP is disable !!!');
+}
