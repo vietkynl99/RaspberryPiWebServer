@@ -15,6 +15,12 @@ const config = require('./modules/config')
 require('dotenv').config();
 
 uilog.log(uilog.Level.SYSTEM, 'NODE_ENV: ' + process.env.NODE_ENV);
+if (!config.enableNLP) {
+	uilog.log(uilog.Level.ERROR, 'Warning! NLP is disable !!!');
+}
+if (!config.enableSerialPort) {
+	uilog.log(uilog.Level.ERROR, 'Warning! Serial Port is disable !!!');
+}
 
 // socket.io
 const backup_port = 8080;
@@ -96,25 +102,27 @@ sqlAdapter.readAllFromTable('setting', undefined,
 		uilog.log(uilog.Level.SQL, 'Old setting: ');
 		uilog.log(uilog.Level.SQL, result);
 
-		serialPortAdapter.autoConnect = result.autoconnect === 1;
-		if (result.autoconnect === 1 && result.serialport != '') {
-			uilog.log(uilog.Level.SQL, 'Auto connect to ' + result.serialport);
-			serialPortAdapter.connect(result.serialport,
-				function openCallback() {
-					sendPortStatus(true);
-					sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is connected!' });
-				},
-				function closeCallback() {
-					sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is disconnected!' });
-					sendPortStatus(true);
-				},
-				function errorCallback(error) {
-					sendDataToAllClientInPage('connectivity', 'alert', { type: 'danger', message: 'Error! ' + error });
-					sendPortStatus(true);
-				},
-				function dataCallback(data) {
-					uilog.log(uilog.Level.SERIALPORT, data);
-				});
+		if (config.enableSerialPort) {
+			serialPortAdapter.autoConnect = result.autoconnect === 1;
+			if (result.autoconnect === 1 && result.serialport != '') {
+				uilog.log(uilog.Level.SQL, 'Auto connect to ' + result.serialport);
+				serialPortAdapter.connect(result.serialport,
+					function openCallback() {
+						sendPortStatus(true);
+						sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is connected!' });
+					},
+					function closeCallback() {
+						sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is disconnected!' });
+						sendPortStatus(true);
+					},
+					function errorCallback(error) {
+						sendDataToAllClientInPage('connectivity', 'alert', { type: 'danger', message: 'Error! ' + error });
+						sendPortStatus(true);
+					},
+					function dataCallback(data) {
+						uilog.log(uilog.Level.SERIALPORT, data);
+					});
+			}
 		}
 	}, function errorCallback(error) {
 		uilog.log(uilog.Level.ERROR, 'SQL query error')
@@ -248,10 +256,10 @@ io.on('connection', function (socket) {
 				sendDataToClient(socket.id, 'update chart', { id: chartId, label: chartLabel, xData: ChartXData, yData: ChartYData });
 				break;
 			case 'connectivity':
-				// port list
-				sendPortList(socket.id);
-				// port status
-				sendPortStatus(false, socket.id);
+				if (config.enableSerialPort) {
+					sendPortList(socket.id);
+					sendPortStatus(false, socket.id);
+				}
 				break;
 			default:
 				break;
@@ -267,73 +275,87 @@ io.on('connection', function (socket) {
 	});
 
 	socket.on('req portlist', function (email) {
-		setTimeout(() => {
-			sendPortList(socket.id);
-		}, 500);
+		if (config.enableSerialPort) {
+			setTimeout(() => {
+				sendPortList(socket.id);
+			}, 500);
+		}
 	});
 
 	socket.on('req connect', function (data) {
-		setTimeout(() => {
-			let email = sqlAdapter.removeSpecialCharacter(data.email);
-			let port = sqlAdapter.removeSpecialCharacter(data.port);
-			if (!email || !port) {
-				return
-			}
-			uilog.log(uilog.Level.SYSTEM, 'Request connect to ' + port + ' from user ' + email);
-			// save settings 
-			sqlAdapter.updateTable('setting', 'serialport', port,
-				function successCallback(result) { },
-				function errorCallback(error) {
-					uilog.log(uilog.Level.ERROR, 'SQL query error. Cannot save settings')
-				});
-			// connect to serial port
-			serialPortAdapter.connect(port,
-				function openCallback() {
-					sendPortStatus(true);
-					sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is connected!' });
-				},
-				function closeCallback() {
-					sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is disconnected!' });
-					sendPortStatus(true);
-				},
-				function errorCallback(error) {
-					sendDataToAllClientInPage('connectivity', 'alert', { type: 'danger', message: 'Error! ' + error });
-					sendPortStatus(true);
-				},
-				function dataCallback(data) {
-					uilog.log(uilog.Level.SERIALPORT, data);
-				});
-		}, 500);
+		if (config.enableSerialPort) {
+			setTimeout(() => {
+				let email = sqlAdapter.removeSpecialCharacter(data.email);
+				let port = sqlAdapter.removeSpecialCharacter(data.port);
+				if (!email || !port) {
+					return
+				}
+				uilog.log(uilog.Level.SYSTEM, 'Request connect to ' + port + ' from user ' + email);
+				// save settings 
+				sqlAdapter.updateTable('setting', 'serialport', port,
+					function successCallback(result) { },
+					function errorCallback(error) {
+						uilog.log(uilog.Level.ERROR, 'SQL query error. Cannot save settings')
+					});
+				// connect to serial port
+				serialPortAdapter.connect(port,
+					function openCallback() {
+						sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is connected!' });
+						sendPortStatus(true);
+					},
+					function closeCallback() {
+						sendDataToAllClientInPage('connectivity', 'alert', { type: 'info', message: 'Serial port is disconnected!' });
+						sendPortStatus(true);
+					},
+					function errorCallback(error) {
+						sendDataToAllClientInPage('connectivity', 'alert', { type: 'danger', message: 'Error! ' + error });
+						sendPortStatus(true);
+					},
+					function dataCallback(data) {
+						uilog.log(uilog.Level.SERIALPORT, data);
+					});
+			}, 500);
+		}
+		else {
+			uilog.log(uilog.Level.ERROR, "Unable connect to Serial Port due to disabled");
+		}
 	});
 
 	socket.on('req disconnect', function (data) {
-		setTimeout(() => {
-			let email = sqlAdapter.removeSpecialCharacter(data.email);
-			if (!email) {
-				return
-			}
-			uilog.log(uilog.Level.SYSTEM, 'Request disconnect to from user ' + email);
-			serialPortAdapter.disconnect();
-		}, 500);
+		if (config.enableSerialPort) {
+			setTimeout(() => {
+				let email = sqlAdapter.removeSpecialCharacter(data.email);
+				if (!email) {
+					return
+				}
+				uilog.log(uilog.Level.SYSTEM, 'Request disconnect to from user ' + email);
+				serialPortAdapter.disconnect();
+			}, 500);
+		}
+		else {
+			uilog.log(uilog.Level.ERROR, "Unable disconnect to Serial Port due to disabled");
+		}
 	});
 
 	socket.on('save autoconnect', function (data) {
-		setTimeout(() => {
-			let autoconnect;
-			if (data.status === true) {
-				autoconnect = 1;
-			}
-			else {
-				autoconnect = 0;
-			}
-			serialPortAdapter.autoConnect = data.status === true;
-			uilog.log(uilog.Level.SYSTEM, 'Request save autoconnect = ' + autoconnect + ' from user ' + data.email);
-			sqlAdapter.updateTable('setting', 'autoconnect', autoconnect,
-				function successCallback(result) { },
-				function errorCallback(error) {
-					uilog.log(uilog.Level.ERROR, 'SQL query error. Cannot save settings')
-				});
-		}, 500);
+		if (config.enableSerialPort) {
+			setTimeout(() => {
+				let autoconnect;
+				if (data.status === true) {
+					autoconnect = 1;
+				}
+				else {
+					autoconnect = 0;
+				}
+				serialPortAdapter.autoConnect = data.status === true;
+				uilog.log(uilog.Level.SYSTEM, 'Request save autoconnect = ' + autoconnect + ' from user ' + data.email);
+				sqlAdapter.updateTable('setting', 'autoconnect', autoconnect,
+					function successCallback(result) { },
+					function errorCallback(error) {
+						uilog.log(uilog.Level.ERROR, 'SQL query error. Cannot save settings')
+					});
+			}, 500);
+		}
 	});
 
 	// Get data from mobile devices
@@ -389,21 +411,23 @@ io.on('connection', function (socket) {
 
 
 function sendPortList(id) {
-	serialPortAdapter.getPortList(function (list) {
-		sendDataToClient(id, 'update portlist', { list: list, path: serialPortAdapter.getPath() });
-	})
+	if (config.enableSerialPort) {
+		serialPortAdapter.getPortList(function (list) {
+			sendDataToClient(id, 'update portlist', { list: list, path: serialPortAdapter.getPath() });
+		})
+	}
 }
 
 function sendPortStatus(sendAll, id) {
-	if (sendAll === true) {
-		sendDataToAllClientInPage('connectivity', 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath(), autoConnect: serialPortAdapter.autoConnect });
-	}
-	else if (id) {
-		sendDataToClient(id, 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath(), autoConnect: serialPortAdapter.autoConnect });
+	if (config.enableSerialPort) {
+		if (sendAll === true) {
+			sendDataToAllClientInPage('connectivity', 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath(), autoConnect: serialPortAdapter.autoConnect });
+		}
+		else if (id) {
+			sendDataToClient(id, 'port status', { status: serialPortAdapter.isConnected(), path: serialPortAdapter.getPath(), autoConnect: serialPortAdapter.autoConnect });
+		}
 	}
 }
-
-
 
 // NLP API methods
 if (config.enableNLP) {
@@ -479,7 +503,4 @@ if (config.enableNLP) {
 		}
 	});
 
-}
-else {
-	uilog.log(uilog.Level.ERROR, 'Warning! NLP is disable !!!');
 }
