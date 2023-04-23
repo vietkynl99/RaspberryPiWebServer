@@ -1,4 +1,4 @@
-const enableNLP = true
+const enableNLP = false
 const enableSerialPort = false
 
 module.exports = {
