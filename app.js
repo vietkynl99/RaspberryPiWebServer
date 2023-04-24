@@ -106,6 +106,11 @@ sqlAdapter.connect()
 
 // check all tables is created
 sqlAdapter.createTables()
+sqlAdapter.query(`ALTER ROLE ${process.env.PG_USER} SET role postgres`,
+	function successCallback(result) {
+	}, function errorCallback(error) {
+		uilog.log(uilog.Level.ERROR, 'SQL query error')
+	})
 
 // read old setting
 sqlAdapter.readAllFromTable('setting', undefined,
