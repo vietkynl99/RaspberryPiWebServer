@@ -1,3 +1,4 @@
+require('dotenv').config();
 const crypto = require('crypto')
 const config = require('../modules/config')
 const uilog = require('../modules/uiLog')
@@ -58,11 +59,11 @@ function removeSpecialCharacter(str) {
 function connect() {
 	if (config.usePostgreSQL) {
 		sql = new Pool({
-			user: 'postgres',
-			host: 'localhost',
-			database: 'kynlwebdb',
-			password: 'KynlMySQL1103@!',
-			port: 5432,
+			user: process.env.PG_USER,
+			host: process.env.PG_HOST,
+			database: process.env.PG_DB,
+			password: process.env.PG_PWD,
+			port: process.env.PG_PORT
 		});
 
 		sql.on('error', (err, client) => {
@@ -72,11 +73,11 @@ function connect() {
 	}
 	else {
 		sql = mysql.createConnection({
-			host: "localhost",
-			port: 3306,
-			user: "root",
-			password: "KynlMySQL1103@!",
-			database: "kynlwebdb"
+			host: process.env.MYSQL_HOST,
+			port: process.env.MYSQL_PORT,
+			user: process.env.MYSQL_USER,
+			password: process.env.MYSQL_PWD,
+			database: process.env.MYSQL_DB,
 		});
 		sql.connect((error) => {
 			if (error) {
