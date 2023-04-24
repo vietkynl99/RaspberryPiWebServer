@@ -23,8 +23,8 @@ function add(email, page, id, ip) {
 
 function removeId(id) {
 	let index = list.findIndex(x => x.id === id)
-	if (index >= 0) {
-		let data = list.at(index)
+	if (index >= 0 && index < list.length) {
+		let data = list[index]
 		list.splice(index, 1)
 		return data
 	}
