@@ -17,7 +17,7 @@ DO $$BEGIN
             token character varying,
             lastlogin timestamp with time zone
         );
-        ALTER TABLE IF EXISTS public.userinfo OWNER to postgres;
+        -- ALTER TABLE IF EXISTS public.userinfo OWNER to postgres;
         INSERT INTO public.userinfo VALUES ('Viet', 'Kynl', 'vietkynl@gmail.com', '123456', '0869333444', '1999-01-01', '1');
         INSERT INTO public.userinfo VALUES ('Admin', 'System', 'admin@gmail.com', '123456', '0869123123', '1999-01-01', '1');
     END IF;
@@ -41,7 +41,7 @@ DO $$BEGIN
             email character varying NOT NULL,
             ip character varying NOT NULL
         );
-        ALTER TABLE IF EXISTS public.loginhistory OWNER to postgres;
+        -- ALTER TABLE IF EXISTS public.loginhistory OWNER to postgres;
     END IF;
 END$$;
 
@@ -62,7 +62,7 @@ DO $$BEGIN
             type integer NOT NULL,
             data character varying NOT NULL
         );
-        ALTER TABLE IF EXISTS public.event OWNER to postgres;
+        -- ALTER TABLE IF EXISTS public.event OWNER to postgres;
     END IF;
 END$$;
 
@@ -79,7 +79,7 @@ DO $$BEGIN
             autoconnect integer NOT NULL,
             serialport character varying
         );
-        ALTER TABLE IF EXISTS public.setting OWNER to postgres;
+        -- ALTER TABLE IF EXISTS public.setting OWNER to postgres;
         INSERT INTO public.setting (autoconnect) VALUES ('0');
     END IF;
 END$$;
