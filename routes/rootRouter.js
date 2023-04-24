@@ -2,6 +2,7 @@ var express = require('express');
 var app = express();
 var router = express.Router();
 var cookieParser = require('cookie-parser');
+var uilog = require('../modules/uiLog')
 
 app.use(cookieParser());
 

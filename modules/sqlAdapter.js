@@ -1,7 +1,11 @@
-const crypto = require('crypto');
-var uilog = require('../modules/uiLog')
-var mysql = require('mysql');
-var sqlcon = undefined;
+const crypto = require('crypto')
+const config = require('../modules/config')
+const uilog = require('../modules/uiLog')
+const mysql = require('mysql')
+const { Pool } = require('pg')
+const fs = require('fs')
+
+var sql = undefined;
 
 // crypto
 const crypto_key = crypto.randomBytes(32);
@@ -52,131 +56,181 @@ function removeSpecialCharacter(str) {
 }
 
 function connect() {
-	// sqlcon = mysql.createConnection({
-	// 	host: "localhost",
-	// 	port: 3306,
-	// 	user: "root",
-	// 	password: "KynlMySQL1103@!1",
-	// 	database: "kynlwebdb"
-	// });
-	// sqlcon.connect((error) => {
-	// 	if (error) {
-	// 		uilog.log(uilog.Level.ERROR, 'Cannot connect to database: ' + error)
-	// 		throw error
-	// 	}
-	// 	uilog.log(uilog.Level.SQL, 'Database connected!')
-	// });
+	if (config.usePostgreSQL) {
+		sql = new Pool({
+			user: 'postgres',
+			host: 'localhost',
+			database: 'kynlwebdb',
+			password: 'KynlMySQL1103@!',
+			port: 5432,
+		});
+
+		sql.on('error', (err, client) => {
+			console.error('Unexpected error on idle client', err);
+			process.exit(-1);
+		});
+	}
+	else {
+		sql = mysql.createConnection({
+			host: "localhost",
+			port: 3306,
+			user: "root",
+			password: "KynlMySQL1103@!",
+			database: "kynlwebdb"
+		});
+		sql.connect((error) => {
+			if (error) {
+				uilog.log(uilog.Level.ERROR, 'Cannot connect to database: ' + error)
+				throw error
+			}
+			uilog.log(uilog.Level.SQL, 'Database connected!')
+		});
+	}
+}
+
+function close() {
+	if(config.usePostgreSQL) {
+		sql.end()
+	}
 }
 
 function query(query, successCallback, errorCallback) {
-	// sqlcon.query(query, (error, result) => {
-	// 	if (error) {
-	// 		uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-	// 		errorCallback(error)
-	// 	}
-	// 	else {
-	// 		successCallback(result)
-	// 	}
-	// });
+	sql.query(query, (error, result) => {
+		if (error) {
+			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
+			errorCallback(error)
+		}
+		else {
+			successCallback(config.usePostgreSQL ? result.rows : result)
+		}
+	});
+}
+
+
+function createTables() {
+	const sqlFile = config.usePostgreSQL ? './modules/postgre.sql' : './modules/mysql.sql'
+	fs.readFile(sqlFile, (err, data) => {
+		if (err) throw err;
+	
+		let query = data.toString().trim();
+	
+		if (!query) {
+			uilog.log(uilog.Level.ERROR, 'Query is empty');
+			process.exit(1)
+		}
+
+		sql.query(query, (error, result) => {
+			if (error) {
+				uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
+			}
+			else {
+				uilog.log(uilog.Level.SQL, 'Create table successfully!!');
+			}
+		});
+	})
 }
 
 function checkAuthWithPass(email, password, successCallback, errorCallback) {
-	// let query = `SELECT permission FROM userinfo WHERE email = ? AND password = ?`;
-	// sqlcon.query(query, [email, password], (error, result) => {
-	// 	if (error) {
-	// 		uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-	// 		errorCallback(error)
-	// 	}
-	// 	else {
-	// 		successCallback(result)
-	// 	}
-	// });
+	let query = config.usePostgreSQL ? `SELECT permission FROM userinfo WHERE email = $1 AND password = $2` :
+		`SELECT permission FROM userinfo WHERE email = ? AND password = ?`
+	sql.query(query, [email, password], (error, result) => {
+		if (error) {
+			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
+			errorCallback(error)
+		}
+		else {
+			successCallback(config.usePostgreSQL ? result.rows : result)
+		}
+	});
 }
 
 function checkAuthWithToken(encryptedEmail, encryptedToken, successCallback, errorCallback) {
-	// let rawEmail = decrypte(encryptedEmail);
-	// let rawToken = decrypte(encryptedToken);
-	// let query = `SELECT permission FROM userinfo WHERE email = ? AND token = ? AND lastlogin >= DATE_SUB(NOW(), INTERVAL 1 HOUR)`;
-	// sqlcon.query(query, [rawEmail, rawToken], (error, result) => {
-	// 	if (error) {
-	// 		uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-	// 		errorCallback(error)
-	// 	}
-	// 	else {
-	// 		successCallback(result)
-	// 	}
-	// });
+	let rawEmail = decrypte(encryptedEmail);
+	let rawToken = decrypte(encryptedToken);
+	let query = config.usePostgreSQL ? `SELECT permission FROM userinfo WHERE email = $1 AND token = $2 AND lastlogin >= NOW() - INTERVAL '1 hour'` :
+		`SELECT permission FROM userinfo WHERE email = ? AND token = ? AND lastlogin >= DATE_SUB(NOW(), INTERVAL 1 HOUR)`
+	sql.query(query, [rawEmail, rawToken], (error, result) => {
+		if (error) {
+			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
+			errorCallback(error)
+		}
+		else {
+			successCallback(config.usePostgreSQL ? result.rows : result)
+		}
+	});
 }
 
 function updateToken(email, token, successCallback, errorCallback) {
-	// let query = `UPDATE userinfo SET token = ? , lastlogin = NOW() WHERE email = ?`;
-	// sqlcon.query(query, [token, email], (error, result) => {
-	// 	if (error) {
-	// 		uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-	// 		errorCallback(error)
-	// 	}
-	// 	else {
-	// 		successCallback(result)
-	// 	}
-	// });
+	let query = config.usePostgreSQL ? `UPDATE userinfo SET token = $1 , lastlogin = NOW() WHERE email = $2` :
+		`UPDATE userinfo SET token = ? , lastlogin = NOW() WHERE email = ?`
+	sql.query(query, [token, email], (error, result) => {
+		if (error) {
+			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
+			errorCallback(error)
+		}
+		else {
+			successCallback(config.usePostgreSQL ? result.rowCount : result.changedRows)
+		}
+	});
 }
 
 function readUserInformation(email, successCallback, errorCallback) {
-	// let query = `SELECT firstname, lastname FROM userinfo WHERE email = ?`;
-	// sqlcon.query(query, [email], (error, result) => {
-	// 	if (error) {
-	// 		uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-	// 		errorCallback(error)
-	// 	}
-	// 	else {
-	// 		successCallback(result)
-	// 	}
-	// });
+	let query = config.usePostgreSQL ? `SELECT firstname, lastname FROM userinfo WHERE email = $1` :
+		`SELECT firstname, lastname FROM userinfo WHERE email = ?`;
+	sql.query(query, [email], (error, result) => {
+		if (error) {
+			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
+			errorCallback(error)
+		}
+		else {
+			successCallback(config.usePostgreSQL ? result.rows : result)
+		}
+	});
 }
 
 function insertToTable(table, dataName, dataValue, successCallback, errorCallback) {
-	// let query = `INSERT INTO ${table} (${dataName}) VALUES (${dataValue})`;
-	// sqlcon.query(query, (error, result) => {
-	// 	if (error) {
-	// 		uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-	// 		errorCallback(error)
-	// 	}
-	// 	else {
-	// 		successCallback(result)
-	// 	}
-	// });
+	let query = `INSERT INTO ${table} (${dataName}) VALUES (${dataValue})`;
+	sql.query(query, (error, result) => {
+		if (error) {
+			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
+			errorCallback(error)
+		}
+		else {
+			successCallback(config.usePostgreSQL ? result.rows : result)
+		}
+	});
 }
 
 function updateTable(table, dataName, dataValue, successCallback, errorCallback) {
-	// let query = `UPDATE ${table} SET ${dataName} = '${dataValue}'`;
-	// sqlcon.query(query, [dataName, dataValue], (error, result) => {
-	// 	if (error) {
-	// 		uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-	// 		errorCallback(error)
-	// 	}
-	// 	else {
-	// 		successCallback(result)
-	// 	}
-	// });
+	let query = `UPDATE ${table} SET ${dataName} = '${dataValue}'`;
+	sql.query(query, [dataName, dataValue], (error, result) => {
+		if (error) {
+			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
+			errorCallback(error)
+		}
+		else {
+			successCallback(config.usePostgreSQL ? result.rowCount : result.changedRows)
+		}
+	});
 }
 
 function readAllFromTable(table, limit, successCallback, errorCallback) {
-	// let query;
-	// if (limit) {
-	// 	query = `SELECT * FROM ${table} ORDER BY id DESC LIMIT ${limit}`;
-	// }
-	// else {
-	// 	query = `SELECT * FROM ${table}`;
-	// }
-	// sqlcon.query(query, (error, result) => {
-	// 	if (error) {
-	// 		uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
-	// 		errorCallback(error)
-	// 	}
-	// 	else {
-	// 		successCallback(result)
-	// 	}
-	// });
+	let query;
+	if (limit) {
+		query = `SELECT * FROM ${table} ORDER BY id DESC LIMIT ${limit}`;
+	}
+	else {
+		query = `SELECT * FROM ${table}`;
+	}
+	sql.query(query, (error, result) => {
+		if (error) {
+			uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${error}`)
+			errorCallback(error)
+		}
+		else {
+			successCallback(config.usePostgreSQL ? result.rows : result)
+		}
+	});
 }
 
 
@@ -188,7 +242,9 @@ module.exports = {
 	EventType,
 	removeSpecialCharacter,
 	connect,
+	close,
 	query,
+	createTables,
 	checkAuthWithPass,
 	checkAuthWithToken,
 	updateToken,

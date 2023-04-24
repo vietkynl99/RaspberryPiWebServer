@@ -1,35 +1,31 @@
 // connect to database
-var uilog = require('../modules/uiLog')
-var sqlAdapter = require('../modules/sqlAdapter')
+const uilog = require('../modules/uiLog')
+const sqlAdapter = require('../modules/sqlAdapter')
+const config = require('../modules/config')
+const { Pool } = require('pg');
+const fs = require('fs')
+
+const sqlFile = config.usePostgreSQL ? 'postgre.sql' : 'mysql.sql'
+
 sqlAdapter.connect()
 
-
-const fs = require('fs')
-fs.readFile('kynlweb.sql', (err, data) => {
+fs.readFile(sqlFile, (err, data) => {
     if (err) throw err;
 
-    let text = data.toString().trim();
-    // remove space and comment
-    text = text.replace(/^[\s]*[--]+.*[\s\r\n]+/gm, "").trim();
-    // remove last ;
-    if (text.at(text.length - 1) == ';') {
-        text = text.substring(0, text.length - 1)
-    }
-    let queryArray = text.split(';');
+    let query = data.toString().trim();
 
-    for (let i = 0; i < queryArray.length; i++) {
-        let query = queryArray[i].trim();
-        // uilog.log(uilog.Level.SQL, '\n' + (i + 1) + '. ' + query);
-        sqlAdapter.query(query,
-            function successCallback(result) {
-                if (i === queryArray.length - 1) {
-                    uilog.log(uilog.Level.SQL, 'Execute ' + queryArray.length + ' queries successfully!!');
-                    process.exit()
-                }
-            },
-            function errorCallback(error) {
-                uilog.log(uilog.Level.ERROR, 'SQL query error: index=' + (i + 1) + ' query=' + query);
-                process.exit()
-            });
+    if (!query) {
+        uilog.log(uilog.Level.ERROR, 'Query is empty');
+        process.exit(1)
     }
+
+    sqlAdapter.query(query,
+        function successCallback(result) {
+            uilog.log(uilog.Level.SQL, 'Execute queries successfully!!');
+            process.exit(0)
+        },
+        function errorCallback(error) {
+            uilog.log(uilog.Level.ERROR, `Sql query error:\n\tquery: ${query}\n\terror: ${err}`)
+            throw err
+        });
 })

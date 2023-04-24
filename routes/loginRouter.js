@@ -105,8 +105,8 @@ router.post('/', function (req, res) {
 				res.cookie('key2', token.encrypted, { expires: expires_date, httpOnly: true });
 				// save token to sql
 				sqlAdapter.updateToken(email, token.raw,
-					function (result) {
-						if (result.changedRows !== 1) {
+					function (changedRows) {
+						if (changedRows !== 1) {
 							uilog.log(uilog.Level.ERROR, "Cannot update token to sql")
 							// deny request
 							res.send({ response: 'deny', timeout: null });

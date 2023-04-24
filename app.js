@@ -90,10 +90,22 @@ app.use(function (err, req, res, next) {
 	res.render('error');
 });
 
+function gracefulShutdown() {
+	uilog.log(uilog.Level.ERROR, 'Exit program. Closing connection...');
+	sqlAdapter.close()
+	process.exit(0);
+}
+
+process.on('SIGINT', gracefulShutdown);
+process.on('SIGTERM', gracefulShutdown);
+
 
 // connect to database
 var sqlAdapter = require('./modules/sqlAdapter')
 sqlAdapter.connect()
+
+// check all tables is created
+sqlAdapter.createTables()
 
 // read old setting
 sqlAdapter.readAllFromTable('setting', undefined,
